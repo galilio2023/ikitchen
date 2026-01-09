@@ -22,23 +22,26 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           git diff HEAD^ HEAD > diff.txt
+          # Escape special characters for the prompt
+          PROMPT="Please review this code diff and list any bugs: $(cat diff.txt | head -c 5000)"
           
-          # We force the AI to be extremely concise to stay under free tier limits
-          PROMPT="Act as a Senior Developer. Review this code diff. PROVIDE ONLY 3 BULLET POINTS. NO INTRO. NO THINKING. Code: $(cat diff.txt)"
+          # This JSON structure is the most compatible with the Free Tier API
+          jq -n --arg msg "$PROMPT" \
+          '{
+            contents: [{ parts: [{ text: $msg }] }],
+            safetySettings: [
+              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+            ]
+          }' > p.json
           
-          # Prepare clean JSON
-          jq -n --rawfile m diff.txt \
-            '{contents:[{parts:[{text: ("Review this code: " + $m)}]}],
-              generationConfig: {
-                temperature: 0.1,
-                maxOutputTokens: 800
-              }}' > p.json
-          
-          # Call the STABLE v1 endpoint instead of v1beta
-          curl -s -X POST "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
+          curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
             -H 'Content-Type: application/json' \
             -d @p.json > res.json
           
+          echo "--- DEBUG LOG ---"
           cat res.json
 
       - name: Comment
@@ -48,26 +51,20 @@ jobs:
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('res.json', 'utf8'));
             
-            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
-              // We look for the first part that actually contains text
-              const textPart = data.candidates[0].content.parts.find(p => p.text);
-              if (textPart) {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  body: "### 🤖 Gemini AI Review\n\n" + textPart.text
-                });
-                return;
-              }
+            if (data.candidates && data.candidates[0].content) {
+              const review = data.candidates[0].content.parts[0].text;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: "### 🤖 AI Review\n\n" + review
+              });
+            } else {
+              const err = data.error ? data.error.message : "Possible regional block or API limit.";
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: "⚠️ **API Rejected:** " + err
+              });
             }
-            
-            // Log exactly what happened if we reached here
-            const reason = data.candidates ? data.candidates[0].finishReason : "No Candidates";
-            console.log("Full API Response: " + JSON.stringify(data));
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: "⚠️ **AI Silent:** Gemini finished with reason: " + reason + ". Check Actions logs for details."
-            });
