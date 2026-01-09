@@ -21,23 +21,26 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # 1. Get the code changes
           git diff HEAD^ HEAD > diff.txt
           
-          # 2. Build a very simple prompt
-          echo "You are a Senior Developer. Review this code for bugs and Tailwind v4 best practices. Code diff:" > prompt.txt
-          cat diff.txt >> prompt.txt
+          # We add a 'System Instruction' to prevent the AI from being shy/silent
+          PROMPT="Review this Next.js 16 code. Give 3 short bullet points for improvement. If the code is perfect, say 'Looks great!'. Code: $(cat diff.txt)"
           
-          # 3. Create JSON payload
-          jq -n --rawfile m prompt.txt '{contents:[{parts:[{text:$m}]}]}' > p.json
+          # Using jq to build the payload with Safety Settings set to 'BLOCK_NONE'
+          jq -n --rawfile m diff.txt \
+            '{contents:[{parts:[{text: ("Review this code: " + $m)}]}],
+              safetySettings: [
+                {category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE"},
+                {category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE"},
+                {category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE"},
+                {category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE"}
+              ]}' > p.json
           
-          # 4. Call Gemini 1.5 Flash (v1beta for better stability)
           curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
             -H 'Content-Type: application/json' \
             -d @p.json > res.json
           
-          # 5. Debug - this helps us see the error in the 'Actions' logs
-          echo "--- API RESPONSE ---"
+          echo "--- LOGS FOR DEBUGGING ---"
           cat res.json
 
       - name: Comment
@@ -46,19 +49,22 @@ jobs:
           script: |
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('res.json', 'utf8'));
-            let message = "";
-
-            if (data.candidates && data.candidates[0].content) {
-              message = "### 🤖 Gemini AI Review\n\n" + data.candidates[0].content.parts[0].text;
-            } else if (data.promptFeedback && data.promptFeedback.blockReason) {
-              message = "⚠️ **AI blocked:** The review was filtered by safety settings (" + data.promptFeedback.blockReason + ").";
+            
+            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+              const review = data.candidates[0].content.parts[0].text;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: "### 🤖 Gemini AI Review\n\n" + review
+              });
             } else {
-              message = "❓ **AI Silent:** Gemini returned an empty response. Check the 'Actions' logs for details.";
+              // If it's still silent, tell us the 'Finish Reason' from the API
+              const reason = data.candidates ? data.candidates[0].finishReason : "Unknown Error";
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: "⚠️ **AI Error:** The model returned status: " + reason + ". Check logs for JSON."
+              });
             }
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: message
-            });
