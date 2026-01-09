@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import Project from '@/models/Project';
+import mongoose from "mongoose";
 
 /**
  * GET /api/projects
@@ -34,21 +35,23 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         await dbConnect();
-
-        // 1. Parse the request body
         const body = await request.json();
+
         const { name, client } = body;
 
-        // 2. Industrial Validation
-        if (!name || !client) {
-            return NextResponse.json(
-                { error: 'Validation Error', message: 'Name and Client fields are required' },
-                { status: 400 }
-            );
+        // 1. Manual Short-Circuit: Throw error if fields are missing or just whitespace
+        // This triggers the 'catch' block immediately without touching the DB
+        if (!name?.trim() || !client?.trim()) {
+            const validationError = new mongoose.Error.ValidationError();
+            validationError.addError('fields', new mongoose.Error.ValidatorError({
+                message: 'All identifier fields (Name & Client) must be populated.',
+                path: 'fields',
+                type: 'required',
+            }));
+            throw validationError;
         }
 
-        // 3. Create the document using your Mongoose Schema
-        // Defaults: status="Draft", progress=0
+        // 2. Proceed to Mongoose Create if manual check passes
         const newProject = await Project.create({
             name,
             client,
@@ -56,13 +59,30 @@ export async function POST(request: Request) {
             progress: 0
         });
 
-        // 4. Return the new project with 201 Created status
         return NextResponse.json(newProject, { status: 201 });
 
-    } catch (error) {
-        console.error(' [API_PROJECTS_POST] Error:', error);
+    } catch (error: any) {
+        // This catch block now handles BOTH your manual 'throw' and DB errors
+
+        if (error instanceof SyntaxError) {
+            return NextResponse.json(
+                { error: 'Payload_Malformed', message: 'Invalid JSON input' },
+                { status: 400 }
+            );
+        }
+
+        if (error instanceof mongoose.Error.ValidationError) {
+            // This now catches the manual throw FROM Step 1
+            const messages = Object.values(error.errors).map((err: any) => err.message);
+            return NextResponse.json(
+                { error: 'Input_Validation_Failed', details: messages },
+                { status: 400 }
+            );
+        }
+
+        console.error(' [SYSTEM_CRITICAL]:', error);
         return NextResponse.json(
-            { error: 'Internal Server Error', message: 'Failed to initialize project sequence' },
+            { error: 'Internal_Server_Error' },
             { status: 500 }
         );
     }
