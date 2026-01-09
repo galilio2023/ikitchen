@@ -118,17 +118,19 @@ function StatCard({ label, value, icon: Icon, color }: StatCardProps) {
   );
 }
 
+interface ProjectCardProps {
+    name: string;
+    client: string;
+    status: "Draft" | "Measuring" | "Designing" | "Rendered" | "Completed";
+    progress: number;
+}
+
 function ProjectCard({
-  name,
-  client,
-  status,
-  progress,
-}: {
-  name: string;
-  client: string;
-  status: string;
-  progress: number;
-}) {
+                         name,
+                         client,
+                         status,
+                         progress,
+                     }: ProjectCardProps) {
   return (
     <Card className="bg-slate-900/20 border-slate-800 rounded-none group hover:bg-slate-900/40 transition-all cursor-pointer border-t-2 border-t-transparent hover:border-t-blue-500">
       <CardHeader>

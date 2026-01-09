@@ -2,7 +2,6 @@ import mongoose, { Schema, model, models } from 'mongoose';
 
 // 3D Coordinate System: The "Address" of every object
 const CoordinateSchema = new Schema({
-    projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
     x: { type: Number, required: true },      // Horizontal (from left corner)
     y: { type: Number, required: true },      // Vertical (from floor)
     z: { type: Number, default: 0 },         // Depth (offset from wall face)
@@ -12,6 +11,7 @@ const CoordinateSchema = new Schema({
 });
 
 const KitchenSchema = new Schema({
+    projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
     // Client & Project Identity
     clientName: { type: String, required: true },
     phone: { type: String, required: true },

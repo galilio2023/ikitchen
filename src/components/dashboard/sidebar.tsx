@@ -50,7 +50,14 @@ export function Sidebar() {
     )
 }
 
-function NavItem({ href, icon, label, active = false }: { href: string, icon: any, label: string, active?: boolean }) {
+interface NavItemProps {
+    href: string;
+    icon: React.ReactNode;
+    label: string;
+    active?: boolean;
+}
+
+function NavItem({ href, icon, label, active = false }: NavItemProps) {
     return (
         <Link href={href} className={`
       flex items-center gap-3 px-4 py-2.5 rounded-md text-sm transition-all duration-200
