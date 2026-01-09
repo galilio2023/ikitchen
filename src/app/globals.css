@@ -1,52 +1,18 @@
 @import "tailwindcss";
 
-/* 1. Define your design tokens */
+@theme {
+    /* This is where you define custom Slate neural variables if needed */
+    --color-neural-border: var(--color-slate-800);
+}
+
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-
-    /* Brand Colors: "Walnut Wood" and "Aluminum Silver" */
-    --brand-wood: oklch(0.45 0.05 45);
-    --brand-aluminum: oklch(0.7 0.02 240);
-
-    /* shadcn UI Variables */
-    --card: oklch(1 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --border: oklch(0.92 0 0);
-    --radius: 0.6rem;
+    --background: #020617; /* Slate 950 */
+    --foreground: #f8fafc; /* Slate 50 */
 }
 
-/* 2. Map them to Tailwind v4 @theme */
-@theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-
-    --color-wood: var(--brand-wood);
-    --color-aluminum: var(--brand-aluminum);
-
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-border: var(--border);
-
-    --radius-xl: var(--radius);
-}
-
-/* 3. Dark Mode (OKLCH makes this easy) */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: oklch(0.145 0 0);
-        --foreground: oklch(0.985 0 0);
-        --border: oklch(0.25 0 0);
-    }
-}
-
-/* 4. Base Styles */
 @layer base {
     body {
-        background: var(--background);
-        color: var(--foreground);
-        /* In 2026, we use the system-interface font stack for better performance */
-        font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+        @apply bg-slate-950 text-slate-200 antialiased;
+        font-feature-settings: "rlig" 1, "calt" 1;
     }
 }
