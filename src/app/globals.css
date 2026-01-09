@@ -1,18 +1,31 @@
 @import "tailwindcss";
 
 @theme {
-    /* This is where you define custom Slate neural variables if needed */
+    /* Industrial Neural Variables */
     --color-neural-border: var(--color-slate-800);
+
+    /* ✨ Magic Shimmer Keyframe
+       In v4, we define the animation name and the keyframes separately
+    */
+    --animate-shimmer: shimmer 2.5s infinite linear;
+    --color-industrial-glass: rgba(15, 23, 42, 0.4);
+
+    @keyframes shimmer {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(100%); }
+    }
 }
 
 :root {
-    --background: #020617; /* Slate 950 */
-    --foreground: #f8fafc; /* Slate 50 */
+    --background: #020617;
+    --foreground: #f8fafc;
 }
 
 @layer base {
     body {
-        @apply bg-slate-950 text-slate-200 antialiased;
+        background-color: var(--background);
+        color: var(--foreground);
+        -webkit-font-smoothing: antialiased;
         font-feature-settings: "rlig" 1, "calt" 1;
     }
 }
