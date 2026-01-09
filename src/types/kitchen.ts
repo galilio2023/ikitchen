@@ -1,3 +1,26 @@
+
+export interface IKitchen {
+    _id?: string;
+    // ADD THIS LINE:
+    projectId: string; // Or mongoose.Types.ObjectId if used strictly on backend
+
+    clientName: string;
+    phone: string;
+    address?: string;
+    status: 'draft' | 'measuring' | 'designing' | 'ordered' | 'installed';
+
+    walls: IWall[];
+    obstacles: IObstacle[];
+    appliances: IAppliance[];
+    standards: IKitchenStandards;
+
+    totalPrice: number;
+    material?: string;
+    color?: string;
+
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
+}
 export interface ICoordinate {
     x: number;      // Distance from the left corner of the wall
     y: number;      // Distance from the floor
@@ -43,27 +66,3 @@ export interface IKitchenStandards {
     kickplateHeight: number;
 }
 
-export interface IKitchen {
-    _id?: string; // MongoDB Document ID
-    clientName: string;
-    phone: string;
-    address?: string;
-    status: 'draft' | 'measuring' | 'designing' | 'ordered' | 'installed';
-
-    // The 3D Structure
-    walls: IWall[];
-    obstacles: IObstacle[];
-    appliances: IAppliance[];
-
-    // Custom "Rules" for this specific kitchen
-    standards: IKitchenStandards;
-
-    // Project Metadata
-    totalPrice: number;
-    material?: string;
-    color?: string;
-
-    // Serialized dates for Next.js 16 Server-to-Client communication
-    createdAt?: string | Date;
-    updatedAt?: string | Date;
-}
