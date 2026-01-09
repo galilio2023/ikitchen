@@ -23,24 +23,22 @@ jobs:
         run: |
           git diff HEAD^ HEAD > diff.txt
           
-          # We add a 'System Instruction' to prevent the AI from being shy/silent
-          PROMPT="Review this Next.js 16 code. Give 3 short bullet points for improvement. If the code is perfect, say 'Looks great!'. Code: $(cat diff.txt)"
+          # We force the AI to be extremely concise to stay under free tier limits
+          PROMPT="Act as a Senior Developer. Review this code diff. PROVIDE ONLY 3 BULLET POINTS. NO INTRO. NO THINKING. Code: $(cat diff.txt)"
           
-          # Using jq to build the payload with Safety Settings set to 'BLOCK_NONE'
+          # Prepare clean JSON
           jq -n --rawfile m diff.txt \
             '{contents:[{parts:[{text: ("Review this code: " + $m)}]}],
-              safetySettings: [
-                {category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE"},
-                {category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE"},
-                {category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE"},
-                {category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE"}
-              ]}' > p.json
+              generationConfig: {
+                temperature: 0.1,
+                maxOutputTokens: 800
+              }}' > p.json
           
-          curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
+          # Call the STABLE v1 endpoint instead of v1beta
+          curl -s -X POST "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
             -H 'Content-Type: application/json' \
             -d @p.json > res.json
           
-          echo "--- LOGS FOR DEBUGGING ---"
           cat res.json
 
       - name: Comment
@@ -50,21 +48,26 @@ jobs:
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('res.json', 'utf8'));
             
-            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-              const review = data.candidates[0].content.parts[0].text;
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: "### 🤖 Gemini AI Review\n\n" + review
-              });
-            } else {
-              // If it's still silent, tell us the 'Finish Reason' from the API
-              const reason = data.candidates ? data.candidates[0].finishReason : "Unknown Error";
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: "⚠️ **AI Error:** The model returned status: " + reason + ". Check logs for JSON."
-              });
+            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+              // We look for the first part that actually contains text
+              const textPart = data.candidates[0].content.parts.find(p => p.text);
+              if (textPart) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body: "### 🤖 Gemini AI Review\n\n" + textPart.text
+                });
+                return;
+              }
             }
+            
+            // Log exactly what happened if we reached here
+            const reason = data.candidates ? data.candidates[0].finishReason : "No Candidates";
+            console.log("Full API Response: " + JSON.stringify(data));
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: "⚠️ **AI Silent:** Gemini finished with reason: " + reason + ". Check Actions logs for details."
+            });
