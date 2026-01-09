@@ -8,25 +8,61 @@ import Project from '@/models/Project';
  */
 export async function GET() {
     try {
-        // 1. Establish database connection
         await dbConnect();
 
-        // 2. Fetch projects sorted by most recent first
-        // This ensures "Residence Al Maadi" appears at the top
         const projects = await Project.find({}).sort({ createdAt: -1 });
 
-        // 3. Return the data with a 200 OK status
         return NextResponse.json(projects, {
             status: 200,
             headers: {
-                'Cache-Control': 'no-store, max-age=0', // Ensure we get fresh data
+                'Cache-Control': 'no-store, max-age=0',
             },
         });
     } catch (error) {
         console.error(' [API_PROJECTS_GET] Error:', error);
-
         return NextResponse.json(
             { error: 'Internal Server Error', message: 'Failed to fetch projects' },
+            { status: 500 }
+        );
+    }
+}
+
+/**
+ * POST /api/projects
+ * Creates a new kitchen sequence entry
+ */
+export async function POST(request: Request) {
+    try {
+        await dbConnect();
+
+        // 1. Parse the request body
+        const body = await request.json();
+        const { name, client } = body;
+
+        // 2. Industrial Validation
+        if (!name || !client) {
+            return NextResponse.json(
+                { error: 'Validation Error', message: 'Name and Client fields are required' },
+                { status: 400 }
+            );
+        }
+
+        // 3. Create the document using your Mongoose Schema
+        // Defaults: status="Draft", progress=0
+        const newProject = await Project.create({
+            name,
+            client,
+            status: "Draft",
+            progress: 0
+        });
+
+        // 4. Return the new project with 201 Created status
+        return NextResponse.json(newProject, { status: 201 });
+
+    } catch (error) {
+        console.error(' [API_PROJECTS_POST] Error:', error);
+        return NextResponse.json(
+            { error: 'Internal Server Error', message: 'Failed to initialize project sequence' },
             { status: 500 }
         );
     }
