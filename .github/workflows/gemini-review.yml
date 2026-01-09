@@ -1,70 +1,22 @@
-name: Gemini Reviewer
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: read
-  pull-requests: write
-
-jobs:
-  review:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Gemini AI
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          git diff HEAD^ HEAD > diff.txt
-          # Escape special characters for the prompt
-          PROMPT="Please review this code diff and list any bugs: $(cat diff.txt | head -c 5000)"
-          
-          # This JSON structure is the most compatible with the Free Tier API
-          jq -n --arg msg "$PROMPT" \
-          '{
-            contents: [{ parts: [{ text: $msg }] }],
-            safetySettings: [
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-            ]
-          }' > p.json
-          
-          curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
-            -H 'Content-Type: application/json' \
-            -d @p.json > res.json
-          
-          echo "--- DEBUG LOG ---"
-          cat res.json
-
-      - name: Comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const data = JSON.parse(fs.readFileSync('res.json', 'utf8'));
-            
-            if (data.candidates && data.candidates[0].content) {
-              const review = data.candidates[0].content.parts[0].text;
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: "### 🤖 AI Review\n\n" + review
-              });
-            } else {
-              const err = data.error ? data.error.message : "Possible regional block or API limit.";
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: "⚠️ **API Rejected:** " + err
-              });
-            }
+- name: Gemini AI
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    run: |
+      git diff HEAD^ HEAD > diff.txt
+      # We keep the prompt simple to avoid regional filtering
+      PROMPT="You are a Senior Architect. Review this Next.js 16/Tailwind v4 code. List 3 technical improvements. Diff: $(cat diff.txt | head -c 4000)"
+      
+      # Using the 2026 'Gemini 3 Flash' preview model
+      jq -n --arg msg "$PROMPT" \
+      '{
+        contents: [{ parts: [{ text: $msg }] }],
+        generationConfig: { "thinkingLevel": "minimal" }
+      }' > p.json
+      
+      # Notice we use v1beta but with the gemini-3-flash-preview model name
+      curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}" \
+        -H 'Content-Type: application/json' \
+        -d @p.json > res.json
+      
+      echo "--- 2026 API DEBUG ---"
+      cat res.json
