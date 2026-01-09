@@ -1,52 +1,67 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 
+// 3D Coordinate System: The "Address" of every object
+const CoordinateSchema = new Schema({
+    x: { type: Number, required: true },      // Horizontal (from left corner)
+    y: { type: Number, required: true },      // Vertical (from floor)
+    z: { type: Number, default: 0 },         // Depth (offset from wall face)
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
+    depth: { type: Number, required: true }   // Thickness/Volume
+});
+
 const KitchenSchema = new Schema({
+    // Client & Project Identity
     clientName: { type: String, required: true },
     phone: { type: String, required: true },
     address: { type: String },
+    status: {
+        type: String,
+        enum: ['draft', 'measuring', 'designing', 'ordered', 'installed'],
+        default: 'draft'
+    },
 
-    // Flexible Walls Array
+    // The Physical Room (The Canvas)
     walls: [{
-        label: { type: String },
-        length: { type: Number },
+        label: { type: String, default: 'Wall' }, // e.g., "Wall A"
+        length: { type: Number, required: true }, // in cm
+        height: { type: Number, default: 240 },
+        thickness: { type: Number, default: 10 }
     }],
 
-    // Obstacles (Windows, Doors, etc.)
+    // Fixed Architectural Elements (Things the AI cannot move)
     obstacles: [{
         type: {
             type: String,
-            enum: ['Window', 'Door', 'Column', 'Dressing Entry', 'Gas Pipe', 'Pillar'],
-            required: true
+            enum: ['window', 'door', 'socket', 'pipe', 'pillar', 'radiator', 'clearance']
         },
-        wallLabel: { type: String },
-        width: { type: Number },
-        heightFromFloor: { type: Number },
-        distanceFromCorner: { type: Number },
+        wallIndex: { type: Number, required: true }, // Link to walls array index
+        position: CoordinateSchema
     }],
 
-    // Appliances
+    // Kitchen Components (Things the AI/User places)
     appliances: [{
-        name: { type: String },
-        width: { type: Number },
-        isBuiltIn: { type: Boolean, default: true }
+        name: { type: String, required: true }, // e.g., "Fridge", "Sink"
+        wallIndex: { type: Number, required: true },
+        position: CoordinateSchema,
+        isFixed: { type: Boolean, default: false } // If true, AI won't suggest moving it
     }],
 
-    material: {
-        type: String,
-        enum: ['Natural Wood', 'Acrylic', 'HPL', 'Aluminum', 'PVC'],
-        default: 'Acrylic'
+    // Global Project Standards (The "Kitchen Man's" Rules)
+    standards: {
+        baseCabinetDepth: { type: Number, default: 60 },
+        wallCabinetDepth: { type: Number, default: 35 },
+        countertopThickness: { type: Number, default: 4 },
+        kickplateHeight: { type: Number, default: 10 } // Space for feet at bottom
     },
-    color: { type: String },
-    status: {
-        type: String,
-        enum: ['Inquiry', 'Measured', 'Designing', 'In Production', 'Installed'],
-        default: 'Inquiry'
-    },
-    totalPrice: { type: Number, default: 0 },
-    deposit: { type: Number, default: 0 }
-}, {
-    timestamps: true
-});
 
+    // Financials (Protected from mass-assignment in API)
+    totalPrice: { type: Number, default: 0 },
+    material: { type: String },
+    color: { type: String }
+
+}, { timestamps: true });
+
+// Export the model
 const Kitchen = models.Kitchen || model('Kitchen', KitchenSchema);
 export default Kitchen;
