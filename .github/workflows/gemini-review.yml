@@ -1,4 +1,4 @@
-name: Gemini AI Reviewer
+name: Gemini Reviewer
 
 on:
   pull_request:
@@ -11,50 +11,35 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.number != null
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Get Git Diff
-        id: diff
-        run: |
-          git diff HEAD^ HEAD -- \
-            '*.ts' '*.tsx' '*.js' '*.jsx' '*.css' \
-            ':(exclude)package-lock.json' \
-            ':(exclude).next/*' \
-            ':(exclude)node_modules/*' > pr_diff.txt
-          if [ ! -s pr_diff.txt ]; then
-            echo "empty=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Run Gemini Review
-        if: steps.diff.outputs.empty != 'true'
+      - name: Gemini AI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          PROMPT="Review this Next.js 16 code for div hell and clean TypeScript types: $(cat pr_diff.txt)"
-          echo "$PROMPT" > prompt.txt
-          jq -n --rawfile msg prompt.txt '{contents: [{parts: [{text: $msg}]}]}' > payload.json
-          
+          git diff HEAD^ HEAD > diff.txt
+          echo "Review this code for Next.js 16 best practices: " > prompt.txt
+          cat diff.txt >> prompt.txt
+          jq -n --rawfile m prompt.txt '{contents:[{parts:[{text:$m}]}]}' > p.json
           curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}" \
             -H 'Content-Type: application/json' \
-            -d @payload.json > review_response.json
+            -d @p.json > res.json
 
-      - name: Post Comment
-        if: steps.diff.outputs.empty != 'true'
+      - name: Comment
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const data = JSON.parse(fs.readFileSync('review_response.json', 'utf8'));
+            const data = JSON.parse(fs.readFileSync('res.json', 'utf8'));
             if (data.candidates && data.candidates[0].content) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                body: "### 🤖 Gemini AI Review\n\n" + data.candidates[0].content.parts[0].text
+                body: "### 🤖 AI Review\n" + data.candidates[0].content.parts[0].text
               });
             }
