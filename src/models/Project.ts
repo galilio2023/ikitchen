@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 // 1. Raw Data Interface (Used for your UI and API)
 export interface IProject {
     _id: string;
+    id?:string
     name: string;
     client: string;
     status: string;
