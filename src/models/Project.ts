@@ -1,25 +1,31 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-export interface IProject extends Document {
-  name: string;
-  client: string;
-  status: "Draft" | "Measuring" | "Designing" | "Rendered" | "Completed";
-  progress: number;
+// 1. Raw Data Interface (Used for your UI and API)
+export interface IProject {
+    _id: string;
+    name: string;
+    client: string;
+    status: string;
+    progress: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
-const ProjectSchema = new Schema<IProject>(
-  {
-    name: { type: String, required: true, trim: true },
-    client: { type: String, required: true, trim: true },
-    status: {
-      type: String,
-      enum: ["Draft", "Measuring", "Designing", "Rendered", "Completed"],
-      default: "Draft",
-    },
-    progress: { type: Number, default: 0, min: 0, max: 100 },
-  },
-  { timestamps: true },
-);
+// 2. Mongoose Document Interface (Used for DB operations)
+// We extend the Raw Data and Mongoose's Document,
+// Omit the _id from Document to avoid the TS2430 conflict
+export interface IProjectDocument extends Omit<IProject, '_id'>, Document {}
 
-export default (mongoose.models.Project as Model<IProject>) ||
-  mongoose.model<IProject>("Project", ProjectSchema);
+const ProjectSchema = new Schema<IProjectDocument>({
+    name: { type: String, required: true },
+    client: { type: String, required: true },
+    status: { type: String, default: "Draft" },
+    progress: { type: Number, default: 0 }
+}, {
+    timestamps: true,
+    // This helper ensures _id is treated as a string when sent to the frontend
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+export default mongoose.models.Project || mongoose.model<IProjectDocument>('Project', ProjectSchema);
