@@ -44,7 +44,7 @@
         filter: blur(80px);
         animation: var(--animate-nebula);
          }
-    }
+}
 
 
 @layer utilities {
