@@ -1,27 +1,22 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, ChefHat, Ruler, Database, Settings, Search, Bell, Command } from 'lucide-react';
+import { LayoutDashboard, ChefHat, Ruler, Database, Settings, Search, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import CreateProjectModal from '../CreateProjectModal';
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     return (
-        <div className="flex h-screen w-full bg-black text-white antialiased overflow-hidden font-mono relative isolate">
+        /* REMOVED 'isolate' and 'bg-black' to ensure Starfield is visible from the layout.tsx layer */
+        <div className="flex h-screen w-full text-white antialiased overflow-hidden font-mono relative">
 
-            {/* --- COMPONENT 1: GLOBAL BACKGROUND NODES --- */}
-            <div className="fixed inset-0 pointer-events-none z-[-1]">
-                <div className="absolute top-[-10%] left-[-5%] w-[40vw] h-[40vw] bg-magic-purple/10 blur-[120px] rounded-full opacity-50" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[35vw] h-[35vw] bg-magic-cyan/5 blur-[100px] rounded-full opacity-30" />
-            </div>
-
-            {/* --- COMPONENT 2: THE SIDEBAR --- */}
-            <aside className="w-64 flex flex-col h-full relative z-[60] border-r border-white/5 bg-black/40 backdrop-blur-3xl rounded-r-[2.5rem] shadow-[20px_0_50px_rgba(0,0,0,0.5)]">
-                {/* Logo Section */}
-                <div className="p-10">
+            {/* --- SIDEBAR --- */}
+            <aside className="w-64 flex flex-col h-full relative z-[60] border-r border-white/5 bg-black/10 backdrop-blur-md rounded-r-[2.5rem] shadow-[10px_0_30px_rgba(0,0,0,0.3)]">                <div className="p-10">
                     <h2 className="text-2xl font-black tracking-tighter text-white italic">
                         KITCHEN<span className="text-white/20 not-italic">_VOYAGER</span>
                     </h2>
@@ -31,7 +26,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                     </div>
                 </div>
 
-                {/* Navigation Section */}
                 <nav className="flex-1 px-4 space-y-8 overflow-y-auto scrollbar-hide">
                     <SidebarGroup title="Production_Control">
                         <SidebarLink href="/dashboard" icon={<LayoutDashboard size={18} />} label="Overview" active={pathname === "/dashboard"} />
@@ -45,7 +39,6 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                     </SidebarGroup>
                 </nav>
 
-                {/* Footer / User Section */}
                 <div className="p-6 mt-auto border-t border-white/5">
                     <div className="glass-brilliant p-4 rounded-2xl flex items-center gap-3 border border-white/5 group cursor-pointer transition-all hover:bg-white/[0.05]">
                         <div className="w-10 h-10 rounded-xl bg-black border border-white/10 flex items-center justify-center text-[10px] font-black text-magic-purple">IG</div>
@@ -57,11 +50,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 </div>
             </aside>
 
-            {/* --- COMPONENT 3: MAIN VIEWPORT CONTAINER --- */}
+            {/* --- MAIN VIEWPORT --- */}
             <div className="flex-1 flex flex-col h-full relative min-w-0">
-
-                {/* --- COMPONENT 4: THE NAVBAR/HEADER --- */}
-                <header className="h-24 flex-none flex items-center justify-between px-10 relative z-[50] border-b border-white/[0.03] bg-black/20 backdrop-blur-md">
+                {/* HEADER: Added lower opacity and backdrop blur to see stars/nebula */}
+                <header className="h-24 flex-none flex items-center justify-between px-10 relative z-[50] border-b border-white/[0.03] bg-black/10 backdrop-blur-md">
                     <div className="relative group max-w-md w-full">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-magic-purple transition-colors" />
                         <input
@@ -80,12 +72,11 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                     </div>
                 </header>
 
-                {/* --- COMPONENT 5: DYNAMIC CONTENT AREA --- */}
-                <main className="flex-1 overflow-y-auto px-10 pb-10 relative will-change-transform isolate">
-                    {/* Ambient Glow */}
-                    <div className="absolute top-0 left-1/4 w-[50vw] h-[40vh] bg-magic-purple/[0.03] blur-[120px] pointer-events-none -z-10" />
-
-                    <div className="max-w-[1600px] mx-auto pt-8">
+                {/* CONTENT AREA */}
+                <main className="flex-1 overflow-y-auto px-10 pb-10 relative will-change-transform">
+                    {/* Deep shadow overlay to give depth to the sidebar edge */}
+                    <div className="fixed inset-y-0 left-64 w-32 pointer-events-none bg-gradient-to-r from-black/30 to-transparent z-0" />
+                    <div className="max-w-[1600px] mx-auto pt-8 relative z-10">
                         {children}
                     </div>
                 </main>
@@ -93,6 +84,8 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
         </div>
     );
 }
+
+// ... SidebarGroup and SidebarLink sub-components remain the same ...
 
 {/* --- HELPER SUB-COMPONENTS (Kept internal for organization) --- */}
 
@@ -111,14 +104,24 @@ function SidebarLink({ href, icon, label, active }: { href: string, icon: React.
     return (
         <Link
             href={href}
-            className={`group flex items-center gap-4 px-4 py-3 rounded-2xl text-[11px] transition-all duration-500 relative overflow-hidden font-bold uppercase tracking-widest ${
+            aria-current={active ? 'page' : undefined}
+            className={cn(
+                "group flex items-center gap-4 px-4 py-3 rounded-2xl text-[11px] transition-all duration-500 relative overflow-hidden font-bold uppercase tracking-widest",
                 active
                     ? "text-white bg-white/[0.05] border border-white/10"
                     : "text-white/40 hover:text-white hover:bg-white/[0.02]"
-            }`}
+            )}
         >
-            {active && <div className="absolute left-0 top-3 bottom-3 w-[2px] bg-magic-purple rounded-r-full shadow-[0_0_15px_#8b5cf6]" />}
-            <span className={`${active ? "text-magic-purple scale-110" : "group-hover:text-magic-purple group-hover:scale-110"} transition-all duration-500`}>
+            {active && (
+                <motion.div
+                    layoutId="active-pill"
+                    className="absolute left-0 top-3 bottom-3 w-[2px] bg-magic-purple rounded-r-full shadow-[0_0_15px_#8b5cf6]"
+                />
+            )}
+            <span className={cn(
+                "transition-all duration-500",
+                active ? "text-magic-purple scale-110" : "group-hover:text-magic-purple group-hover:scale-110"
+            )}>
                 {icon}
             </span>
             <span className={active ? "translate-x-1" : "group-hover:translate-x-1 transition-all"}>

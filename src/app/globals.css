@@ -26,31 +26,26 @@
 }
 
 @layer base {
-    body {
-        /* CHANGED: Set background to transparent so the React Starfield component is visible */
-        @apply bg-black text-white font-sans antialiased overflow-x-hidden min-h-screen relative;
 
-        /* 1. Purple Horizon Glow (Bottom) - Keep this as a subtle overlay */
+    body {
+        @apply bg-black text-white font-sans antialiased overflow-x-hidden min-h-screen relative;
         background-image: radial-gradient(circle at 50% 100%, rgba(139, 92, 246, 0.12) 0%, transparent 50%);
         background-attachment: fixed;
     }
 
-    /* Animated Nebula Blur - This provides the deep "Light" behind your sidebar and dashboard */
-    /* Update your body::before in globals.css */
     body::before {
         content: "";
+        /* This z-[-1] is perfect. It sits above the z-[-2] Starfield component */
         @apply fixed inset-0 z-[-1] opacity-40 pointer-events-none;
         background:
-            /* High-intensity glow spot behind the sidebar area */
                 radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.25), transparent 40%),
-                    /* High-intensity cyan spot on the top right */
                 radial-gradient(circle at 85% 15%, rgba(6, 182, 212, 0.15), transparent 40%),
-                    /* Deep purple wash */
                 radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.05), transparent 70%);
-        filter: blur(80px); /* Reduced blur makes the light 'sharper' */
+        filter: blur(80px);
         animation: var(--animate-nebula);
+         }
     }
-}
+
 
 @layer utilities {
     /* The Glass Hub - Using black/60 for "Obsidian" depth */
