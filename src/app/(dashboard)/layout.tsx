@@ -1,19 +1,28 @@
-import { Sidebar } from "@/components/dashboard/sidebar";
+import { ProjectProvider } from "@/context/ProjectContext";
+import dbConnect from "@/lib/dbConnect";
+import Project from "@/models/Project";
+import SidebarLayout from "@/components/dashboard/sidebar"; // Updated import to your new unified layout
 import React from "react";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex min-h-screen bg-slate-950">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-10" />
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+    // 1. Establish DB Connection on the Server
+    await dbConnect();
 
-        <div className="relative z-10">{children}</div>
-      </main>
-    </div>
-  );
+    // 2. Fetch Initial Data for the ProjectProvider
+    const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
+
+    // 3. Serialize Data (Convert Mongoose ObjectIds to Strings)
+    const serializedData = JSON.parse(JSON.stringify(projects));
+
+    return (
+        <ProjectProvider initialData={serializedData}>
+            {/* We wrap the children in SidebarLayout.
+               This file now manages the Sidebar, Navbar, and the scrollable Main area
+               with the 2026 Specular Brilliant aesthetic.
+            */}
+            <SidebarLayout>
+                {children}
+            </SidebarLayout>
+        </ProjectProvider>
+    );
 }
