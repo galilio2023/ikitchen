@@ -6,13 +6,15 @@ export const makeStore = () => {
     return configureStore({
         reducer: {
             projects: projectReducer,
-            // You can add more slices here later (e.g., auth, materials)
-            kitchen:kitchenReducer
+            kitchen: kitchenReducer, // Matches Dashboard Selector
         },
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware({
+                serializableCheck: false, // Useful for handling Mongo Date objects
+            }),
     });
 };
 
-// These types are crucial for TypeScript support
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];
