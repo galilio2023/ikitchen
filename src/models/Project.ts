@@ -1,33 +1,58 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-// 1. Raw Data Interface (Used for your UI and API)
+/**
+ * IProject Interface
+ * Represents the high-level metadata for the Dashboard.
+ * Spatial data (walls/obstacles) is now handled exclusively by the Kitchen model.
+ */
 export interface IProject {
     _id: string;
-    id?:string
-    name: string;
-    obstacles?: any[];
-    client: string;
-    status: string;
+    id?: string;
+    name: string;   // The project/registry name
+    client: string; // The client name
+    status: string; // 'Draft', 'Active', etc.
     progress: number;
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-// 2. Mongoose Document Interface (Used for DB operations)
-// We extend the Raw Data and Mongoose's Document,
-// Omit the _id from Document to avoid the TS2430 conflict
+/**
+ * Mongoose Document Interface
+ * Omit _id from the interface because Mongoose Document provides it.
+ */
 export interface IProjectDocument extends Omit<IProject, '_id'>, Document {}
 
 const ProjectSchema = new Schema<IProjectDocument>({
-    name: { type: String, required: true },
-    client: { type: String, required: true },
-    status: { type: String, default: "Draft" },
-    progress: { type: Number, default: 0 }
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    client: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    status: {
+        type: String,
+        default: "Draft"
+    },
+    progress: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    }
 }, {
     timestamps: true,
-    // This helper ensures _id is treated as a string when sent to the frontend
+    // Ensure virtual 'id' is included when converting to JSON/Object for the frontend
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
+});
+
+// Virtual for 'id' to map MongoDB's _id to the frontend's expected id field
+ProjectSchema.virtual('id').get(function() {
+    return this._id.toHexString();
 });
 
 export default mongoose.models.Project || mongoose.model<IProjectDocument>('Project', ProjectSchema);

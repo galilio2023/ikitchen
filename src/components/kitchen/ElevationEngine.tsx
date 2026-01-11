@@ -1,100 +1,117 @@
+// src/components/kitchen/ElevationEngine.tsx
 'use client';
 
-import { motion } from 'framer-motion';
-import { IWall, IKitchen } from '@/types';
+import React, { useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import {
-    updateWallLength,
-    addWall,
-    setSelectedObstacle
-} from '@/lib/features/kitchens/kitchenSlice';
-import DraggableObstacle from "@/components/kitchen/DraggableObstacle";
-import WallNavigator from "@/components/kitchen/WallNavigator";
-import ObstacleToolbox from "@/components/kitchen/ObstacleToolbox";
-import { Plus } from 'lucide-react';
-import {useMemo} from "react";
+import { saveKitchen, setSelectedObstacle, updateObstaclePosition } from '@/lib/features/kitchens/kitchenSlice';
+import DraggableObstacle from "./DraggableObstacle";
+import ObstacleToolbox from "./ObstacleToolbox";
+import PropertiesPanel from "./PropertiesPanel";
+import { IKitchen, IObstacle } from '@/types/kitchen';
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
     const dispatch = useAppDispatch();
-    const { selectedObstacleIndex } = useAppSelector((state) => state.kitchen);
+    const { currentKitchen, selectedObstacleId } = useAppSelector((state) => state.kitchen);
+    const [activeWallIdx, setActiveWallIdx] = useState(0);
 
-    // OPTIMIZATION: Pre-sort obstacles by wall to prevent O(n^2) rendering
+    const handleSave = () => {
+        if (currentKitchen) {
+            dispatch(saveKitchen(currentKitchen));
+            toast.success("WORKSPACE_SYNC_COMPLETE");
+        }
+    };
+
     const obstaclesByWall = useMemo(() => {
-        const map: Record<number, typeof kitchen.obstacles> = {};
-        (kitchen.obstacles || []).forEach((obs) => {
+        const map: Record<number, { data: IObstacle; globalIndex: number }[]> = {};
+        (kitchen.obstacles || []).forEach((obs, index) => {
             if (!map[obs.wallIndex]) map[obs.wallIndex] = [];
-            map[obs.wallIndex].push(obs);
+            map[obs.wallIndex].push({ data: obs, globalIndex: index });
         });
         return map;
     }, [kitchen.obstacles]);
 
     if (!kitchen.walls || kitchen.walls.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-white/10 rounded-[3rem] bg-white/[0.02]">
-                <div className="w-16 h-16 rounded-full bg-magic-purple/10 flex items-center justify-center mb-6 animate-pulse">
-                    <Plus className="text-magic-purple" size={32} />
+            <div className="flex h-full items-center justify-center bg-obsidian">
+                <div className="text-center opacity-20">
+                    <Plus className="mx-auto mb-4" size={48} />
+                    <p className="text-xs font-mono uppercase tracking-[0.5em]">Grid_Offline</p>
                 </div>
-                <h3 className="text-white font-black uppercase tracking-[0.3em] text-sm mb-2">No_Walls_Detected</h3>
-                <button
-                    onClick={() => dispatch(addWall({ projectId: kitchen.projectId }))}
-                    className="px-10 py-4 bg-magic-purple text-white font-black rounded-full hover:scale-105 transition-all text-[10px] uppercase tracking-widest shadow-[0_0_40px_rgba(168,85,247,0.4)]"
-                >
-                    Create_First_Wall_Vector
-                </button>
             </div>
         );
     }
 
     return (
-        <div className="relative">
-            <div className="sticky top-0 z-50 py-4 bg-obsidian/80 backdrop-blur-md mb-10">
-                <WallNavigator walls={kitchen.walls} />
-            </div>
-
-            <div className="space-y-32 pb-60">
-                {kitchen.walls.map((wall, index) => {
-                    const wallObstacles = obstaclesByWall[index] || [];
-
-                    return (
-                        <div key={index} id={`wall-panel-${index}`} className="relative scroll-mt-40 group z-10 isolate flex flex-col">
-                            {/* ... WALL HEADER LOGIC ... */}
-
-                            <div
-                                className="wall-surface relative h-80 bg-[#080808] rounded-[2.5rem] border-2 border-white/10 overflow-hidden z-20"
-                                onClick={() => dispatch(setSelectedObstacle(null))}
-                            >
-                                <div className="absolute inset-0 opacity-[0.15] pointer-events-none"
-                                     style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }} />
-
-                                {wallObstacles.map((obs) => {
-                                    // Calculate global index for the dispatcher
-                                    const globalIdx = kitchen.obstacles.findIndex(o => o.id === obs.id);
-                                    return (
-                                        <DraggableObstacle
-                                            key={obs.id}
-                                            obstacle={obs}
-                                            obstacleIndex={globalIdx}
-                                            wall={wall}
-                                            isSelected={selectedObstacleIndex === globalIdx}
-                                        />
-                                    );
-                                })}
-
-                                {wallObstacles.length === 0 && (
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                                        <span className="text-[10px] uppercase font-black tracking-[0.5em] text-white">Surface_Ready</span>
-                                    </div>
+        <div className="flex h-[calc(100vh-6rem)] w-full overflow-hidden bg-obsidian font-mono">
+            <main className="flex-1 relative overflow-y-auto custom-scrollbar bg-[#030303] scroll-smooth">
+                {/* Header Wall Nav */}
+                <div className="sticky top-0 z-50 w-full py-4 bg-obsidian/90 backdrop-blur-xl border-b border-white/5 px-10">
+                    <div className="flex justify-center gap-2">
+                        {kitchen.walls.map((wall, idx) => (
+                            <button
+                                key={wall.id}
+                                onClick={() => {
+                                    setActiveWallIdx(idx);
+                                    document.getElementById(`wall-${wall.id}`)?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                className={cn(
+                                    "px-6 py-1.5 rounded-full text-[9px] font-black uppercase transition-all border",
+                                    activeWallIdx === idx ? "bg-magic-purple/20 border-magic-purple text-magic-purple" : "text-white/30 border-transparent hover:border-white/10"
                                 )}
+                            >
+                                {wall.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="max-w-5xl mx-auto px-10 pt-10 pb-64 space-y-32">
+                    {kitchen.walls.map((wall, wallIdx) => (
+                        <section key={wall.id} id={`wall-${wall.id}`} className="relative group">
+                            <div className="flex items-end justify-between mb-6">
+                                <div>
+                                    <span className="text-[8px] font-black text-magic-purple uppercase">Elevation_0{wallIdx + 1}</span>
+                                    <h2 className="text-xl font-bold text-white uppercase italic">{wall.label}</h2>
+                                </div>
+                                <span className="text-[9px] text-white/20">{wall.length}cm x {wall.height}cm</span>
                             </div>
 
-                            <div className="relative z-30 px-8" style={{ transform: 'translateY(-1.5rem)' }}>
-                                <ObstacleToolbox wallIndex={index} />
+                            <div className="relative h-[500px] bg-black rounded-[2rem] border border-white/5 overflow-hidden group-hover:border-magic-purple/20 transition-all">
+                                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #8b5cf6 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }} />
+
+                                {obstaclesByWall[wallIdx]?.map((obs) => (
+                                    <DraggableObstacle
+                                        key={obs.data.id}
+                                        obstacle={obs.data}
+                                        globalIndex={obs.globalIndex}
+                                        wall={wall}
+                                        isSelected={selectedObstacleId === obs.data.id}
+                                        onSelect={() => dispatch(setSelectedObstacle(obs.data.id))}
+                                        onPositionChange={(x, y) => dispatch(updateObstaclePosition({ id: obs.data.id, x, y }))}
+                                    />
+                                ))}
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        </section>
+                    ))}
+                </div>
+            </main>
+
+            <aside className="w-80 border-l border-white/5 bg-black/40 flex flex-col">
+                <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+                    <ObstacleToolbox wallIndex={activeWallIdx} />
+                </div>
+                <div className="p-6 border-t border-white/5 bg-black/60">
+                    <button onClick={handleSave} className="w-full py-4 bg-magic-purple text-white font-black text-[10px] uppercase rounded-xl hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">
+                        Sync_Workspace
+                    </button>
+                </div>
+            </aside>
+
+            {/* Float Properties Panel */}
+            <PropertiesPanel />
         </div>
     );
-
 }

@@ -1,55 +1,60 @@
-
 export interface IKitchen {
+    id: string;
     _id?: string;
-    // ADD THIS LINE:
-    projectId: string; // Or mongoose.Types.ObjectId if used strictly on backend
-
+    projectId: string;
+    progress:number;
     clientName: string;
     phone: string;
     address?: string;
     status: 'draft' | 'measuring' | 'designing' | 'ordered' | 'installed';
-
     walls: IWall[];
     obstacles: IObstacle[];
     appliances: IAppliance[];
     standards: IKitchenStandards;
-
     totalPrice: number;
     material?: string;
     color?: string;
-
     createdAt?: string | Date;
     updatedAt?: string | Date;
 }
+
 export interface ICoordinate {
-    x: number;      // Distance from the left corner of the wall
-    y: number;      // Distance from the floor
-    z: number;      // Depth offset (distance from wall face)
+    x: number;      // Distance from the left corner of the wall (cm)
+    y: number;      // Distance from the floor (cm)
+    z: number;      // Depth offset from wall face (cm)
     width: number;
     height: number;
-    depth: number;  // The volume thickness of the object
+    depth: number;  // Physical thickness
 }
 
 export interface IWall {
+    id:string
     label: string;
-    length: number;    // Width of the wall in cm
-    height: number;    // Usually 240cm standard
-    thickness: number; // Wall thickness (usually 10-20cm)
+    length: number;    // Width in cm
+    height: number;    // Standard height (e.g., 240)
+    thickness: number;
 }
 
+/** * UPDATED: Included 'vent' to resolve TS2678 error.
+ * Ensure these strings match the 'type' field sent from your Toolbox.
+ */
 export type ObstacleType =
     | 'window'
     | 'door'
     | 'socket'
+    | 'vent' // FIXED: Added to match component usage
     | 'pipe'
     | 'pillar'
     | 'radiator'
-    | 'clearance'; // 'clearance' marks space that must stay empty
+    | 'clearance';
+
+/** Alias for backward compatibility with existing components */
 export interface Obstacle extends IObstacle {}
+
 export interface IObstacle {
-    id:string
+    id: string; // Unique ID for selection and drag-drop tracking
     type: ObstacleType;
-    wallIndex: number; // Links this obstacle to a specific wall in the array
+    wallIndex: number;
     position: ICoordinate;
 }
 
@@ -57,7 +62,7 @@ export interface IAppliance {
     name: string;
     wallIndex: number;
     position: ICoordinate;
-    isFixed: boolean; // True if the kitchen man says this cannot move
+    isFixed: boolean;
 }
 
 export interface IKitchenStandards {
@@ -66,4 +71,3 @@ export interface IKitchenStandards {
     countertopThickness: number;
     kickplateHeight: number;
 }
-

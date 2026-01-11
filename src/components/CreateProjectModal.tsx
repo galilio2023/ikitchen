@@ -1,176 +1,93 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Zap, Layout, User, Loader2 } from 'lucide-react';
-import { useAppDispatch } from '@/lib/hooks'; // REDUX HOOK
-import { addProjectThunk } from '@/lib/features/projects/projectSlice'; // REDUX ACTION
-import { toast } from 'sonner';
+import { Database, Zap, Cpu, AlertTriangle, GitBranch, Plus, ExternalLink } from "lucide-react";
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { fetchAllKitchens } from "@/lib/features/kitchens/kitchenSlice";
 
-export default function CreateProjectModal() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
+import CreateProjectModal from '@/components/CreateProjectModal';
+import StatCard from "@/components/StatCard";
+import Link from "next/link";
 
-    // --- NEW: INPUT STATES ---
-    const [name, setName] = useState('');
-    const [client, setClient] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
+export default function DashboardPage() {
     const dispatch = useAppDispatch();
+    const { items: projects, loading, error } = useAppSelector((state) => state.kitchen);
 
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // --- NEW: SUBMIT HANDLER ---
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!name || !client) return toast.error("DATA_INCOMPLETE: FILL_ALL_FIELDS");
-
-        setIsSubmitting(true);
-        try {
-            const resultAction = await dispatch(addProjectThunk({
-                name,
-                client,
-                status: 'Draft',
-                progress: 0
-            }));
-
-            if (addProjectThunk.fulfilled.match(resultAction)) {
-                toast.success("NODE_INITIALIZED_SUCCESSFULLY");
-                setIsOpen(false);
-                setName('');
-                setClient('');
-            } else {
-                toast.error("CONNECTION_FAILURE: CHECK_CORE_API");
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const modalContent = (
-        <AnimatePresence>
-            {isOpen && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 isolate">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/90 backdrop-blur-2xl"
-                        onClick={() => !isSubmitting && setIsOpen(false)}
-                    />
-
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        transition={{ type: "spring", damping: 25, stiffness: 400 }}
-                        className="glass-brilliant w-full max-w-xl rounded-[3rem] p-10 md:p-12 relative bg-black border border-white/10"
-                    >
-                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-magic-purple/20 blur-[100px] rounded-full pointer-events-none" />
-
-                        <div className="flex justify-between items-start mb-10 relative z-10">
-                            <div>
-                                <h2 className="text-3xl font-black italic text-white tracking-tighter uppercase">
-                                    Init<span className="text-white/20 not-italic">_Node</span>
-                                </h2>
-                                <p className="text-[9px] font-mono text-magic-purple uppercase tracking-[0.4em] mt-2">
-                                    Deployment_Interface_Active
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="p-3 hover:bg-white/10 rounded-2xl transition-all text-white/40 hover:text-white border border-white/5"
-                                disabled={isSubmitting}
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <form className="space-y-8 relative z-10" onSubmit={handleSubmit}>
-                            <div className="space-y-6">
-                                <FormInput
-                                    label="Registry_Name"
-                                    icon={<Layout size={14} />}
-                                    placeholder="ENTER_PROJECT_TITLE"
-                                    value={name}
-                                    onChange={(val) => setName(val)}
-                                />
-                                <FormInput
-                                    label="Operator_ID"
-                                    icon={<User size={14} />}
-                                    placeholder="ASSIGN_CLIENT_ID"
-                                    value={client}
-                                    onChange={(val) => setClient(val)}
-                                />
-                            </div>
-
-                            <div className="pt-4 flex gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsOpen(false)}
-                                    className="flex-1 h-14 rounded-2xl border border-white/10 text-[10px] font-black text-white/40 hover:text-white transition-all uppercase tracking-widest"
-                                    disabled={isSubmitting}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="flex-1 h-14 bg-magic-purple rounded-2xl text-[10px] font-black text-white shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:brightness-110 active:scale-95 transition-all border-t border-white/20 disabled:opacity-50"
-                                >
-                                    <div className="flex items-center justify-center gap-2 tracking-[0.2em]">
-                                        {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} fill="currentColor" />}
-                                        {isSubmitting ? "PROCESSING..." : "INITIALIZE"}
-                                    </div>
-                                </button>
-                            </div>
-                        </form>
-                    </motion.div>
-                </div>
-            )}
-        </AnimatePresence>
-    );
+        dispatch(fetchAllKitchens());
+    }, [dispatch]);
 
     return (
-        <>
-            <button
-                onClick={() => setIsOpen(true)}
-                className="glass-brilliant glass-shine group relative flex items-center gap-3 px-6 h-12 rounded-2xl bg-magic-purple/10 border-magic-purple/30 hover:bg-magic-purple/20 transition-all duration-500 overflow-hidden"
-            >
-                <Plus size={18} className="text-magic-purple group-hover:rotate-90 transition-transform duration-500" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white font-mono relative z-10">
-                    Initialize_Node
-                </span>
-            </button>
-
-            {mounted && createPortal(modalContent, document.body)}
-        </>
-    );
-}
-
-// --- UPDATED SUB-COMPONENT ---
-function FormInput({ label, icon, placeholder, value, onChange }: {
-    label: string, icon: React.ReactNode, placeholder: string, value: string, onChange: (val: string) => void
-}) {
-    return (
-        <div className="space-y-2 group">
-            <label className="text-[9px] uppercase tracking-[0.3em] text-white/40 font-black ml-2 group-focus-within:text-magic-purple transition-colors font-mono">
-                {label}
-            </label>
-            <div className="relative">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-magic-purple transition-colors">
-                    {icon}
-                </div>
-                <input
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    className="w-full h-14 bg-white/[0.03] border border-white/10 pl-14 pr-4 rounded-2xl text-[11px] text-white placeholder:text-white/10 focus:outline-none focus:border-magic-purple/50 focus:bg-white/[0.07] transition-all font-mono"
-                    placeholder={placeholder}
+        <div className="space-y-10 p-10 max-w-7xl mx-auto">
+            {/* 1. SYSTEM STATUS */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StatCard
+                    label="DB_CONNECTION"
+                    value={error ? "OFFLINE" : (loading ? "CONNECTING" : "NOMINAL")}
+                    icon={Database}
+                    status={error ? "critical" : (loading ? "active" : "nominal")}
                 />
+                <StatCard label="YAML_CONFIG" value="EMPTY" icon={Zap} status="nominal" />
+                <StatCard label="AI_REVIEW" value="STANDBY" icon={Cpu} status="active" />
             </div>
+
+            {/* 2. ACTIVITY LOG & REGISTRY */}
+            <section className="glass-brilliant rounded-[2.5rem] border border-white/5 bg-black/40 overflow-hidden shadow-2xl">
+                <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                    <div className="space-y-1">
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/80">Active_Nodes</h2>
+                        <div className="flex items-center gap-2">
+                            <GitBranch size={12} className="text-magic-purple" />
+                            <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">feature/schema-kitchen</span>
+                        </div>
+                    </div>
+                    <CreateProjectModal />
+                </div>
+
+                <div className="p-6 min-h-[350px]">
+                    {loading && projects.length === 0 ? (
+                        <div className="h-64 flex flex-col items-center justify-center gap-4">
+                            <div className="w-10 h-10 border-2 border-magic-purple border-t-transparent rounded-full animate-spin" />
+                            <p className="text-[9px] font-mono text-magic-purple uppercase animate-pulse tracking-[0.3em]">Querying_Database...</p>
+                        </div>
+                    ) : projects.length === 0 ? (
+                        <div className="h-64 flex flex-col items-center justify-center text-center space-y-4">
+                            <div className="p-4 rounded-full bg-white/[0.02] border border-white/5 text-white/10">
+                                <Database size={32} />
+                            </div>
+                            <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">No nodes established in cluster.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-3">
+                            {projects.map((project) => (
+                                <Link
+                                    key={project._id || project.id}
+                                    href={`/projects/${project._id || project.id}`}
+                                    className="group flex items-center justify-between p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-magic-purple/40 transition-all duration-300"
+                                >
+                                    <div className="flex items-center gap-6">
+                                        <div className="h-2 w-2 rounded-full bg-magic-purple/40 group-hover:bg-magic-purple group-hover:shadow-[0_0_12px_rgba(139,92,246,0.8)] transition-all" />
+                                        <div className="flex flex-col">
+                                            <span className="text-[11px] font-black text-white/80 group-hover:text-white uppercase tracking-wider">
+                                                {project.clientName || "Unknown_Client"}
+                                            </span>
+                                            <span className="text-[8px] font-mono text-white/10">NODE_ID: {project._id || project.id}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-6">
+                                        <div className="hidden sm:block text-right">
+                                            <p className="text-[7px] text-white/20 uppercase font-black tracking-widest">Status</p>
+                                            <p className="text-[9px] text-magic-purple font-mono uppercase">{project.status || 'DRAFT'}</p>
+                                        </div>
+                                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-black/40 border border-white/5 group-hover:border-magic-purple/50 group-hover:text-magic-purple transition-all">
+                                            <ExternalLink size={14} />
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
         </div>
-    );
-}
+    );}

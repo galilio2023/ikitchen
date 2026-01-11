@@ -1,97 +1,67 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useAppSelector, useAppDispatch } from '@/lib/hooks';
-import { addObstacle } from '@/lib/features/kitchens/kitchenSlice';
-import { calculateWallPoints, getNearestWallInfo } from '@/lib/geometry';
-import { ObstacleType } from '@/types/kitchen';
+import React from 'react';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import {
+    setSelectedObstacle,
+    updateObstaclePosition
+} from '@/lib/features/kitchens/kitchenSlice';
 import DraggableObstacle from './DraggableObstacle';
 
-export default function ObstacleLayer() {
+interface ObstacleLayerProps {
+    wallIndex: number;
+}
+
+export default function ObstacleLayer({ wallIndex }: ObstacleLayerProps) {
     const dispatch = useAppDispatch();
-    const { currentKitchen } = useAppSelector((state) => state.kitchen);
 
-    const wallTracks = useMemo(() => {
-        return currentKitchen ? calculateWallPoints(currentKitchen.walls) : [];
-    }, [currentKitchen]);
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        if (!currentKitchen) return;
-
-        // 1. Get the type of obstacle being dropped
-        const type = e.dataTransfer.getData('obstacleType') as ObstacleType;
-
-        // 2. Get mouse coordinates relative to the canvas
-        const rect = e.currentTarget.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        // 3. The Math Brain: Find the nearest wall and the snap position
-        const snap = getNearestWallInfo(mouseX, mouseY, wallTracks);
-
-        // 4. Create the IObstacle object
-        const newObstacle = {
-            id: crypto.randomUUID(),
-            type: type,
-            wallIndex: snap.wallIndex,
-            position: {
-                x: snap.positionX, // The horizontal distance along the wall (CM)
-                y: 100,            // Default height from floor
-                z: 0,
-                width: 60,         // Default width
-                height: 60,        // Default height
-                depth: 2
-            }
-        };
-
-        // 5. Send to Redux
-        dispatch(addObstacle(newObstacle));
-    };
+    // Select only the data we need from the consolidated slice
+    const currentKitchen = useAppSelector((state) => state.kitchen.currentKitchen);
+    const selectedObstacleId = useAppSelector((state) => state.kitchen.selectedObstacleId);
 
     if (!currentKitchen) return null;
 
+    // Filter obstacles belonging to THIS specific wall
+    const wallObstacles = currentKitchen.obstacles.filter(
+        (obs) => obs.wallIndex === wallIndex
+    );
+
+    const handleSelect = (id: string) => {
+        dispatch(setSelectedObstacle(id));
+    };
+
+    const handleDrag = (id: string, x: number, y: number) => {
+        dispatch(updateObstaclePosition({ id, x, y }));
+    };
+
     return (
-        <div
-            onDragOver={(e) => e.preventDefault()} // Required to allow drop
-            onDrop={handleDrop}
-            className="relative w-full h-[600px] bg-zinc-950 rounded-3xl border border-white/5 overflow-hidden group"
-        >
-            {/* Visual Grid for better technical feel */}
-            <div className="absolute inset-0 grid-background opacity-20 pointer-events-none" />
-
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                {wallTracks.map((wall, i) => (
-                    <g key={i}>
-                        <line
-                            x1={wall.start.x} y1={wall.start.y}
-                            x2={wall.end.x} y2={wall.end.y}
-                            stroke="#8b5cf6"
-                            strokeWidth="2"
-                            strokeDasharray="4 8"
-                            className="opacity-40 group-hover:opacity-100 transition-opacity duration-700"
-                        />
-                        <text
-                            x={(wall.start.x + wall.end.x) / 2}
-                            y={(wall.start.y + wall.end.y) / 2 - 10}
-                            fill="rgba(139, 92, 246, 0.5)"
-                            className="text-[9px] font-mono font-bold uppercase tracking-tighter"
-                            textAnchor="middle"
-                        >
-                            Wall_{wall.label} ({wall.length}cm)
-                        </text>
-                    </g>
-                ))}
-            </svg>
-
-            {/* Render Obstacles */}
-            {currentKitchen.obstacles.map((obs) => (
-                <DraggableObstacle
-                    key={obs.id}
-                    obstacle={obs}
-                    wallTracks={wallTracks}
-                />
+        <div className="absolute inset-0 pointer-events-none w-full h-full overflow-hidden">
+            {/* We map through the filtered obstacles.
+              'pointer-events-auto' on the children allows them to be clickable
+              while the layer itself doesn't block underlying wall clicks.
+            */}
+            {wallObstacles.map((obs, index) => (
+                <div key={obs.id} className="pointer-events-auto">
+                    <DraggableObstacle
+                        obstacle={obs}
+                        globalIndex={index}
+                        wall={currentKitchen.walls[wallIndex]}
+                        isSelected={selectedObstacleId === obs.id}
+                        onSelect={() => handleSelect(obs.id)}
+                        // This allows the child to stay "dumb" while updating the slice
+                        onPositionChange={(x, y) => handleDrag(obs.id, x, y)}
+                    />
+                </div>
             ))}
+
+            {/* Empty State / Ghost Indicator if needed */}
+            {wallObstacles.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl opacity-20">
+                    <span className="text-[10px] font-mono uppercase tracking-widest">
+                        Wall_{wallIndex}_Empty
+                    </span>
+                </div>
+            )}
         </div>
     );
 }

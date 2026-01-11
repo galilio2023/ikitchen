@@ -14,20 +14,18 @@ export const metadata: Metadata = {
     description: "Advanced 3D kitchen modeling and project management system.",
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: {
-    children: React.ReactNode;
-}) {
+// src/app/layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className="dark selection:bg-magic-purple/30">
-        <body className={`${inter.className} bg-black text-white antialiased min-h-screen relative`}>
+        <html lang="en" className="dark selection:bg-magic-purple/30 overflow-hidden">
+        {/* Added overflow-hidden to html to prevent any bounce/stretch */}
+        <body className={`${inter.className} bg-black text-white antialiased h-screen relative overflow-hidden`}>
         <StoreProvider>
-            {/* Starfield at the absolute bottom */}
             <Starfield starCount={80} />
-
-            {/* Main UI layer sits above background effects */}
-            <div className="relative z-10 min-h-screen">
+            {/* Changed min-h-screen to h-full.
+                       This ensures the child SidebarLayout (h-screen) has a stable container.
+                    */}
+            <div className="relative z-10 h-full">
                 {children}
             </div>
         </StoreProvider>

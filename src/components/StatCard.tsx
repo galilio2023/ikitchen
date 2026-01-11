@@ -1,128 +1,75 @@
 'use client';
 
-import { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { memo } from "react";
-
-/**
- * NodeStatus Mapping:
- * nominal: Cyan (Stable)
- * active: Purple (Processing)
- * critical: Red (Overload/Error)
- */
-type NodeStatus = 'nominal' | 'active' | 'critical';
+import React from 'react';
+import { LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface StatCardProps {
     label: string;
-    value: string | number;
+    value: string;
     icon: LucideIcon;
-    status?: NodeStatus;
-    className?: string; // <--- ADDED THIS TO FIX TS2322
+    status: 'nominal' | 'active' | 'critical';
 }
 
-const statusConfig = {
-    nominal: {
-        color: 'text-cyan-400', // Changed to standard tailwind if magic-cyan isn't in v4 config yet
-        bg: 'bg-cyan-500',
-        border: 'group-hover:border-cyan-500/50',
-        glow: 'shadow-[inset_0_0_15px_rgba(6,182,212,0.2)]',
-        label: '_NOMINAL',
-        bits: 3
-    },
-    active: {
-        color: 'text-purple-500',
-        bg: 'bg-purple-600',
-        border: 'group-hover:border-purple-500/50',
-        glow: 'shadow-[inset_0_0_15px_rgba(139,92,246,0.2)]',
-        label: '_ACTIVE',
-        bits: 5
-    },
-    critical: {
-        color: 'text-red-500',
-        bg: 'bg-red-500',
-        border: 'group-hover:border-red-500/50',
-        glow: 'shadow-[inset_0_0_15px_rgba(239,68,68,0.2)]',
-        label: '_CRITICAL',
-        bits: 8
-    },
-};
+export default function StatCard({ label, value, icon: Icon, status }: StatCardProps) {
+    // Dynamic styling based on system status
+    const statusStyles = {
+        nominal: "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.1)]",
+        active: "text-magic-purple border-magic-purple/20 bg-magic-purple/5 shadow-[0_0_15px_rgba(139,92,246,0.1)]",
+        critical: "text-red-400 border-red-500/20 bg-red-500/5 shadow-[0_0_15px_rgba(248,113,113,0.1)]"
+    };
 
-export default memo(function StatCard({ label, value, icon: Icon, status = 'nominal', className }: StatCardProps) {
-    const config = statusConfig[status];
+    const dotStyles = {
+        nominal: "bg-emerald-500 shadow-[0_0_8px_#10b981]",
+        active: "bg-magic-purple shadow-[0_0_8px_#8b5cf6]",
+        critical: "bg-red-500 shadow-[0_0_8px_#f87171]"
+    };
 
     return (
-        <motion.div
-            whileHover={{ y: -5, scale: 1.01 }}
-            className={cn(
-                "glass-brilliant glass-shine p-8 rounded-[2.5rem] font-mono group relative overflow-hidden transition-all duration-500",
-                "border border-white/5 backdrop-blur-md",
-                className // <--- ADDED THIS TO APPLY EXTERNAL CLASSES
-            )}
-        >
-            {/* 1. SENSOR GRID BACKGROUND */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                 style={{
-                     backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-                     backgroundSize: '24px 24px'
-                 }}
-            />
+        <div className={cn(
+            "relative overflow-hidden glass-brilliant p-6 rounded-[2rem] border transition-all duration-500",
+            statusStyles[status]
+        )}>
+            {/* Background Icon Watermark */}
+            <Icon className="absolute -right-4 -bottom-4 h-24 w-24 opacity-[0.03] -rotate-12 pointer-events-none" />
 
-            {/* 2. DYNAMIC AMBIENT LIGHT LEAK */}
-            <div className={cn(
-                "absolute -bottom-16 -right-16 w-40 h-40 blur-[60px] transition-all duration-1000 pointer-events-none opacity-10 group-hover:opacity-30",
-                config.bg
-            )} />
-
-            {/* 3. TELEMETRY HEADER */}
-            <div className="flex items-center gap-5 mb-8 relative z-10">
-                <div className="relative">
-                    <div className={cn("absolute inset-0 rounded-2xl blur-lg group-hover:animate-pulse opacity-20", config.bg)} />
-                    <div className={cn(
-                        "relative p-3.5 bg-black border border-white/10 rounded-2xl transition-all duration-500",
-                        config.color,
-                        config.glow,
-                        config.border
-                    )}>
-                        <Icon size={20} strokeWidth={2.5} />
+            <div className="relative z-10 flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div className="p-2.5 rounded-xl bg-black/40 border border-white/5">
+                        <Icon size={18} className="text-white/60" />
                     </div>
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-[7px] uppercase font-black tracking-[0.5em] text-white/20 mb-1">System_Node_Link</span>
-                    <span className="text-[11px] uppercase font-bold text-white/60 tracking-[0.2em] group-hover:text-white transition-colors">{label}</span>
-                </div>
-            </div>
 
-            {/* 4. MAIN DATA DISPLAY */}
-            <div className="relative z-10">
-                <div className="flex items-baseline gap-3">
-                    <h3 className="text-5xl font-black text-white tracking-tighter group-hover:sparkle-text transition-all duration-500">{value}</h3>
-                    <div className="flex flex-col">
-                         <span className={cn("text-[9px] font-black tracking-tighter italic uppercase transition-colors", config.color)}>
-                            {config.label}
-                        </span>
-                        <span className="text-[7px] text-white/10 font-bold uppercase tracking-widest mt-0.5">verified</span>
-                    </div>
-                </div>
-
-                {/* 5. HEALTH-AWARE BIT-STREAM */}
-                <div className="mt-8 flex gap-1.5 h-1.5 items-end">
-                    {[...Array(8)].map((_, i) => (
-                        <motion.div
-                            key={i}
-                            animate={{
-                                opacity: [0.2, 0.6, 0.2],
-                                scaleY: i < config.bits ? [1, 1.3, 1] : 1
-                            }}
-                            transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.12, ease: "easeInOut" }}
-                            className={cn(
-                                "h-full w-full rounded-full transition-all duration-700",
-                                i < config.bits ? config.bg : "bg-white/5 group-hover:bg-white/10"
-                            )}
+                    {/* Status Indicator Dot */}
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-white/5">
+                        <motion.span
+                            animate={{ opacity: [1, 0.4, 1] }}
+                            transition={{ repeat: Infinity, duration: 2 }}
+                            className={cn("h-1.5 w-1.5 rounded-full", dotStyles[status])}
                         />
-                    ))}
+                        <span className="text-[8px] font-black uppercase tracking-widest text-white/40">
+                            {status}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+                        {label}
+                    </p>
+                    <h3 className="text-xl font-mono font-black tracking-tighter text-white">
+                        {value}
+                    </h3>
                 </div>
             </div>
-        </motion.div>
+
+            {/* Subtle bottom glow flare */}
+            <div className={cn(
+                "absolute bottom-0 left-0 right-0 h-[2px] opacity-30",
+                status === 'nominal' && "bg-emerald-500",
+                status === 'active' && "bg-magic-purple",
+                status === 'critical' && "bg-red-500"
+            )} />
+        </div>
     );
-});
+}

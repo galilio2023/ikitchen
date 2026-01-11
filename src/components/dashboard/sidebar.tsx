@@ -5,18 +5,19 @@ import { LayoutDashboard, ChefHat, Ruler, Database, Settings, Search, Bell } fro
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import CreateProjectModal from '../CreateProjectModal';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const isEditor = pathname.includes('/projects/') && pathname.split('/').length > 3;
 
     return (
-        /* REMOVED 'isolate' and 'bg-black' to ensure Starfield is visible from the layout.tsx layer */
-        <div className="flex h-screen w-full text-white antialiased overflow-hidden font-mono relative">
+        <div className="flex h-screen w-full text-white antialiased overflow-hidden font-mono relative bg-black">
 
             {/* --- SIDEBAR --- */}
-            <aside className="w-64 flex flex-col h-full relative z-[60] border-r border-white/5 bg-black/10 backdrop-blur-md rounded-r-[2.5rem] shadow-[10px_0_30px_rgba(0,0,0,0.3)]">                <div className="p-10">
+            <aside className="w-64 flex-none flex flex-col h-full relative z-[60] border-r border-white/5 bg-black/20 backdrop-blur-xl rounded-r-[2.5rem] shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
+                <div className="p-10">
                     <h2 className="text-2xl font-black tracking-tighter text-white italic">
                         KITCHEN<span className="text-white/20 not-italic">_VOYAGER</span>
                     </h2>
@@ -52,12 +53,11 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
             {/* --- MAIN VIEWPORT --- */}
             <div className="flex-1 flex flex-col h-full relative min-w-0">
-                {/* HEADER: Added lower opacity and backdrop blur to see stars/nebula */}
-                <header className="h-24 flex-none flex items-center justify-between px-10 relative z-[50] border-b border-white/[0.03] bg-black/10 backdrop-blur-md">
+                <header className="h-24 flex-none flex items-center justify-between px-10 relative z-[50] border-b border-white/[0.03] bg-black/20 backdrop-blur-md">
                     <div className="relative group max-w-md w-full">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-magic-purple transition-colors" />
                         <input
-                            placeholder="SEARCH_KITCHENS_OR_SPECS..."
+                            placeholder="SEARCH_NODES..."
                             className="w-full h-12 pl-12 pr-4 rounded-2xl text-[10px] tracking-[0.2em] uppercase text-white bg-white/[0.03] border border-white/5 focus:outline-none focus:border-magic-purple/40 focus:bg-white/[0.06] transition-all"
                         />
                     </div>
@@ -72,22 +72,24 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                     </div>
                 </header>
 
-                {/* CONTENT AREA */}
-                <main className="flex-1 overflow-y-auto px-10 pb-10 relative will-change-transform">
-                    {/* Deep shadow overlay to give depth to the sidebar edge */}
-                    <div className="fixed inset-y-0 left-64 w-32 pointer-events-none bg-gradient-to-r from-black/30 to-transparent z-0" />
-                    <div className="max-w-[1600px] mx-auto pt-8 relative z-10">
+                <main className="flex-1 overflow-hidden relative">
+                    {/* Inner Content Wrapper */}
+                    <div className={cn(
+                        "h-full relative z-10 transition-all duration-500",
+                        isEditor
+                            ? "w-full max-w-none"
+                            : "max-w-[1600px] mx-auto px-10 pt-8 overflow-y-auto pb-10 scrollbar-hide"
+                    )}>
                         {children}
                     </div>
+
+                    {/* Shadow masking for depth */}
+                    <div className="absolute inset-y-0 left-0 w-20 pointer-events-none bg-gradient-to-r from-black/40 to-transparent z-20" />
                 </main>
             </div>
         </div>
     );
 }
-
-// ... SidebarGroup and SidebarLink sub-components remain the same ...
-
-{/* --- HELPER SUB-COMPONENTS (Kept internal for organization) --- */}
 
 function SidebarGroup({ title, children }: { title: string, children: React.ReactNode }) {
     return (
@@ -104,27 +106,31 @@ function SidebarLink({ href, icon, label, active }: { href: string, icon: React.
     return (
         <Link
             href={href}
-            aria-current={active ? 'page' : undefined}
             className={cn(
-                "group flex items-center gap-4 px-4 py-3 rounded-2xl text-[11px] transition-all duration-500 relative overflow-hidden font-bold uppercase tracking-widest",
+                "group flex items-center gap-4 px-4 py-3 rounded-2xl text-[11px] transition-all duration-300 relative overflow-hidden font-bold uppercase tracking-widest",
                 active
-                    ? "text-white bg-white/[0.05] border border-white/10"
+                    ? "text-white bg-white/[0.08] border border-white/10"
                     : "text-white/40 hover:text-white hover:bg-white/[0.02]"
             )}
         >
-            {active && (
-                <motion.div
-                    layoutId="active-pill"
-                    className="absolute left-0 top-3 bottom-3 w-[2px] bg-magic-purple rounded-r-full shadow-[0_0_15px_#8b5cf6]"
-                />
-            )}
+            <AnimatePresence>
+                {active && (
+                    <motion.div
+                        layoutId="active-pill"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        className="absolute left-0 top-3 bottom-3 w-[2px] bg-magic-purple rounded-r-full shadow-[0_0_15px_#8b5cf6]"
+                    />
+                )}
+            </AnimatePresence>
             <span className={cn(
-                "transition-all duration-500",
+                "transition-transform duration-300",
                 active ? "text-magic-purple scale-110" : "group-hover:text-magic-purple group-hover:scale-110"
             )}>
                 {icon}
             </span>
-            <span className={active ? "translate-x-1" : "group-hover:translate-x-1 transition-all"}>
+            <span className={cn("transition-all", active ? "translate-x-1" : "group-hover:translate-x-1")}>
                 {label}
             </span>
         </Link>

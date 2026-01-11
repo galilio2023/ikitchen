@@ -1,52 +1,88 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { toast } from 'sonner';
-import { IKitchen, IObstacle, IWall, ObstacleType } from "@/types";
+import { IKitchen, IObstacle, ObstacleType } from '@/types/kitchen';
 
 interface KitchenState {
+    items: IKitchen[];
     currentKitchen: IKitchen | null;
+    selectedObstacleId: string | null;
     loading: boolean;
     error: string | null;
-    selectedObstacleIndex: number | null;
 }
 
 const initialState: KitchenState = {
+    items: [],
     currentKitchen: null,
+    selectedObstacleId: null,
     loading: false,
     error: null,
-    selectedObstacleIndex: null
 };
 
-export const fetchKitchenByProject = createAsyncThunk(
-    'kitchen/fetchByProject',
-    async (projectId: string, { rejectWithValue }) => {
+/** * THUNK: Fetch All Projects (For Dashboard)
+ * Renamed to fetchAllKitchens to fix Next.js TS71002 error
+ */
+export const fetchAllKitchens = createAsyncThunk(
+    'kitchen/fetchAll',
+    async (_, { rejectWithValue }) => {
         try {
-            const res = await fetch(`/api/kitchens?projectId=${projectId}`);
-            if (!res.ok) throw new Error("SYSTEM_LINK_FAILURE");
-            const result = await res.json();
-            return result.data && result.data.length > 0 ? result.data[0] : null;
-        } catch (err: any) {
-            toast.error("NEURAL_SYNC_FAILED", { description: err.message });
-            return rejectWithValue(err.message);
+            // Ensure this matches your actual API folder name!
+            const response = await fetch('/api/projects');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'REGISTRY_FETCH_FAILURE');
+            }
+            return await response.json();
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
 
-export const updateKitchenThunk = createAsyncThunk(
-    'kitchen/update',
+/** * THUNK: Fetch Single Kitchen by ID */
+export const fetchKitchenById = createAsyncThunk(
+    'kitchen/fetchById',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`/api/projects/${id}`);
+            if (!response.ok) throw new Error('FETCH_SYNC_FAILED');
+            return await response.json();
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+/** * THUNK: Save/Persist Kitchen Changes */
+export const saveKitchen = createAsyncThunk(
+    'kitchen/save',
     async (kitchen: IKitchen, { rejectWithValue }) => {
         try {
-            const res = await fetch(`/api/kitchens`, {
+            const response = await fetch(`/api/projects/${kitchen.id || kitchen._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(kitchen),
             });
-            if (!res.ok) throw new Error("CLOUD_SYNC_REJECTED");
-            const result = await res.json();
-            toast.success("NODE_SYNCHRONIZED");
-            return result.data;
-        } catch (err: any) {
-            toast.error("SYNC_ERROR", { description: err.message });
-            return rejectWithValue(err.message);
+            if (!response.ok) throw new Error('DATABASE_SAVE_FAILURE');
+            return await response.json();
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+/** * THUNK: Initializing a New Node */
+export const addProjectThunk = createAsyncThunk(
+    'kitchen/addProject',
+    async (kitchenData: Partial<IKitchen>, { rejectWithValue }) => {
+        try {
+            const response = await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(kitchenData),
+            });
+            if (!response.ok) throw new Error('UPLINK_INITIALIZATION_FAILED');
+            return await response.json();
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -55,125 +91,78 @@ export const kitchenSlice = createSlice({
     name: 'kitchen',
     initialState,
     reducers: {
-        clearCurrentKitchen: (state) => {
-            state.currentKitchen = null;
+        setSelectedObstacle: (state, action: PayloadAction<string | null>) => {
+            state.selectedObstacleId = action.payload;
         },
-
-        addWall: (state, action: PayloadAction<{ projectId: string }>) => {
-            if (!state.currentKitchen) {
-                state.currentKitchen = {
-                    projectId: action.payload.projectId,
-                    clientName: "New Project",
-                    phone: "Pending...",
-                    status: 'draft',
-                    walls: [],
-                    obstacles: [],
-                    appliances: [],
-                    totalPrice: 0,
-                    standards: {
-                        baseCabinetDepth: 60,
-                        wallCabinetDepth: 35,
-                        countertopThickness: 4,
-                        kickplateHeight: 10,
-                    }
-                } as IKitchen;
-            }
-            state.currentKitchen.walls.push({
-                label: `Wall ${String.fromCharCode(65 + state.currentKitchen.walls.length)}`,
-                length: 250,
-                height: 240,
-                thickness: 10
-            });
-        },
-
-        updateWallLength: (state, action: PayloadAction<{ index: number; length: number }>) => {
-            if (state.currentKitchen?.walls[action.payload.index]) {
-                state.currentKitchen.walls[action.payload.index].length = action.payload.length;
+        updateObstaclePosition: (state, action: PayloadAction<{ id: string; x: number; y: number }>) => {
+            if (!state.currentKitchen) return;
+            const obs = state.currentKitchen.obstacles.find(o => o.id === action.payload.id);
+            if (obs) {
+                obs.position.x = action.payload.x;
+                obs.position.y = action.payload.y;
+                state.currentKitchen.updatedAt = new Date().toISOString();
             }
         },
-
-        removeWall: (state, action: PayloadAction<number>) => {
-            if (state.currentKitchen) {
-                state.currentKitchen.walls.splice(action.payload, 1);
-                // Clean up obstacles associated with this wall
-                state.currentKitchen.obstacles = state.currentKitchen.obstacles.filter(
-                    obs => obs.wallIndex !== action.payload
-                );
-            }
-        },
-
-        addObstacle: (state, action: PayloadAction<{ wallIndex: number; type: ObstacleType }>) => {
-            if (state.currentKitchen) {
-                const countOnWall = state.currentKitchen.obstacles.filter(o => o.wallIndex === action.payload.wallIndex).length;
-
-                state.currentKitchen.obstacles.push({
-                    type: action.payload.type,
-                    wallIndex: action.payload.wallIndex,
-                    position: {
-                        x: 20 + (countOnWall * 15),
-                        y: 100,
-                        z: 0,
-                        width: 60,
-                        height: 90,
-                        depth: 5
-                    }
-                });
-            }
-        },
-
-        updateObstaclePosition: (state, action: PayloadAction<{
-            obstacleIndex: number;
-            x: number;
-            y: number;
-        }>) => {
-            const { obstacleIndex, x, y } = action.payload;
-            // FIXED: Accessing obstacles via state.currentKitchen
-            if (state.currentKitchen && state.currentKitchen.obstacles[obstacleIndex]) {
-                state.currentKitchen.obstacles[obstacleIndex].position.x = x;
-                state.currentKitchen.obstacles[obstacleIndex].position.y = y;
-            }
-        },
-
-        updateObstacleDetails: (state, action: PayloadAction<{ index: number; updates: Partial<IObstacle['position']> }>) => {
-            const obs = state.currentKitchen?.obstacles[action.payload.index];
+        updateObstacleDetails: (state, action: PayloadAction<{ id: string; updates: Partial<IObstacle['position']> }>) => {
+            if (!state.currentKitchen) return;
+            const obs = state.currentKitchen.obstacles.find(o => o.id === action.payload.id);
             if (obs) {
                 obs.position = { ...obs.position, ...action.payload.updates };
+                state.currentKitchen.updatedAt = new Date().toISOString();
             }
         },
-
-        setSelectedObstacle: (state, action: PayloadAction<number | null>) => {
-            state.selectedObstacleIndex = action.payload;
+        addObstacle: (state, action: PayloadAction<{ type: ObstacleType; wallIndex: number; x: number; y: number }>) => {
+            if (!state.currentKitchen) return;
+            const newObstacle: IObstacle = {
+                id: crypto.randomUUID(),
+                type: action.payload.type,
+                wallIndex: action.payload.wallIndex,
+                position: { x: action.payload.x, y: action.payload.y, z: 0, width: 60, height: 60, depth: 5 }
+            };
+            state.currentKitchen.obstacles.push(newObstacle);
+            state.selectedObstacleId = newObstacle.id;
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchKitchenByProject.pending, (state) => {
-                state.loading = true;
+            // 1. Fetch Projects (Registry)
+            .addCase(fetchAllKitchens.fulfilled, (state, action) => {
+                state.loading = false;
+                // Map data to ensure 'id' is always available for the UI
+                state.items = action.payload.map((item: any) => ({
+                    ...item,
+                    id: item._id || item.id
+                }));
                 state.error = null;
             })
-            .addCase(fetchKitchenByProject.fulfilled, (state, action) => {
+            .addCase(fetchAllKitchens.rejected, (state, action) => {
                 state.loading = false;
-                state.currentKitchen = action.payload;
+                state.error = action.payload as string;
+                // Critical: If the fetch fails, we must stop the spinner
+                console.error("Dashboard Sync Error:", action.payload);
             })
-            .addCase(fetchKitchenByProject.rejected, (state, action) => {
+            .addCase(fetchAllKitchens.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
-            .addCase(updateKitchenThunk.fulfilled, (state, action) => {
-                state.currentKitchen = action.payload;
+            // 2. Fetch Single (Editor)
+            .addCase(fetchKitchenById.pending, (state) => { state.loading = true; state.currentKitchen = null; })
+            .addCase(fetchKitchenById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentKitchen = { ...action.payload, id: action.payload._id || action.payload.id };
+            })
+            // 3. Save Handlers
+            .addCase(saveKitchen.pending, (state) => { state.loading = true; })
+            .addCase(saveKitchen.fulfilled, (state) => { state.loading = false; })
+            // 4. Add Project Handlers
+            .addCase(addProjectThunk.fulfilled, (state, action) => {
+                state.loading = false;
+                const newProject = { ...action.payload, id: action.payload._id || action.payload.id };
+                state.currentKitchen = newProject;
+                state.items.unshift(newProject);
             });
     }
 });
 
-export const {
-    clearCurrentKitchen,
-    addWall,
-    updateWallLength,
-    removeWall,
-    addObstacle,
-    updateObstaclePosition,
-    updateObstacleDetails,
-    setSelectedObstacle
-} = kitchenSlice.actions;
-
+export const { setSelectedObstacle, updateObstaclePosition, updateObstacleDetails, addObstacle } = kitchenSlice.actions;
 export default kitchenSlice.reducer;
