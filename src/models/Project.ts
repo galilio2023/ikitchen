@@ -5,6 +5,7 @@ export interface IProject {
     _id: string;
     id?:string
     name: string;
+    obstacles?: any[];
     client: string;
     status: string;
     progress: number;

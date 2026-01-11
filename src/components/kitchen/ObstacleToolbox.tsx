@@ -1,60 +1,78 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addObstacle, setSelectedObstacle } from '@/lib/features/kitchens/kitchenSlice';
-import { ObstacleType } from '@/types';
+import React from 'react';
 import { Square, DoorOpen, Zap, Droplets, Columns2, Heater, ShieldAlert } from 'lucide-react';
+import {ObstacleType} from "@/types";
+import {addObstacle} from "@/lib/features/kitchens/kitchenSlice";
+import {useAppDispatch} from "@/lib/hooks";
 
-export default function ObstacleToolbox({ wallIndex }: { wallIndex: number }) {
+interface ObstacleToolboxProps {
+    wallIndex: number; // <--- ADD THIS
+}
+
+export default function ObstacleToolbox({ wallIndex }: ObstacleToolboxProps) {
     const dispatch = useAppDispatch();
-    const obstacles = useAppSelector(state => state.kitchen.currentKitchen?.obstacles || []);
 
     const tools = [
-        { type: 'window' as ObstacleType, icon: Square, color: 'text-blue-400', label: 'Window' },
-        { type: 'door' as ObstacleType, icon: DoorOpen, color: 'text-orange-400', label: 'Door' },
-        { type: 'socket' as ObstacleType, icon: Zap, color: 'text-yellow-400', label: 'Power' },
-        { type: 'water' as ObstacleType, icon: Droplets, color: 'text-cyan-400', label: 'Water' },
-        { type: 'pillar' as ObstacleType, icon: Columns2, color: 'text-emerald-400', label: 'Pillar' },
-        { type: 'heat' as ObstacleType, icon: Heater, color: 'text-red-400', label: 'Heat' },
-        { type: 'zone' as ObstacleType, icon: ShieldAlert, color: 'text-purple-400', label: 'Zone' },
+        { type: 'window', icon: Square, label: 'Window', color: 'text-blue-400' },
+        { type: 'door', icon: DoorOpen, label: 'Door', color: 'text-orange-400' },
+        { type: 'socket', icon: Zap, label: 'Power', color: 'text-yellow-400' },
+        { type: 'pipe', icon: Droplets, label: 'Water', color: 'text-cyan-400' },
+        { type: 'pillar', icon: Columns2, label: 'Pillar', color: 'text-emerald-400' },
+        { type: 'radiator', icon: Heater, label: 'Heat', color: 'text-red-400' },
+        { type: 'clearance', icon: ShieldAlert, label: 'Zone', color: 'text-purple-400' },
     ];
-
-    const handleInject = (type: ObstacleType) => {
-        // 1. Inject the new obstacle
-        dispatch(addObstacle({ wallIndex, type }));
-
-        // 2. The new obstacle will be at the end of the array
-        // We set a small timeout to ensure the state has updated before selecting
-        setTimeout(() => {
-            dispatch(setSelectedObstacle(obstacles.length));
-        }, 50);
+    const handleAdd = (type: ObstacleType) => {
+        dispatch(addObstacle({
+            type,
+            wallIndex, // Use the prop we just added
+            x: 50,     // Default starting position on the wall
+            y: 100
+        }));
     };
-
     return (
-        <div className="flex flex-wrap items-center gap-2 p-3 bg-black/60 backdrop-blur-2xl rounded-[1.5rem] border border-white/10 shadow-2xl">
-            <div className="flex flex-col px-3 border-r border-white/10 mr-2">
-                <span className="text-[7px] font-black text-magic-purple uppercase tracking-[0.3em]">Hardware</span>
-                <span className="text-[9px] font-bold text-white/40 uppercase font-mono">Inject_v4</span>
+        <aside className="w-72 glass-brilliant glass-shine rounded-[2rem] p-6 flex flex-col gap-6 h-full border border-white/5">
+            <div className="flex flex-col gap-1 relative z-10">
+                <span className="text-[10px] font-black text-magic-purple uppercase tracking-[0.3em]">Hardware_Library</span>
+                <span className="text-[11px] font-medium text-white/30 font-mono italic">v4.0_STRICT_SNAP</span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-1 gap-3 relative z-10 overflow-y-auto scrollbar-hide">
                 {tools.map((tool) => (
-                    <button
+                    <div
                         key={tool.type}
-                        onClick={() => handleInject(tool.type)}
-                        className="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/5
-                                 hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300
-                                 active:scale-90 cursor-pointer"
+                        draggable
+                        // CLICK TO ADD:
+                        onClick={() => handleAdd(tool.type as ObstacleType)}
+                        onDragStart={(e) => {
+                            e.dataTransfer.setData('obstacleType', tool.type);
+                            e.dataTransfer.effectAllowed = 'move';
+                        }}
+                        className="group flex items-center gap-4 px-4 py-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-magic-purple/40 cursor-pointer active:scale-95 transition-all"
                     >
-                        <span className={`${tool.color} transition-all duration-500 group-hover:scale-125 group-hover:rotate-[12deg]`}>
-                            <tool.icon size={14} />
-                        </span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-white transition-colors">
-                            {tool.label}
-                        </span>
-                    </button>
+                        <div className={`p-2.5 rounded-xl bg-black/40 border border-white/5 ${tool.color} group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all`}>
+                            <tool.icon size={18} />
+                        </div>
+
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-bold uppercase tracking-widest text-white/70 group-hover:text-white transition-colors">
+                                {tool.label}
+                            </span>
+                            <span className="text-[8px] font-mono text-white/20 uppercase tracking-tighter">
+                                Comp_Ref_{tool.type.substring(0, 3)}
+                            </span>
+                        </div>
+                    </div>
                 ))}
             </div>
-        </div>
+
+            {/* Bottom Status Indicator */}
+            <div className="mt-auto pt-4 border-t border-white/5 relative z-10">
+                <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-magic-cyan animate-pulse" />
+                    <span className="text-[8px] font-mono text-white/30 uppercase tracking-[0.2em]">Ready_To_Deploy</span>
+                </div>
+            </div>
+        </aside>
     );
 }

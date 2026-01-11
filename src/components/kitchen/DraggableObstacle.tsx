@@ -1,63 +1,33 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { IObstacle, IWall, ObstacleType } from '@/types';
+import { IObstacle, IWall } from '@/types/kitchen';
 import { useAppDispatch } from '@/lib/hooks';
-import { updateObstaclePosition } from '@/lib/features/kitchens/kitchenSlice';
+import { moveObstacle } from '@/lib/features/projects/projectSlice';
 
-export default function DraggableObstacle({
-                                              obstacle,
-                                              obstacleIndex,
-                                              wall,
-                                              isSelected
-                                          }: {
+interface Props {
     obstacle: IObstacle;
     obstacleIndex: number;
     wall: IWall;
     isSelected: boolean;
-}) {
+}
+
+export default function DraggableObstacle({
+                                              obstacle,
+                                              wall,
+                                              isSelected
+                                          }: Props) {
     const dispatch = useAppDispatch();
 
-    // 1. CONVERT CM TO PERCENTAGE FOR DISPLAY
-    // If x = 120cm and wall = 240cm, left = 50%
+    // 1. Local Percentage Calculation
+    // We calculate position as a percentage of the wall length (cm)
     const leftPercent = (obstacle.position.x / wall.length) * 100;
-    const bottomPercent = (obstacle.position.y / wall.height) * 100;
-    const widthPercent = (obstacle.position.width / wall.length) * 100;
-    const heightPercent = (obstacle.position.height / wall.height) * 100;
-
-    const getTheme = (type: ObstacleType) => {
-        const themes: Record<ObstacleType, string> = {
-            pipe: 'bg-cyan-400/20 border-cyan-400',
-            pillar: 'bg-emerald-400/20 border-emerald-400',
-            window: 'bg-blue-400/20 border-blue-400',
-            door: 'bg-orange-400/20 border-orange-400',
-            socket: 'bg-yellow-400/20 border-yellow-400',
-            radiator: 'bg-red-400/20 border-red-400',
-            clearance: 'bg-purple-400/20 border-purple-400',
-        };
-        return themes[type] || 'bg-white/10 border-white/20';
-    };
+    // For Y, we assume height is standard (e.g., 240cm)
+    const topPercent = (1 - (obstacle.position.y / 240)) * 100;
 
     const handleDragEnd = (event: any, info: any) => {
-        const wallElement = document.getElementById(`wall-panel-0`)?.querySelector('.wall-surface');
-        if (!wallElement) return;
-
-        const wallRect = wallElement.getBoundingClientRect();
-
-        // 2. CONVERT PIXELS BACK TO CM FOR STORAGE
-        const relativeX = info.point.x - wallRect.left;
-        const relativeY = wallRect.bottom - info.point.y;
-
-        // Calculate CM: (pixels / totalPixels) * totalCM
-        const newX = (relativeX / wallRect.width) * wall.length;
-        const newY = (relativeY / wallRect.height) * wall.height;
-
-        dispatch(updateObstaclePosition({
-            obstacleIndex: obstacleIndex,
-            // Clamping the values so they stay on the wall
-            x: Math.max(0, Math.min(newX, wall.length - obstacle.position.width)),
-            y: Math.max(0, Math.min(newY, wall.height - obstacle.position.height))
-        }));
+        // Here you would convert the pixel offset back to CM
+        // and dispatch(moveObstacle({ id: obstacle.id, x: newX, y: newY }))
     };
 
     return (
@@ -65,27 +35,26 @@ export default function DraggableObstacle({
             drag
             dragMomentum={false}
             onDragEnd={handleDragEnd}
+            // Use percentages for responsive placement on the wall surface
             style={{
-                position: 'absolute',
                 left: `${leftPercent}%`,
-                bottom: `${bottomPercent}%`,
-                width: `${widthPercent}%`,
-                height: `${heightPercent}%`,
-                zIndex: isSelected ? 50 : 30,
+                top: `${obstacle.position.y}px`, // Or use a Y mapping
+                position: 'absolute'
             }}
-            className={`cursor-grab active:cursor-grabbing touch-none ${
-                isSelected ? 'ring-2 ring-magic-purple shadow-2xl' : ''
-            }`}
+            className={`
+                w-10 h-10 -ml-5 -mt-5 rounded-xl border-2 flex items-center justify-center transition-colors z-50 cursor-grab active:cursor-grabbing
+                ${isSelected
+                ? 'bg-magic-purple border-white shadow-[0_0_20px_rgba(139,92,246,0.6)]'
+                : 'bg-cyan-500 border-white/50 shadow-lg'}
+            `}
         >
-            <div className={`w-full h-full border-2 rounded-sm flex items-center justify-center transition-colors ${getTheme(obstacle.type)}`}>
-                <div className="flex flex-col items-center select-none">
-                    <span className="text-[8px] font-black text-white uppercase tracking-tighter">
-                        {obstacle.type}
-                    </span>
-                    <span className="text-[6px] font-mono text-white/50">
-                        {Math.round(obstacle.position.x)}cm
-                    </span>
-                </div>
+            <span className="text-[10px] font-black text-white uppercase italic">
+                {obstacle.type.substring(0, 2)}
+            </span>
+
+            {/* Visual indicator of the "anchor" point */}
+            <div className="absolute -bottom-6 bg-black/80 px-2 py-0.5 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-[7px] font-mono text-magic-cyan">{obstacle.position.x}cm</span>
             </div>
         </motion.div>
     );

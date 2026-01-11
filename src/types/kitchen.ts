@@ -45,8 +45,9 @@ export type ObstacleType =
     | 'pillar'
     | 'radiator'
     | 'clearance'; // 'clearance' marks space that must stay empty
-
+export interface Obstacle extends IObstacle {}
 export interface IObstacle {
+    id:string
     type: ObstacleType;
     wallIndex: number; // Links this obstacle to a specific wall in the array
     position: ICoordinate;
