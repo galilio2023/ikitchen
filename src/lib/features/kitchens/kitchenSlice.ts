@@ -131,7 +131,11 @@ export const kitchenSlice = createSlice({
             })
             .addCase(fetchAllKitchens.fulfilled, (state, action) => {
                 state.loading = false;
-                state.items = action.payload;
+                // Standardize MongoDB _id to Frontend id
+                state.items = action.payload.map((item: any) => ({
+                    ...item,
+                    id: item._id || item.id
+                }));
                 state.error = null;
             })
             .addCase(fetchAllKitchens.rejected, (state, action) => {
