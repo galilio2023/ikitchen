@@ -11,24 +11,27 @@ export const metadata: Metadata = {
         template: "%s | KITCHEN_VOYAGER",
         default: "KITCHEN_VOYAGER | Neural_3D_OS",
     },
-    description: "Advanced 3D kitchen modeling and project management system.",
+    description: "Advanced_3D_modeling_node.",
 };
 
-// src/app/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className="dark selection:bg-magic-purple/30 overflow-hidden">
-        {/* Added overflow-hidden to html to prevent any bounce/stretch */}
-        <body className={`${inter.className} bg-black text-white antialiased h-screen relative overflow-hidden`}>
+        <html lang="en" className="dark selection:bg-magic-purple/30">
+        <body className={`${inter.className} bg-black text-white antialiased min-h-screen relative overflow-x-hidden`}>
+
+        {/* 1. LAYER 0: Background Visuals (Mounted first, no logic) */}
+        <Starfield starCount={80} />
+
+        {/* 2. LAYER 1: State Provider (Wraps the logic tree) */}
         <StoreProvider>
-            <Starfield starCount={80} />
-            {/* Changed min-h-screen to h-full.
-                       This ensures the child SidebarLayout (h-screen) has a stable container.
-                    */}
-            <div className="relative z-10 h-full">
+
+            {/* 3. LAYER 2: Main Content (The relative z-10 ensures it stays above stars) */}
+            <div className="relative z-10 min-h-screen flex flex-col">
                 {children}
             </div>
+
         </StoreProvider>
+
         </body>
         </html>
     );

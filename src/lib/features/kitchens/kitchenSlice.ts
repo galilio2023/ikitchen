@@ -114,7 +114,7 @@ export const kitchenSlice = createSlice({
         addObstacle: (state, action: PayloadAction<{ type: ObstacleType; wallIndex: number; x: number; y: number }>) => {
             if (!state.currentKitchen) return;
             const newObstacle: IObstacle = {
-                id: crypto.randomUUID(),
+                id: `obs-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 type: action.payload.type,
                 wallIndex: action.payload.wallIndex,
                 position: { x: action.payload.x, y: action.payload.y, z: 0, width: 60, height: 60, depth: 5 }
@@ -125,36 +125,44 @@ export const kitchenSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // 1. Fetch Projects (Registry)
-            .addCase(fetchAllKitchens.fulfilled, (state, action) => {
-                state.loading = false;
-                // Map data to ensure 'id' is always available for the UI
-                state.items = action.payload.map((item: any) => ({
-                    ...item,
-                    id: item._id || item.id
-                }));
+            .addCase(fetchAllKitchens.pending, (state) => {
+                state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchAllKitchens.rejected, (state, action) => {
+            .addCase(fetchAllKitchens.fulfilled, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
-                // Critical: If the fetch fails, we must stop the spinner
-                console.error("Dashboard Sync Error:", action.payload);
+                state.error = null;
+
+                // Ensure payload is an array to prevent .map() from hitting an undefined object
+                const payload = Array.isArray(action.payload) ? action.payload : [];
+
+                state.items = payload.map((item: any) => ({
+                    ...item, // Keeps all fields for TS compliance
+                    id: item._id || item.id // Standardizes ID for the Link keys
+                }));
             })
             .addCase(fetchAllKitchens.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                // This is the ONLY place this action should be handled
+                state.error = action.payload as string || 'Connection Lost';
             })
-            // 2. Fetch Single (Editor)
-            .addCase(fetchKitchenById.pending, (state) => { state.loading = true; state.currentKitchen = null; })
+            .addCase(fetchKitchenById.pending, (state) => {
+                state.loading = true;
+                state.currentKitchen = null;
+            })
             .addCase(fetchKitchenById.fulfilled, (state, action) => {
                 state.loading = false;
                 state.currentKitchen = { ...action.payload, id: action.payload._id || action.payload.id };
             })
-            // 3. Save Handlers
-            .addCase(saveKitchen.pending, (state) => { state.loading = true; })
-            .addCase(saveKitchen.fulfilled, (state) => { state.loading = false; })
-            // 4. Add Project Handlers
+            .addCase(fetchKitchenById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // 3. Save / Add Handlers (Only define each .fulfilled ONCE)
+            .addCase(saveKitchen.fulfilled, (state) => {
+                state.loading = false;
+            })
             .addCase(addProjectThunk.fulfilled, (state, action) => {
                 state.loading = false;
                 const newProject = { ...action.payload, id: action.payload._id || action.payload.id };

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface StatCardProps {
@@ -57,15 +57,31 @@ export default function StatCard({ label, value, icon: Icon, status }: StatCardP
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
                         {label}
                     </p>
-                    <h3 className="text-xl font-mono font-black tracking-tighter text-white">
-                        {value}
-                    </h3>
+
+                    {/* Value Container with Animation */}
+                    <div className="h-7 overflow-hidden relative">
+                        <AnimatePresence mode="wait">
+                            <motion.h3
+                                key={value} // This key triggers the animation on change
+                                initial={{ y: 12, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -12, opacity: 0 }}
+                                transition={{
+                                    duration: 0.3,
+                                    ease: [0.23, 1, 0.32, 1] // Custom cubic-bezier for a "tech" feel
+                                }}
+                                className="text-xl font-mono font-black tracking-tighter text-white"
+                            >
+                                {value}
+                            </motion.h3>
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
 
             {/* Subtle bottom glow flare */}
             <div className={cn(
-                "absolute bottom-0 left-0 right-0 h-[2px] opacity-30",
+                "absolute bottom-0 left-0 right-0 h-[2px] opacity-30 transition-colors duration-500",
                 status === 'nominal' && "bg-emerald-500",
                 status === 'active' && "bg-magic-purple",
                 status === 'critical' && "bg-red-500"

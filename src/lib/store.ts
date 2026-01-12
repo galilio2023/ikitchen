@@ -1,20 +1,22 @@
-import { configureStore } from '@reduxjs/toolkit';
-import projectReducer from './features/projects/projectSlice';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import kitchenReducer from './features/kitchens/kitchenSlice';
+
+// 1. Create a root reducer first
+const rootReducer = combineReducers({
+    kitchen: kitchenReducer,
+});
 
 export const makeStore = () => {
     return configureStore({
-        reducer: {
-            projects: projectReducer,
-            kitchen: kitchenReducer, // Matches Dashboard Selector
-        },
+        reducer: rootReducer,
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware({
-                serializableCheck: false, // Useful for handling Mongo Date objects
+                serializableCheck: false,
             }),
     });
 };
 
+// 2. Derive types from the rootReducer directly, NOT the store instance
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];
