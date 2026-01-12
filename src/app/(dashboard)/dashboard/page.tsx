@@ -1,32 +1,43 @@
 'use client';
 
 import { Database, Zap, Cpu, GitBranch, ExternalLink } from "lucide-react";
-import { useEffect } from 'react';
+import { useEffect, useTransition } from 'react';
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchAllKitchens } from "@/lib/features/kitchens/kitchenSlice";
-
-import CreateProjectModal from '@/components/CreateProjectModal';
+import dynamic from 'next/dynamic';
 import StatCard from "@/components/StatCard";
 import Link from "next/link";
 
+const CreateProjectModal = dynamic(() => import('@/components/CreateProjectModal'), {
+    ssr: false,
+    loading: () => <div className="h-10 w-32 bg-white/5 rounded-xl animate-pulse" />
+});
+
 export default function DashboardPage() {
     const dispatch = useAppDispatch();
-    // Ensuring we select the correct slice state
     const { items: projects, loading, error } = useAppSelector((state) => state.kitchen);
 
+    // 1. useTransition unblocks the main thread by marking the fetch as non-urgent
+    const [isPending, startTransition] = useTransition();
+
     useEffect(() => {
-        dispatch(fetchAllKitchens());
+        startTransition(() => {
+            dispatch(fetchAllKitchens());
+        });
     }, [dispatch]);
+
+    // 2. Combined loading state to ensure UI doesn't "freeze" in a partial state
+    const isActuallyLoading = (loading || isPending) && projects.length === 0;
 
     return (
         <div className="space-y-10 p-10 max-w-7xl mx-auto">
-            {/* 1. SYSTEM STATUS */}
+            {/* 1. SYSTEM STATUS - These will now stay interactive */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard
                     label="DB_CONNECTION"
-                    value={error ? "OFFLINE" : (loading ? "CONNECTING" : "NOMINAL")}
+                    value={error ? "OFFLINE" : (isActuallyLoading ? "CONNECTING" : "NOMINAL")}
                     icon={Database}
-                    status={error ? "critical" : (loading ? "active" : "nominal")}
+                    status={error ? "critical" : (isActuallyLoading ? "active" : "nominal")}
                 />
                 <StatCard label="YAML_CONFIG" value="EMPTY" icon={Zap} status="nominal" />
                 <StatCard label="AI_REVIEW" value="STANDBY" icon={Cpu} status="active" />
@@ -46,17 +57,19 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="p-6 min-h-[350px]">
-                    {loading && (!projects || projects.length === 0) ? (
+                    {isActuallyLoading ? (
                         <div className="h-64 flex flex-col items-center justify-center gap-4">
                             <div className="w-10 h-10 border-2 border-magic-purple border-t-transparent rounded-full animate-spin" />
                             <p className="text-[9px] font-mono text-magic-purple uppercase animate-pulse tracking-[0.3em]">Querying_Database...</p>
                         </div>
-                    ) : (!projects || projects.length === 0) ? (
+                    ) : projects.length === 0 ? (
                         <div className="h-64 flex flex-col items-center justify-center text-center space-y-4">
                             <div className="p-4 rounded-full bg-white/[0.02] border border-white/5 text-white/10">
                                 <Database size={32} />
                             </div>
-                            <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">No nodes established in cluster.</p>
+                            <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">
+                                {error ? `SYSTEM_SYNC_ERROR: ${error}` : "No nodes established in cluster."}
+                            </p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 gap-3">
@@ -72,7 +85,9 @@ export default function DashboardPage() {
                                             <span className="text-[11px] font-black text-white/80 group-hover:text-white uppercase tracking-wider">
                                                 {project.clientName || "Unknown_Client"}
                                             </span>
-                                            <span className="text-[8px] font-mono text-white/10">NODE_ID: {String(project._id || project.id).slice(-6)}</span>
+                                            <span className="text-[8px] font-mono text-white/10">
+                                                NODE_ID: {String(project._id || project.id).slice(-6)}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-6">

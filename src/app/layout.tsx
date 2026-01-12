@@ -11,25 +11,27 @@ export const metadata: Metadata = {
         template: "%s | KITCHEN_VOYAGER",
         default: "KITCHEN_VOYAGER | Neural_3D_OS",
     },
-    description: "Advanced 3D kitchen modeling and project management system.",
+    description: "Advanced_3D_modeling_node.",
 };
 
-// src/app/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en" className="dark selection:bg-magic-purple/30">
-        <body className={`${inter.className} bg-black text-white antialiased min-h-screen relative`}>
-        {/* StoreProvider must wrap the content for Redux to work */}
-        <StoreProvider>
-            <Starfield starCount={80} />
+        <body className={`${inter.className} bg-black text-white antialiased min-h-screen relative overflow-x-hidden`}>
 
-            {/* We use 'fixed' for the Starfield background and
-                  let the 'relative' div handle the actual layout flow.
-                */}
+        {/* 1. LAYER 0: Background Visuals (Mounted first, no logic) */}
+        <Starfield starCount={80} />
+
+        {/* 2. LAYER 1: State Provider (Wraps the logic tree) */}
+        <StoreProvider>
+
+            {/* 3. LAYER 2: Main Content (The relative z-10 ensures it stays above stars) */}
             <div className="relative z-10 min-h-screen flex flex-col">
                 {children}
             </div>
+
         </StoreProvider>
+
         </body>
         </html>
     );

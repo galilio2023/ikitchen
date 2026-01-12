@@ -2,12 +2,6 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
-
-/** * Use Global to preserve connection during Next.js Hot Module Replacement (HMR)
- */
 let cached = (global as any).mongoose;
 
 if (!cached) {
@@ -15,24 +9,40 @@ if (!cached) {
 }
 
 async function dbConnect() {
-    if (cached.conn) return cached.conn;
-
-    if (!cached.promise) {
-        const opts = {
-            bufferCommands: false,
-            connectTimeoutMS:2000,
-            serverSelectionTimeoutMS: 5000, // Fail fast (5s) instead of hanging Turbopack
-        };
-
-        cached.promise = mongoose.connect(MONGODB_URI!, opts).then((m) => m);
+    // 1. Return existing connection if healthy
+    if (cached.conn && mongoose.connection.readyState === 1) {
+        return cached.conn;
     }
+
+    // 2. If a connection is already in progress, wait for it
+    if (cached.promise) {
+        cached.conn = await cached.promise;
+        return cached.conn;
+    }
+
+    // 3. No connection or promise exists; start a new one
+    const opts = {
+        bufferCommands: false,
+        connectTimeoutMS: 5000,
+        socketTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 5000,
+    };
+
+    console.log("🔌 INITIALIZING_NEW_DB_CONNECTION...");
+
+    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((m) => {
+        console.log("✅ DB_CONNECTION_ESTABLISHED");
+        return m;
+    });
 
     try {
         cached.conn = await cached.promise;
     } catch (e) {
-        cached.promise = null; // Reset promise on failure to allow retry
+        console.error("❌ DB_CONNECTION_FAILED:", e);
+        cached.promise = null; // Reset so next request can retry
         throw e;
     }
+
     return cached.conn;
 }
 

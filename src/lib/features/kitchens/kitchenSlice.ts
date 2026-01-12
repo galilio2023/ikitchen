@@ -114,7 +114,7 @@ export const kitchenSlice = createSlice({
         addObstacle: (state, action: PayloadAction<{ type: ObstacleType; wallIndex: number; x: number; y: number }>) => {
             if (!state.currentKitchen) return;
             const newObstacle: IObstacle = {
-                id: crypto.randomUUID(),
+                id: `obs-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 type: action.payload.type,
                 wallIndex: action.payload.wallIndex,
                 position: { x: action.payload.x, y: action.payload.y, z: 0, width: 60, height: 60, depth: 5 }
@@ -131,12 +131,15 @@ export const kitchenSlice = createSlice({
             })
             .addCase(fetchAllKitchens.fulfilled, (state, action) => {
                 state.loading = false;
-                // Standardize MongoDB _id to Frontend id
-                state.items = action.payload.map((item: any) => ({
-                    ...item,
-                    id: item._id || item.id
-                }));
                 state.error = null;
+
+                // Ensure payload is an array to prevent .map() from hitting an undefined object
+                const payload = Array.isArray(action.payload) ? action.payload : [];
+
+                state.items = payload.map((item: any) => ({
+                    ...item, // Keeps all fields for TS compliance
+                    id: item._id || item.id // Standardizes ID for the Link keys
+                }));
             })
             .addCase(fetchAllKitchens.rejected, (state, action) => {
                 state.loading = false;

@@ -4,11 +4,17 @@ import React from 'react';
 import { LayoutDashboard, ChefHat, Ruler, Database, Settings, Search, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import CreateProjectModal from '../CreateProjectModal';
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import dynamic from 'next/dynamic';
 
-export default function SidebarLayout({ children }: { children: React.ReactNode }) {
+// RULE 1 FIX: Dynamic Import breaks the circular dependency loop
+const CreateProjectModal = dynamic(() => import('../CreateProjectModal'), {
+    ssr: false,
+    loading: () => <div className="h-10 w-24 animate-pulse bg-white/5 rounded-xl" />
+});
+
+const SidebarLayout=React.memo(({ children }: { children: React.ReactNode })=> {
     const pathname = usePathname();
     const isEditor = pathname.includes('/projects/') && pathname.split('/').length > 3;
 
@@ -68,12 +74,12 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                             <span className="absolute top-3 right-3 h-1.5 w-1.5 bg-magic-purple rounded-full shadow-[0_0_10px_#8b5cf6]" />
                         </button>
                         <div className="h-6 w-[1px] bg-white/10 mx-2" />
+                        {/* RESTORED MODAL: Now using the dynamic version */}
                         <CreateProjectModal />
                     </div>
                 </header>
 
                 <main className="flex-1 overflow-hidden relative">
-                    {/* Inner Content Wrapper */}
                     <div className={cn(
                         "h-full relative z-10 transition-all duration-500",
                         isEditor
@@ -82,15 +88,14 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                     )}>
                         {children}
                     </div>
-
-                    {/* Shadow masking for depth */}
                     <div className="absolute inset-y-0 left-0 w-20 pointer-events-none bg-gradient-to-r from-black/40 to-transparent z-20" />
                 </main>
             </div>
         </div>
-    );
-}
+    )});
 
+
+// Sub-components stay the same to keep the logic clean
 function SidebarGroup({ title, children }: { title: string, children: React.ReactNode }) {
     return (
         <section>
@@ -136,3 +141,5 @@ function SidebarLink({ href, icon, label, active }: { href: string, icon: React.
         </Link>
     );
 }
+
+export default React.memo(SidebarLayout);
