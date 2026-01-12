@@ -125,36 +125,37 @@ export const kitchenSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // 1. Fetch Projects (Registry)
+            .addCase(fetchAllKitchens.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addCase(fetchAllKitchens.fulfilled, (state, action) => {
                 state.loading = false;
-                // Map data to ensure 'id' is always available for the UI
-                state.items = action.payload.map((item: any) => ({
-                    ...item,
-                    id: item._id || item.id
-                }));
+                state.items = action.payload;
                 state.error = null;
             })
             .addCase(fetchAllKitchens.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
-                // Critical: If the fetch fails, we must stop the spinner
-                console.error("Dashboard Sync Error:", action.payload);
+                // This is the ONLY place this action should be handled
+                state.error = action.payload as string || 'Connection Lost';
             })
-            .addCase(fetchAllKitchens.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
+            .addCase(fetchKitchenById.pending, (state) => {
+                state.loading = true;
+                state.currentKitchen = null;
             })
-            // 2. Fetch Single (Editor)
-            .addCase(fetchKitchenById.pending, (state) => { state.loading = true; state.currentKitchen = null; })
             .addCase(fetchKitchenById.fulfilled, (state, action) => {
                 state.loading = false;
                 state.currentKitchen = { ...action.payload, id: action.payload._id || action.payload.id };
             })
-            // 3. Save Handlers
-            .addCase(saveKitchen.pending, (state) => { state.loading = true; })
-            .addCase(saveKitchen.fulfilled, (state) => { state.loading = false; })
-            // 4. Add Project Handlers
+            .addCase(fetchKitchenById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // 3. Save / Add Handlers (Only define each .fulfilled ONCE)
+            .addCase(saveKitchen.fulfilled, (state) => {
+                state.loading = false;
+            })
             .addCase(addProjectThunk.fulfilled, (state, action) => {
                 state.loading = false;
                 const newProject = { ...action.payload, id: action.payload._id || action.payload.id };

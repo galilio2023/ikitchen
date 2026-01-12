@@ -20,6 +20,7 @@ async function dbConnect() {
     if (!cached.promise) {
         const opts = {
             bufferCommands: false,
+            connectTimeoutMS:2000,
             serverSelectionTimeoutMS: 5000, // Fail fast (5s) instead of hanging Turbopack
         };
 

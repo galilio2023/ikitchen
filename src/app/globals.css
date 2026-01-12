@@ -27,17 +27,16 @@
 }
 
 @layer base {
-    html, body {
-        height: 100vh;
-        width: 100vw;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        @apply bg-black text-white antialiased;
+    html {
+        /* Allow natural height for hydration stability */
+        scroll-behavior: smooth;
     }
 
     body {
-        /* Base radial glow for depth */
+        @apply bg-black text-white antialiased min-h-screen w-full relative;
+        margin: 0;
+        padding: 0;
+        /* Keep the glow, but let it grow with content */
         background-image: radial-gradient(circle at 50% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
         background-attachment: fixed;
     }

@@ -17,15 +17,16 @@ export const metadata: Metadata = {
 // src/app/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className="dark selection:bg-magic-purple/30 overflow-hidden">
-        {/* Added overflow-hidden to html to prevent any bounce/stretch */}
-        <body className={`${inter.className} bg-black text-white antialiased h-screen relative overflow-hidden`}>
+        <html lang="en" className="dark selection:bg-magic-purple/30">
+        <body className={`${inter.className} bg-black text-white antialiased min-h-screen relative`}>
+        {/* StoreProvider must wrap the content for Redux to work */}
         <StoreProvider>
             <Starfield starCount={80} />
-            {/* Changed min-h-screen to h-full.
-                       This ensures the child SidebarLayout (h-screen) has a stable container.
-                    */}
-            <div className="relative z-10 h-full">
+
+            {/* We use 'fixed' for the Starfield background and
+                  let the 'relative' div handle the actual layout flow.
+                */}
+            <div className="relative z-10 min-h-screen flex flex-col">
                 {children}
             </div>
         </StoreProvider>
