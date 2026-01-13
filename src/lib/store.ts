@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import kitchenReducer from './features/kitchens/kitchenSlice';
+import uiReducer from './features/ui/uiSlice';
 
 // 1. Create a root reducer first
 const rootReducer = combineReducers({
     kitchen: kitchenReducer,
+    ui: uiReducer,
 });
 
 export const makeStore = () => {

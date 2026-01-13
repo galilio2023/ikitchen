@@ -19,6 +19,14 @@ const KitchenSchema = new Schema({
         enum: ['draft', 'measuring', 'designing', 'ordered', 'installed'],
         default: 'draft'
     },
+    img: String,
+    url: String,
+    github: String,
+    stars: {
+        type: Number,
+        default: 0
+    },
+    tags: [String],
 
     walls: [{
         label: { type: String, default: 'Wall' },
@@ -31,7 +39,7 @@ const KitchenSchema = new Schema({
     obstacles: [{
         type: {
             type: String,
-            enum: ['window', 'door', 'socket', 'pipe', 'pillar', 'radiator', 'clearance'],
+            enum: ['window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'],
             required: true
         },
         // We'll use the index for now as per your UI logic,

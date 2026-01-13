@@ -28,17 +28,14 @@ async function dbConnect() {
         serverSelectionTimeoutMS: 5000,
     };
 
-    console.log("🔌 INITIALIZING_NEW_DB_CONNECTION...");
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((m) => {
-        console.log("✅ DB_CONNECTION_ESTABLISHED");
         return m;
     });
 
     try {
         cached.conn = await cached.promise;
     } catch (e) {
-        console.error("❌ DB_CONNECTION_FAILED:", e);
         cached.promise = null; // Reset so next request can retry
         throw e;
     }

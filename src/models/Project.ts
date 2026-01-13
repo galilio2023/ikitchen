@@ -6,12 +6,18 @@ import mongoose, { Document, Schema } from 'mongoose';
  * Spatial data (walls/obstacles) is now handled exclusively by the Kitchen model.
  */
 export interface IProject {
-    _id: string;
+    _id?: string;
     id?: string;
     name: string;   // The project/registry name
     client: string; // The client name
     status: string; // 'Draft', 'Active', etc.
     progress: number;
+    img?: string;
+    url?: string;
+    github?: string;
+    stars?: number;
+    tags?: string[];
+    owner?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -42,6 +48,18 @@ const ProjectSchema = new Schema<IProjectDocument>({
         default: 0,
         min: 0,
         max: 100
+    },
+    img: String,
+    url: String,
+    github: String,
+    stars: {
+        type: Number,
+        default: 0
+    },
+    tags: [String],
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 }, {
     timestamps: true,

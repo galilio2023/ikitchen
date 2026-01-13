@@ -1,12 +1,15 @@
 'use client';
 
-import { Database, Zap, Cpu, GitBranch, ExternalLink } from "lucide-react";
-import { useEffect, useTransition } from 'react';
+import { Database, Zap, Cpu, GitBranch, ExternalLink, Search } from "lucide-react";
+import { useEffect, useTransition, useState, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchAllKitchens } from "@/lib/features/kitchens/kitchenSlice";
 import dynamic from 'next/dynamic';
-import StatCard from "@/components/StatCard";
-import Link from "next/link";
+import MagicStatsCard from "@/components/dashboard/MagicStatsCard";
+import ProjectGrid from "@/components/dashboard/ProjectGrid";
+import EmptyDashboard from "@/components/dashboard/EmptyDashboard";
+import { IKitchen } from "@/types/kitchen";
+import {cn} from "@/lib/utils";
 
 const CreateProjectModal = dynamic(() => import('@/components/CreateProjectModal'), {
     ssr: false,
@@ -16,6 +19,7 @@ const CreateProjectModal = dynamic(() => import('@/components/CreateProjectModal
 export default function DashboardPage() {
     const dispatch = useAppDispatch();
     const { items: projects, loading, error } = useAppSelector((state) => state.kitchen);
+    const [searchQuery, setSearchQuery] = useState("");
 
     // 1. useTransition unblocks the main thread by marking the fetch as non-urgent
     const [isPending, startTransition] = useTransition();
@@ -26,34 +30,81 @@ export default function DashboardPage() {
         });
     }, [dispatch]);
 
-    // 2. Combined loading state to ensure UI doesn't "freeze" in a partial state
+    const filteredProjects = useMemo(() => {
+        return projects.filter(project => 
+            project.clientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            project.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            project.status?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [projects, searchQuery]);
+
+    const stats = useMemo(() => {
+        const total = projects.length;
+        const completed = projects.filter(p => p.progress === 100).length;
+        const averageProgress = total > 0 
+            ? Math.round(projects.reduce((acc, p) => acc + (p.progress || 0), 0) / total) 
+            : 0;
+        
+        return { total, completed, averageProgress };
+    }, [projects]);
+
+    // 3. Combined loading state
     const isActuallyLoading = (loading || isPending) && projects.length === 0;
 
     return (
         <div className="space-y-10 p-10 max-w-7xl mx-auto">
             {/* 1. SYSTEM STATUS - These will now stay interactive */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard
-                    label="DB_CONNECTION"
-                    value={error ? "OFFLINE" : (isActuallyLoading ? "CONNECTING" : "NOMINAL")}
+                <MagicStatsCard
+                    index={0}
+                    label="TOTAL_NODES"
+                    value={isActuallyLoading ? "SCANNING..." : stats.total.toString()}
                     icon={Database}
                     status={error ? "critical" : (isActuallyLoading ? "active" : "nominal")}
+                    isScanning={isActuallyLoading || error === 'SIGNAL_LOST'}
                 />
-                <StatCard label="YAML_CONFIG" value="EMPTY" icon={Zap} status="nominal" />
-                <StatCard label="AI_REVIEW" value="STANDBY" icon={Cpu} status="active" />
+                <MagicStatsCard 
+                    index={1}
+                    label="COMPLETED_NODES" 
+                    value={isActuallyLoading ? "SCANNING..." : stats.completed.toString()} 
+                    icon={Zap} 
+                    status="nominal" 
+                    isScanning={isActuallyLoading || error === 'SIGNAL_LOST'}
+                />
+                <MagicStatsCard 
+                    index={2}
+                    label="AVG_INTEGRITY" 
+                    value={isActuallyLoading ? "SCANNING..." : `${stats.averageProgress}%`} 
+                    icon={Cpu} 
+                    status="active" 
+                    isScanning={isActuallyLoading || error === 'SIGNAL_LOST'}
+                />
             </div>
 
             {/* 2. ACTIVITY LOG & REGISTRY */}
-            <section className="glass-brilliant rounded-[2.5rem] border border-white/5 bg-black/40 overflow-hidden shadow-2xl">
-                <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+            <section className="glass-brilliant rounded-[2.5rem] overflow-hidden shadow-2xl border border-border">
+                <div className="p-8 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-6 bg-accent/10">
                     <div className="space-y-1">
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/80">Active_Nodes</h2>
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/80">Active_Nodes</h2>
                         <div className="flex items-center gap-2">
                             <GitBranch size={12} className="text-magic-purple" />
-                            <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">feature/schema-kitchen</span>
+                            <span className="text-[9px] font-mono text-foreground/20 uppercase tracking-widest">registry/v1.0.4</span>
                         </div>
                     </div>
-                    <CreateProjectModal />
+
+                    <div className="flex items-center gap-4 flex-1 max-w-md">
+                        <div className="relative flex-1 group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-foreground/20 group-focus-within:text-magic-purple transition-colors" />
+                            <input 
+                                type="text"
+                                placeholder="Search_Registry..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-accent/30 border border-border rounded-xl py-3 pl-12 pr-4 text-[10px] font-mono uppercase tracking-widest text-foreground placeholder:text-foreground/10 focus:outline-none focus:border-magic-purple/40 focus:bg-accent/50 transition-all"
+                            />
+                        </div>
+                        <CreateProjectModal />
+                    </div>
                 </div>
 
                 <div className="p-6 min-h-[350px]">
@@ -62,46 +113,8 @@ export default function DashboardPage() {
                             <div className="w-10 h-10 border-2 border-magic-purple border-t-transparent rounded-full animate-spin" />
                             <p className="text-[9px] font-mono text-magic-purple uppercase animate-pulse tracking-[0.3em]">Querying_Database...</p>
                         </div>
-                    ) : projects.length === 0 ? (
-                        <div className="h-64 flex flex-col items-center justify-center text-center space-y-4">
-                            <div className="p-4 rounded-full bg-white/[0.02] border border-white/5 text-white/10">
-                                <Database size={32} />
-                            </div>
-                            <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">
-                                {error ? `SYSTEM_SYNC_ERROR: ${error}` : "No nodes established in cluster."}
-                            </p>
-                        </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-3">
-                            {projects.map((project: any) => (
-                                <Link
-                                    key={project._id || project.id}
-                                    href={`/projects/${project._id || project.id}`}
-                                    className="group flex items-center justify-between p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-magic-purple/40 transition-all duration-300"
-                                >
-                                    <div className="flex items-center gap-6">
-                                        <div className="h-2 w-2 rounded-full bg-magic-purple/40 group-hover:bg-magic-purple group-hover:shadow-[0_0_12px_rgba(139,92,246,0.8)] transition-all" />
-                                        <div className="flex flex-col">
-                                            <span className="text-[11px] font-black text-white/80 group-hover:text-white uppercase tracking-wider">
-                                                {project.clientName || "Unknown_Client"}
-                                            </span>
-                                            <span className="text-[8px] font-mono text-white/10">
-                                                NODE_ID: {String(project._id || project.id).slice(-6)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-6">
-                                        <div className="hidden sm:block text-right">
-                                            <p className="text-[7px] text-white/20 uppercase font-black tracking-widest">Status</p>
-                                            <p className="text-[9px] text-magic-purple font-mono uppercase">{project.status || 'DRAFT'}</p>
-                                        </div>
-                                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-black/40 border border-white/5 group-hover:border-magic-purple/50 group-hover:text-magic-purple transition-all">
-                                            <ExternalLink size={14} />
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+                        <ProjectGrid projects={filteredProjects} isSearch={searchQuery.length > 0} />
                     )}
                 </div>
             </section>

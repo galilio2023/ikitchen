@@ -2,11 +2,16 @@ export interface IKitchen {
     id: string;
     _id?: string;
     projectId: string;
-    progress:number;
+    progress: number;
     clientName: string;
     phone: string;
     address?: string;
     status: 'draft' | 'measuring' | 'designing' | 'ordered' | 'installed';
+    img?: string;
+    url?: string;
+    github?: string;
+    stars?: number;
+    tags?: string[];
     walls: IWall[];
     obstacles: IObstacle[];
     appliances: IAppliance[];
@@ -53,6 +58,7 @@ export interface Obstacle extends IObstacle {}
 
 export interface IObstacle {
     id: string; // Unique ID for selection and drag-drop tracking
+    _id?: string;
     type: ObstacleType;
     wallIndex: number;
     position: ICoordinate;
