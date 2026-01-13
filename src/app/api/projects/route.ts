@@ -1,89 +1,110 @@
+// src/app/api/projects/route.ts
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
+import Kitchen from '@/models/Kitchen';
 import Project from '@/models/Project';
-import mongoose from "mongoose";
 
-/**
- * GET /api/projects
- * Fetches all kitchen projects from MongoDB
- */
+const SEED_DATA = [
+    {
+        name: "NEURAL_KITCHEN_ALPHA",
+        client: "ALPHA_CORP",
+        status: "designing",
+        progress: 85,
+        img: "https://images.unsplash.com/photo-1556911220-e15224bbafb0",
+        url: "https://example.com/alpha",
+        github: "https://github.com/alpha",
+        stars: 12,
+        tags: ["featured", "neural", "obsidian"]
+    },
+    {
+        name: "OBSIDIAN_CORE_BETA",
+        client: "BETA_SYSTEMS",
+        status: "measuring",
+        progress: 40,
+        img: "https://images.unsplash.com/photo-1556909212-d5b604ad0567",
+        url: "https://example.com/beta",
+        github: "https://github.com/beta",
+        stars: 8,
+        tags: ["standard", "compact", "glass"]
+    },
+    {
+        name: "VOYAGER_NODE_GAMMA",
+        client: "GAMMA_LABS",
+        status: "installed",
+        progress: 100,
+        img: "https://images.unsplash.com/photo-1484154218962-a197022b5858",
+        url: "https://example.com/gamma",
+        github: "https://github.com/gamma",
+        stars: 25,
+        tags: ["standard", "minimalist", "high-spec"]
+    }
+];
+
 export async function GET() {
     try {
-        await dbConnect();
+        if (!process.env.MONGODB_URI) {
+            return NextResponse.json([], { status: 200 });
+        }
 
-        const projects = await Project.find({}).sort({ createdAt: -1 });
-
-        return NextResponse.json(projects, {
-            status: 200,
-            headers: {
-                'Cache-Control': 'no-store, max-age=0',
-            },
-        });
-    } catch (error) {
-        console.error(' [API_PROJECTS_GET] Error:', error);
-        return NextResponse.json(
-            { error: 'Internal Server Error', message: 'Failed to fetch projects' },
-            { status: 500 }
+        const connectionTimeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('DATABASE_HANDSHAKE_TIMEOUT')), 10000)
         );
+
+        const fetchData = async () => {
+            await dbConnect();
+            
+            // 1. Check if we need to seed
+            const count = await Project.countDocuments();
+            if (count === 0) {
+                console.log('🌱 [SYSTEM]: Clusters Empty. Initiating Auto-Seed...');
+                for (const seed of SEED_DATA) {
+                    const project = await Project.create(seed);
+                    await Kitchen.create({
+                        ...seed,
+                        clientName: seed.client,
+                        phone: "555-NODE-SYNC",
+                        projectId: project._id,
+                        walls: [{ label: 'Wall 1', length: 400, height: 240, thickness: 10 }],
+                        standards: { baseCabinetDepth: 60, wallCabinetDepth: 35, countertopThickness: 4, kickplateHeight: 10 }
+                    });
+                }
+            }
+
+            return await Project.find({}).sort({ updatedAt: -1 }).lean();
+        };
+
+        const projects = await Promise.race([fetchData(), connectionTimeout]);
+        return NextResponse.json(projects);
+    } catch (error) {
+        return NextResponse.json([], { status: 200 });
     }
 }
 
-/**
- * POST /api/projects
- * Creates a new kitchen sequence entry
- */
 export async function POST(request: Request) {
     try {
         await dbConnect();
-        const body = await request.json();
+        const data = await request.json();
 
-        const { name, client } = body;
-
-        // 1. Manual Short-Circuit: Throw error if fields are missing or just whitespace
-        // This triggers the 'catch' block immediately without touching the DB
-        if (!name?.trim() || !client?.trim()) {
-            const validationError = new mongoose.Error.ValidationError();
-            validationError.addError('fields', new mongoose.Error.ValidatorError({
-                message: 'All identifier fields (Name & Client) must be populated.',
-                path: 'fields',
-                type: 'required',
-            }));
-            throw validationError;
-        }
-
-        // 2. Proceed to Mongoose Create if manual check passes
-        const newProject = await Project.create({
-            name,
-            client,
-            status: "Draft",
-            progress: 0
+        // 1. Create Project
+        const project = await Project.create({
+            name: data.clientName,
+            client: data.clientName,
+            status: data.status || 'draft',
+            progress: data.progress || 0,
+            img: data.img,
+            tags: data.tags
         });
 
-        return NextResponse.json(newProject, { status: 201 });
+        // 2. Create Kitchen
+        const kitchen = await Kitchen.create({
+            ...data,
+            projectId: project._id,
+            walls: data.walls || [{ label: 'Wall 1', length: 300, height: 240, thickness: 10 }],
+            standards: data.standards || { baseCabinetDepth: 60, wallCabinetDepth: 35, countertopThickness: 4, kickplateHeight: 10 }
+        });
 
-    } catch (error: any) {
-        // This catch block now handles BOTH your manual 'throw' and DB errors
-
-        if (error instanceof SyntaxError) {
-            return NextResponse.json(
-                { error: 'Payload_Malformed', message: 'Invalid JSON input' },
-                { status: 400 }
-            );
-        }
-
-        if (error instanceof mongoose.Error.ValidationError) {
-            // This now catches the manual throw FROM Step 1
-            const messages = Object.values(error.errors).map((err: any) => err.message);
-            return NextResponse.json(
-                { error: 'Input_Validation_Failed', details: messages },
-                { status: 400 }
-            );
-        }
-
-        console.error(' [SYSTEM_CRITICAL]:', error);
-        return NextResponse.json(
-            { error: 'Internal_Server_Error' },
-            { status: 500 }
-        );
+        return NextResponse.json({ ...kitchen.toObject(), id: project._id.toString() });
+    } catch (error) {
+        return NextResponse.json({ error: "INITIALIZATION_FAILED" }, { status: 500 });
     }
 }

@@ -1,16 +1,24 @@
-import { configureStore } from '@reduxjs/toolkit';
-import projectReducer from './features/projects/projectSlice';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import kitchenReducer from './features/kitchens/kitchenSlice';
+import uiReducer from './features/ui/uiSlice';
+
+// 1. Create a root reducer first
+const rootReducer = combineReducers({
+    kitchen: kitchenReducer,
+    ui: uiReducer,
+});
 
 export const makeStore = () => {
     return configureStore({
-        reducer: {
-            projects: projectReducer,
-            // You can add more slices here later (e.g., auth, materials)
-        },
+        reducer: rootReducer,
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware({
+                serializableCheck: false,
+            }),
     });
 };
 
-// These types are crucial for TypeScript support
+// 2. Derive types from the rootReducer directly, NOT the store instance
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];

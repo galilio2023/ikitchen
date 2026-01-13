@@ -1,0 +1,2080 @@
+
+.next\dev\node_modules\mongoose-8b99e611e7552af3\types\mongooseoptions.d.ts:74:
+     * If `true`, prints the operations mongoose sends to MongoDB to the
+console.
+.next\node_modules\mongoose-8b99e611e7552af3\types\mongooseoptions.d.ts:74:
+ * If `true`, prints the operations mongoose sends to MongoDB to the console.
+node_modules\@reduxjs\toolkit\dist\query\react\index.d.ts:175:     *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\dist\query\react\index.d.ts:177:     *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\dist\query\react\index.d.ts:525:     *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\dist\query\react\index.d.ts:527:     *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\dist\query\react\index.d.ts:828:     *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\dist\query\react\index.d.ts:830:     *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\dist\query\index.d.ts:301:     *
+console.error(error, info)
+node_modules\@reduxjs\toolkit\dist\query\index.d.ts:649:     *
+.then((payload) => console.log('fulfilled', payload))
+node_modules\@reduxjs\toolkit\dist\query\index.d.ts:650:     *
+.catch((error) => console.error('rejected', error));
+node_modules\@reduxjs\toolkit\dist\query\index.d.ts:658:     *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\dist\query\index.d.ts:660:     *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\dist\query\index.d.ts:1905:     *
+console.error(error, info)
+node_modules\@reduxjs\toolkit\dist\index.d.ts:288:     * than `warnAfter` ms,
+a warning will be displayed in the console.
+node_modules\@reduxjs\toolkit\dist\index.d.ts:309: * state, an error is
+printed to the console.
+node_modules\@reduxjs\toolkit\dist\index.d.ts:1423:     *
+console.log(injectedReducer.selector.original(state).boolean) // possibly
+undefined
+node_modules\@reduxjs\toolkit\dist\index.d.ts:1449:         *
+console.log(injectedReducer.selector.original(state).boolean) // undefined
+node_modules\@reduxjs\toolkit\dist\index.d.ts:1503:         *
+console.log(injectedReducer.selector.original(state).boolean) // possibly
+undefined
+node_modules\@reduxjs\toolkit\dist\index.d.ts:2192:     *
+console.log(result.value) // logs 4
+node_modules\@reduxjs\toolkit\dist\index.d.ts:2288:     *
+console.log(payload); // logs 5;
+node_modules\@reduxjs\toolkit\src\entities\tests\sorted_state_adapter.test.ts:7
+27:        console.log(
+node_modules\@reduxjs\toolkit\src\entities\utils.ts:17:    console.warn(
+node_modules\@reduxjs\toolkit\src\listenerMiddleware\index.ts:324:
+console.error(`${alm}/error`, ...args)
+node_modules\@reduxjs\toolkit\src\listenerMiddleware\types.ts:116:   *
+console.log(result.value) // logs 4
+node_modules\@reduxjs\toolkit\src\listenerMiddleware\types.ts:218:   *
+console.log(payload); // logs 5;
+node_modules\@reduxjs\toolkit\src\query\core\buildMiddleware\devMiddleware.ts:2
+4:        console.warn(`There is a mismatch between slice and middleware for
+the reducerPath "${reducerPath}".
+node_modules\@reduxjs\toolkit\src\query\core\buildInitiate.ts:254:   *
+.then((payload) => console.log('fulfilled', payload))
+node_modules\@reduxjs\toolkit\src\query\core\buildInitiate.ts:255:   *
+.catch((error) => console.error('rejected', error));
+node_modules\@reduxjs\toolkit\src\query\core\buildInitiate.ts:263:   *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\src\query\core\buildInitiate.ts:265:   *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\src\query\core\buildSelectors.ts:211:
+console.error(
+node_modules\@reduxjs\toolkit\src\query\core\buildThunks.ts:633:
+console.error(
+node_modules\@reduxjs\toolkit\src\query\core\buildThunks.ts:786:      //
+console.log('Final result: ', transformedData)
+node_modules\@reduxjs\toolkit\src\query\core\buildThunks.ts:873:
+console.error(
+node_modules\@reduxjs\toolkit\src\query\core\buildThunks.ts:879:
+console.error(caughtError)
+node_modules\@reduxjs\toolkit\src\query\core\module.ts:539:
+console.error(
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:332:   *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:334:   *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:799:   *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:801:   *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:1404:     *
+console.log('fulfilled', payload)
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:1406:     *
+console.error('rejected', error);
+node_modules\@reduxjs\toolkit\src\query\react\buildHooks.ts:1743:
+console.log(subscriptionRemoved)
+node_modules\@reduxjs\toolkit\src\query\react\module.ts:176:
+console.warn(
+node_modules\@reduxjs\toolkit\src\query\tests\buildHooks.test.tsx:1789:
+    console.error('Error handling increment trigger', error)
+node_modules\@reduxjs\toolkit\src\query\tests\buildHooks.test.tsx:1799:
+    console.error('Error handling mutate trigger', error)
+node_modules\@reduxjs\toolkit\src\query\tests\devWarnings.test.tsx:362:describe
+('`console.error` on unhandled errors during `initiate`', () => {
+node_modules\@reduxjs\toolkit\src\query\tests\matchers.test.tsx:225:
+ console.log(action.error)
+node_modules\@reduxjs\toolkit\src\query\tests\matchers.test.tsx:232:
+ console.log(action.error)
+node_modules\@reduxjs\toolkit\src\query\tests\refetchingBehaviors.test.tsx:364:
+      // console.info(...args)
+node_modules\@reduxjs\toolkit\src\query\tests\refetchingBehaviors.test.tsx:375:
+        console.log('setup!')
+node_modules\@reduxjs\toolkit\src\query\tests\refetchingBehaviors.test.tsx:378:
+          console.log('cleanup!')
+node_modules\@reduxjs\toolkit\src\query\createApi.ts:252:   *
+console.error(error, info)
+node_modules\@reduxjs\toolkit\src\query\createApi.ts:471:
+console.error(
+node_modules\@reduxjs\toolkit\src\query\endpointDefinitions.ts:395:   *
+ console.error(error, info)
+node_modules\@reduxjs\toolkit\src\query\fetchBaseQuery.ts:220:    console.warn(
+node_modules\@reduxjs\toolkit\src\actionCreatorInvariantMiddleware.ts:30:
+console.warn(getMessage(action.type))
+node_modules\@reduxjs\toolkit\src\combineSlices.ts:202:   *
+console.log(injectedReducer.selector.original(state).boolean) // possibly
+undefined
+node_modules\@reduxjs\toolkit\src\combineSlices.ts:228:     *
+console.log(injectedReducer.selector.original(state).boolean) // undefined
+node_modules\@reduxjs\toolkit\src\combineSlices.ts:291:     *
+console.log(injectedReducer.selector.original(state).boolean) // possibly
+undefined
+node_modules\@reduxjs\toolkit\src\combineSlices.ts:448:        console.error(
+node_modules\@reduxjs\toolkit\src\configureStore.ts:240:    console.error(
+node_modules\@reduxjs\toolkit\src\createSlice.ts:593:        console.error(
+node_modules\@reduxjs\toolkit\src\serializableStateInvariantMiddleware.ts:157:
+  * than `warnAfter` ms, a warning will be displayed in the console.
+node_modules\@reduxjs\toolkit\src\serializableStateInvariantMiddleware.ts:182:
+* state, an error is printed to the console.
+node_modules\@reduxjs\toolkit\src\serializableStateInvariantMiddleware.ts:241:
+           console.error(
+node_modules\@reduxjs\toolkit\src\serializableStateInvariantMiddleware.ts:269:
+           console.error(
+node_modules\@reduxjs\toolkit\src\utils.ts:17:        console.warn(`${fnName}
+took ${elapsed}ms, which is more than the warning threshold of ${maxDelay}ms.
+node_modules\@types\node\dns\promises.d.ts:71:     *   console.log('address:
+%j family: IPv%s', result.address, result.family);
+node_modules\@types\node\dns\promises.d.ts:78:     *   console.log('addresses:
+%j', result);
+node_modules\@types\node\dns\promises.d.ts:101:     *
+console.log(result.hostname, result.service);
+node_modules\@types\node\fs\promises.d.ts:263:         *   console.log(chunk);
+node_modules\@types\node\fs\promises.d.ts:322:         *   console.log(line);
+node_modules\@types\node\fs\promises.d.ts:508:     *   console.log('can
+access');
+node_modules\@types\node\fs\promises.d.ts:510:     *   console.error('cannot
+access');
+node_modules\@types\node\fs\promises.d.ts:537:     *   console.log('source.txt
+was copied to destination.txt');
+node_modules\@types\node\fs\promises.d.ts:539:     *   console.error('The file
+could not be copied');
+node_modules\@types\node\fs\promises.d.ts:545:     *   console.log('source.txt
+was copied to destination.txt');
+node_modules\@types\node\fs\promises.d.ts:547:     *   console.error('The file
+could not be copied');
+node_modules\@types\node\fs\promises.d.ts:617:     *   console.log(`created
+${createDir}`);
+node_modules\@types\node\fs\promises.d.ts:619:     *
+console.error(err.message);
+node_modules\@types\node\fs\promises.d.ts:669:     *     console.log(file);
+node_modules\@types\node\fs\promises.d.ts:671:     *   console.error(err);
+node_modules\@types\node\fs\promises.d.ts:947:     *   console.error(err);
+node_modules\@types\node\fs\promises.d.ts:1014:     *   console.error(err);
+node_modules\@types\node\fs\promises.d.ts:1086:     *   console.log(contents);
+node_modules\@types\node\fs\promises.d.ts:1088:     *
+console.error(err.message);
+node_modules\@types\node\fs\promises.d.ts:1109:     *   console.error(err);
+node_modules\@types\node\fs\promises.d.ts:1183:     *
+console.log(dirent.name);
+node_modules\@types\node\fs\promises.d.ts:1185:     *   console.error(err);
+node_modules\@types\node\fs\promises.d.ts:1209:     *       console.log(event);
+node_modules\@types\node\readline\promises.d.ts:36:         * console.log(`Oh,
+so your favorite food is ${answer}`);
+node_modules\@types\node\readline\promises.d.ts:45:         *
+console.log('The food question timed out');
+node_modules\@types\node\readline\promises.d.ts:49:         * console.log(`Oh,
+so your favorite food is ${answer}`);
+node_modules\@types\node\readline\promises.d.ts:142:     *
+console.log(`Received: ${line}`);
+node_modules\@types\node\timers\promises.d.ts:26:     * console.log(res);  //
+Prints 'result'
+node_modules\@types\node\timers\promises.d.ts:42:     * console.log(res);  //
+Prints 'result'
+node_modules\@types\node\timers\promises.d.ts:61:     *   console.log(now);
+node_modules\@types\node\timers\promises.d.ts:65:     *
+console.log(Date.now());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:78:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:84:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:97:             *
+console.log(buf.length);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:115:             *
+console.log(arrA.buffer === arrB.buffer); // true
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:118:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:143:             *
+console.log(buf1.toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:145:             *
+console.log(buf2.toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:147:             *
+console.log(buf1.toString('latin1'));
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:189:             *
+console.log(totalLength);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:194:             *
+console.log(bufA);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:196:             *
+console.log(bufA.length);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:213:             *
+console.log(buf.length); // 2
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:214:             *
+console.log(buf[0]); // 255
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:215:             *
+console.log(buf[1]); // 255
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:231:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:244:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:256:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:282:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:287:             *
+console.log(buf);
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:370:             *
+console.log(copiedBuf.toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:373:             *
+console.log(buf.toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:379:             *
+console.log(notReallyCopiedBuf.toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:381:             *
+console.log(buf.toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:416:             *
+console.log(buf2.toString('ascii', 0, buf2.length));
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:421:             *
+console.log(buf2.toString('ascii', 0, buf2.length));
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:433:             *
+console.log(buf.subarray(-6, -1).toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:437:             *
+console.log(buf.subarray(-6, -2).toString());
+node_modules\@types\node\ts5.6\buffer.buffer.d.ts:441:             *
+console.log(buf.subarray(-5, -2).toString());
+node_modules\@types\node\ts5.6\index.d.ts:49:/// <reference
+path="../console.d.ts" />
+node_modules\@types\node\assert.d.ts:139:             *
+console.log(tracker.report());
+node_modules\@types\node\async_hooks.d.ts:23:     *
+console.log(executionAsyncId());  // 1 - bootstrap
+node_modules\@types\node\async_hooks.d.ts:26:     *
+console.log(executionAsyncId());  // 6 - open()
+node_modules\@types\node\async_hooks.d.ts:65:     *
+console.log(executionAsyncId(), executionAsyncResource());  // 1 {}
+node_modules\@types\node\async_hooks.d.ts:67:     *
+console.log(executionAsyncId(), executionAsyncResource());  // 7 FSReqWrap
+node_modules\@types\node\async_hooks.d.ts:342:     *   console.log(`${id !==
+undefined ? id : '-'}:`, msg);
+node_modules\@types\node\async_hooks.d.ts:389:         * console.log(result);
+// returns 123
+node_modules\@types\node\async_hooks.d.ts:403:         *
+console.log(asyncLocalStorage.run(321, () => foo.get())); // returns 123
+node_modules\@types\node\buffer.buffer.d.ts:80:             * console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:86:             * console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:99:             *
+console.log(buf.length);
+node_modules\@types\node\buffer.buffer.d.ts:117:             *
+console.log(arrA.buffer === arrB.buffer); // true
+node_modules\@types\node\buffer.buffer.d.ts:120:             *
+console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:145:             *
+console.log(buf1.toString());
+node_modules\@types\node\buffer.buffer.d.ts:147:             *
+console.log(buf2.toString());
+node_modules\@types\node\buffer.buffer.d.ts:149:             *
+console.log(buf1.toString('latin1'));
+node_modules\@types\node\buffer.buffer.d.ts:191:             *
+console.log(totalLength);
+node_modules\@types\node\buffer.buffer.d.ts:196:             *
+console.log(bufA);
+node_modules\@types\node\buffer.buffer.d.ts:198:             *
+console.log(bufA.length);
+node_modules\@types\node\buffer.buffer.d.ts:215:             *
+console.log(buf.length); // 2
+node_modules\@types\node\buffer.buffer.d.ts:216:             *
+console.log(buf[0]); // 255
+node_modules\@types\node\buffer.buffer.d.ts:217:             *
+console.log(buf[1]); // 255
+node_modules\@types\node\buffer.buffer.d.ts:233:             *
+console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:246:             *
+console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:258:             *
+console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:284:             *
+console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:289:             *
+console.log(buf);
+node_modules\@types\node\buffer.buffer.d.ts:372:             *
+console.log(copiedBuf.toString());
+node_modules\@types\node\buffer.buffer.d.ts:375:             *
+console.log(buf.toString());
+node_modules\@types\node\buffer.buffer.d.ts:381:             *
+console.log(notReallyCopiedBuf.toString());
+node_modules\@types\node\buffer.buffer.d.ts:383:             *
+console.log(buf.toString());
+node_modules\@types\node\buffer.buffer.d.ts:418:             *
+console.log(buf2.toString('ascii', 0, buf2.length));
+node_modules\@types\node\buffer.buffer.d.ts:423:             *
+console.log(buf2.toString('ascii', 0, buf2.length));
+node_modules\@types\node\buffer.buffer.d.ts:435:             *
+console.log(buf.subarray(-6, -1).toString());
+node_modules\@types\node\buffer.buffer.d.ts:439:             *
+console.log(buf.subarray(-6, -2).toString());
+node_modules\@types\node\buffer.buffer.d.ts:443:             *
+console.log(buf.subarray(-5, -2).toString());
+node_modules\@types\node\buffer.d.ts:105:     *
+console.log(newBuf.toString('ascii'));
+node_modules\@types\node\buffer.d.ts:183:         *   console.log(bytes); //
+Outputs: Uint8Array(5) [ 104, 101, 108, 108, 111 ]
+node_modules\@types\node\buffer.d.ts:293:             *
+console.log(Buffer.isEncoding('utf8'));
+node_modules\@types\node\buffer.d.ts:296:             *
+console.log(Buffer.isEncoding('hex'));
+node_modules\@types\node\buffer.d.ts:299:             *
+console.log(Buffer.isEncoding('utf/8'));
+node_modules\@types\node\buffer.d.ts:302:             *
+console.log(Buffer.isEncoding(''));
+node_modules\@types\node\buffer.d.ts:324:             * console.log(`${str}:
+${str.length} characters, ` +
+node_modules\@types\node\buffer.d.ts:352:             *
+console.log(arr.sort(Buffer.compare));
+node_modules\@types\node\buffer.d.ts:383:             * console.log(`${len}
+bytes: ${buf.toString('utf8', 0, len)}`);
+node_modules\@types\node\buffer.d.ts:390:             * console.log(`${length}
+bytes: ${buffer.toString('utf8', 8, 10)}`);
+node_modules\@types\node\buffer.d.ts:422:             *
+console.log(buf1.toString('utf8'));
+node_modules\@types\node\buffer.d.ts:424:             *
+console.log(buf1.toString('utf8', 0, 5));
+node_modules\@types\node\buffer.d.ts:429:             *
+console.log(buf2.toString('hex'));
+node_modules\@types\node\buffer.d.ts:431:             *
+console.log(buf2.toString('utf8', 0, 3));
+node_modules\@types\node\buffer.d.ts:433:             *
+console.log(buf2.toString(undefined, 0, 3));
+node_modules\@types\node\buffer.d.ts:455:             * console.log(json);
+node_modules\@types\node\buffer.d.ts:464:             * console.log(copy);
+node_modules\@types\node\buffer.d.ts:483:             *
+console.log(buf1.equals(buf2));
+node_modules\@types\node\buffer.d.ts:485:             *
+console.log(buf1.equals(buf3));
+node_modules\@types\node\buffer.d.ts:507:             *
+console.log(buf1.compare(buf1));
+node_modules\@types\node\buffer.d.ts:509:             *
+console.log(buf1.compare(buf2));
+node_modules\@types\node\buffer.d.ts:511:             *
+console.log(buf1.compare(buf3));
+node_modules\@types\node\buffer.d.ts:513:             *
+console.log(buf2.compare(buf1));
+node_modules\@types\node\buffer.d.ts:515:             *
+console.log(buf2.compare(buf3));
+node_modules\@types\node\buffer.d.ts:517:             * console.log([buf1,
+buf2, buf3].sort(Buffer.compare));
+node_modules\@types\node\buffer.d.ts:530:             *
+console.log(buf1.compare(buf2, 5, 9, 0, 4));
+node_modules\@types\node\buffer.d.ts:532:             *
+console.log(buf1.compare(buf2, 0, 6, 4));
+node_modules\@types\node\buffer.d.ts:534:             *
+console.log(buf1.compare(buf2, 5, 6, 5));
+node_modules\@types\node\buffer.d.ts:577:             *
+console.log(buf2.toString('ascii', 0, 25));
+node_modules\@types\node\buffer.d.ts:596:             *
+console.log(buf.toString());
+node_modules\@types\node\buffer.d.ts:619:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:640:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:661:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:685:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:714:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:742:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:768:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:789:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:809:             *
+console.log(buf.readBigUInt64BE(0));
+node_modules\@types\node\buffer.d.ts:831:             *
+console.log(buf.readBigUInt64LE(0));
+node_modules\@types\node\buffer.d.ts:872:             *
+console.log(buf.readUIntLE(0, 6).toString(16));
+node_modules\@types\node\buffer.d.ts:896:             *
+console.log(buf.readUIntBE(0, 6).toString(16));
+node_modules\@types\node\buffer.d.ts:898:             *
+console.log(buf.readUIntBE(1, 6).toString(16));
+node_modules\@types\node\buffer.d.ts:920:             *
+console.log(buf.readIntLE(0, 6).toString(16));
+node_modules\@types\node\buffer.d.ts:937:             *
+console.log(buf.readIntBE(0, 6).toString(16));
+node_modules\@types\node\buffer.d.ts:939:             *
+console.log(buf.readIntBE(1, 6).toString(16));
+node_modules\@types\node\buffer.d.ts:941:             *
+console.log(buf.readIntBE(1, 0).toString(16));
+node_modules\@types\node\buffer.d.ts:959:             *
+console.log(buf.readUInt8(0));
+node_modules\@types\node\buffer.d.ts:961:             *
+console.log(buf.readUInt8(1));
+node_modules\@types\node\buffer.d.ts:963:             *
+console.log(buf.readUInt8(2));
+node_modules\@types\node\buffer.d.ts:985:             *
+console.log(buf.readUInt16LE(0).toString(16));
+node_modules\@types\node\buffer.d.ts:987:             *
+console.log(buf.readUInt16LE(1).toString(16));
+node_modules\@types\node\buffer.d.ts:989:             *
+console.log(buf.readUInt16LE(2).toString(16));
+node_modules\@types\node\buffer.d.ts:1011:             *
+console.log(buf.readUInt16BE(0).toString(16));
+node_modules\@types\node\buffer.d.ts:1013:             *
+console.log(buf.readUInt16BE(1).toString(16));
+node_modules\@types\node\buffer.d.ts:1035:             *
+console.log(buf.readUInt32LE(0).toString(16));
+node_modules\@types\node\buffer.d.ts:1037:             *
+console.log(buf.readUInt32LE(1).toString(16));
+node_modules\@types\node\buffer.d.ts:1059:             *
+console.log(buf.readUInt32BE(0).toString(16));
+node_modules\@types\node\buffer.d.ts:1081:             *
+console.log(buf.readInt8(0));
+node_modules\@types\node\buffer.d.ts:1083:             *
+console.log(buf.readInt8(1));
+node_modules\@types\node\buffer.d.ts:1085:             *
+console.log(buf.readInt8(2));
+node_modules\@types\node\buffer.d.ts:1102:             *
+console.log(buf.readInt16LE(0));
+node_modules\@types\node\buffer.d.ts:1104:             *
+console.log(buf.readInt16LE(1));
+node_modules\@types\node\buffer.d.ts:1121:             *
+console.log(buf.readInt16BE(0));
+node_modules\@types\node\buffer.d.ts:1138:             *
+console.log(buf.readInt32LE(0));
+node_modules\@types\node\buffer.d.ts:1140:             *
+console.log(buf.readInt32LE(1));
+node_modules\@types\node\buffer.d.ts:1157:             *
+console.log(buf.readInt32BE(0));
+node_modules\@types\node\buffer.d.ts:1172:             *
+console.log(buf.readFloatLE(0));
+node_modules\@types\node\buffer.d.ts:1174:             *
+console.log(buf.readFloatLE(1));
+node_modules\@types\node\buffer.d.ts:1189:             *
+console.log(buf.readFloatBE(0));
+node_modules\@types\node\buffer.d.ts:1204:             *
+console.log(buf.readDoubleLE(0));
+node_modules\@types\node\buffer.d.ts:1206:             *
+console.log(buf.readDoubleLE(1));
+node_modules\@types\node\buffer.d.ts:1221:             *
+console.log(buf.readDoubleBE(0));
+node_modules\@types\node\buffer.d.ts:1238:             * console.log(buf1);
+node_modules\@types\node\buffer.d.ts:1243:             * console.log(buf1);
+node_modules\@types\node\buffer.d.ts:1274:             * console.log(buf1);
+node_modules\@types\node\buffer.d.ts:1279:             * console.log(buf1);
+node_modules\@types\node\buffer.d.ts:1300:             * console.log(buf1);
+node_modules\@types\node\buffer.d.ts:1305:             * console.log(buf1);
+node_modules\@types\node\buffer.d.ts:1334:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1362:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1390:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1417:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1444:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1473:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1495:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1517:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1539:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1561:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1581:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1601:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1621:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1641:             * console.log(buf);
+node_modules\@types\node\buffer.d.ts:1661:             *
+console.log(b.toString());
+node_modules\@types\node\buffer.d.ts:1667:             *
+console.log(c.fill(''));
+node_modules\@types\node\buffer.d.ts:1683:             *
+console.log(Buffer.allocUnsafe(5).fill('\u0222'));
+node_modules\@types\node\buffer.d.ts:1695:             *
+console.log(buf.fill('a'));
+node_modules\@types\node\buffer.d.ts:1697:             *
+console.log(buf.fill('aazz', 'hex'));
+node_modules\@types\node\buffer.d.ts:1699:             *
+console.log(buf.fill('zz', 'hex'));
+node_modules\@types\node\buffer.d.ts:1726:             *
+console.log(buf.indexOf('this'));
+node_modules\@types\node\buffer.d.ts:1728:             *
+console.log(buf.indexOf('is'));
+node_modules\@types\node\buffer.d.ts:1730:             *
+console.log(buf.indexOf(Buffer.from('a buffer')));
+node_modules\@types\node\buffer.d.ts:1732:             *
+console.log(buf.indexOf(97));
+node_modules\@types\node\buffer.d.ts:1734:             *
+console.log(buf.indexOf(Buffer.from('a buffer example')));
+node_modules\@types\node\buffer.d.ts:1736:             *
+console.log(buf.indexOf(Buffer.from('a buffer example').slice(0, 8)));
+node_modules\@types\node\buffer.d.ts:1741:             *
+console.log(utf16Buffer.indexOf('\u03a3', 0, 'utf16le'));
+node_modules\@types\node\buffer.d.ts:1743:             *
+console.log(utf16Buffer.indexOf('\u03a3', -4, 'utf16le'));
+node_modules\@types\node\buffer.d.ts:1761:             *
+console.log(b.indexOf(99.9));
+node_modules\@types\node\buffer.d.ts:1762:             *
+console.log(b.indexOf(256 + 99));
+node_modules\@types\node\buffer.d.ts:1766:             *
+console.log(b.indexOf('b', undefined));
+node_modules\@types\node\buffer.d.ts:1767:             *
+console.log(b.indexOf('b', {}));
+node_modules\@types\node\buffer.d.ts:1768:             *
+console.log(b.indexOf('b', null));
+node_modules\@types\node\buffer.d.ts:1769:             *
+console.log(b.indexOf('b', []));
+node_modules\@types\node\buffer.d.ts:1791:             *
+console.log(buf.lastIndexOf('this'));
+node_modules\@types\node\buffer.d.ts:1793:             *
+console.log(buf.lastIndexOf('buffer'));
+node_modules\@types\node\buffer.d.ts:1795:             *
+console.log(buf.lastIndexOf(Buffer.from('buffer')));
+node_modules\@types\node\buffer.d.ts:1797:             *
+console.log(buf.lastIndexOf(97));
+node_modules\@types\node\buffer.d.ts:1799:             *
+console.log(buf.lastIndexOf(Buffer.from('yolo')));
+node_modules\@types\node\buffer.d.ts:1801:             *
+console.log(buf.lastIndexOf('buffer', 5));
+node_modules\@types\node\buffer.d.ts:1803:             *
+console.log(buf.lastIndexOf('buffer', 4));
+node_modules\@types\node\buffer.d.ts:1808:             *
+console.log(utf16Buffer.lastIndexOf('\u03a3', undefined, 'utf16le'));
+node_modules\@types\node\buffer.d.ts:1810:             *
+console.log(utf16Buffer.lastIndexOf('\u03a3', -5, 'utf16le'));
+node_modules\@types\node\buffer.d.ts:1828:             *
+console.log(b.lastIndexOf(99.9));
+node_modules\@types\node\buffer.d.ts:1829:             *
+console.log(b.lastIndexOf(256 + 99));
+node_modules\@types\node\buffer.d.ts:1833:             *
+console.log(b.lastIndexOf('b', undefined));
+node_modules\@types\node\buffer.d.ts:1834:             *
+console.log(b.lastIndexOf('b', {}));
+node_modules\@types\node\buffer.d.ts:1838:             *
+console.log(b.lastIndexOf('b', null));
+node_modules\@types\node\buffer.d.ts:1839:             *
+console.log(b.lastIndexOf('b', []));
+node_modules\@types\node\buffer.d.ts:1859:             *
+console.log(buf.includes('this'));
+node_modules\@types\node\buffer.d.ts:1861:             *
+console.log(buf.includes('is'));
+node_modules\@types\node\buffer.d.ts:1863:             *
+console.log(buf.includes(Buffer.from('a buffer')));
+node_modules\@types\node\buffer.d.ts:1865:             *
+console.log(buf.includes(97));
+node_modules\@types\node\buffer.d.ts:1867:             *
+console.log(buf.includes(Buffer.from('a buffer example')));
+node_modules\@types\node\buffer.d.ts:1869:             *
+console.log(buf.includes(Buffer.from('a buffer example').slice(0, 8)));
+node_modules\@types\node\buffer.d.ts:1871:             *
+console.log(buf.includes('this', 4));
+node_modules\@types\node\child_process.d.ts:11: *   console.log(`stdout:
+${data}`);
+node_modules\@types\node\child_process.d.ts:15: *   console.error(`stderr:
+${data}`);
+node_modules\@types\node\child_process.d.ts:19: *   console.log(`child process
+exited with code ${code}`);
+node_modules\@types\node\child_process.d.ts:117:         *
+console.log(`Received chunk ${data}`);
+node_modules\@types\node\child_process.d.ts:208:         *
+console.log(`Spawned child pid: ${grep.pid}`);
+node_modules\@types\node\child_process.d.ts:256:         *   console.log(
+node_modules\@types\node\child_process.d.ts:292:         *
+console.log(process.pid, 'is alive')
+node_modules\@types\node\child_process.d.ts:327:         *
+console.log('PARENT got message:', m);
+node_modules\@types\node\child_process.d.ts:338:         *
+console.log('CHILD got message:', m);
+node_modules\@types\node\child_process.d.ts:725:     *   console.log(`stdout:
+${data}`);
+node_modules\@types\node\child_process.d.ts:729:     *
+console.error(`stderr: ${data}`);
+node_modules\@types\node\child_process.d.ts:733:     *   console.log(`child
+process exited with code ${code}`);
+node_modules\@types\node\child_process.d.ts:749:     *   console.error(`ps
+stderr: ${data}`);
+node_modules\@types\node\child_process.d.ts:754:     *     console.log(`ps
+process exited with code ${code}`);
+node_modules\@types\node\child_process.d.ts:760:     *
+console.log(data.toString());
+node_modules\@types\node\child_process.d.ts:764:     *   console.error(`grep
+stderr: ${data}`);
+node_modules\@types\node\child_process.d.ts:769:     *     console.log(`grep
+process exited with code ${code}`);
+node_modules\@types\node\child_process.d.ts:781:     *   console.error('Failed
+to start subprocess.');
+node_modules\@types\node\child_process.d.ts:947:     *     console.error(`exec
+error: ${error}`);
+node_modules\@types\node\child_process.d.ts:950:     *   console.log(`stdout:
+${stdout}`);
+node_modules\@types\node\child_process.d.ts:951:     *
+console.error(`stderr: ${stderr}`);
+node_modules\@types\node\child_process.d.ts:975:     *
+console.log('stdout:', stdout);
+node_modules\@types\node\child_process.d.ts:976:     *
+console.error('stderr:', stderr);
+node_modules\@types\node\child_process.d.ts:989:     *   console.error(error);
+// an AbortError
+node_modules\@types\node\child_process.d.ts:1089:     *   console.log(stdout);
+node_modules\@types\node\child_process.d.ts:1111:     *   console.log(stdout);
+node_modules\@types\node\child_process.d.ts:1128:     *
+console.error(error); // an AbortError
+node_modules\@types\node\child_process.d.ts:1304:     *     console.log(`Hello
+from ${process.argv[2]}!`);
+node_modules\@types\node\cluster.d.ts:19: *   console.log(`Primary
+${process.pid} is running`);
+node_modules\@types\node\cluster.d.ts:27: *     console.log(`worker
+${worker.process.pid} died`);
+node_modules\@types\node\cluster.d.ts:37: *   console.log(`Worker
+${process.pid} started`);
+node_modules\@types\node\cluster.d.ts:289:         *   console.log(`Primary
+${process.pid} is running`);
+node_modules\@types\node\cluster.d.ts:297:         *     console.log('worker
+is dead:', worker.isDead());
+node_modules\@types\node\cluster.d.ts:301:         *     console.log('worker
+is dead:', worker.isDead());
+node_modules\@types\node\cluster.d.ts:327:         *     console.log('Oh, it
+was just voluntary – no need to worry');
+node_modules\@types\node\cluster.d.ts:474:         *   console.log('I am
+primary');
+node_modules\@types\node\cluster.d.ts:478:         *   console.log(`I am
+worker #${cluster.worker.id}`);
+node_modules\@types\node\console.d.ts:7: * * A `Console` class with methods
+such as `console.log()`, `console.error()`, and `console.warn()` that can be
+used to write to any Node.js stream.
+node_modules\@types\node\console.d.ts:19: * console.log('hello world');
+node_modules\@types\node\console.d.ts:21: * console.log('hello %s', 'world');
+node_modules\@types\node\console.d.ts:23: * console.error(new Error('Whoops,
+something bad happened'));
+node_modules\@types\node\console.d.ts:35: * console.warn(`Danger ${name}!
+Danger!`);
+node_modules\@types\node\console.d.ts:44: * const myConsole = new
+console.Console(out, err);
+node_modules\@types\node\console.d.ts:46: * myConsole.log('hello world');
+node_modules\@types\node\console.d.ts:48: * myConsole.log('hello %s', 'world');
+node_modules\@types\node\console.d.ts:50: * myConsole.error(new Error('Whoops,
+something bad happened'));
+node_modules\@types\node\console.d.ts:54: * myConsole.warn(`Danger ${name}!
+Danger!`);
+node_modules\@types\node\console.d.ts:57: * @see
+[source](https://github.com/nodejs/node/blob/v20.13.1/lib/console.js)
+node_modules\@types\node\console.d.ts:68:            Console:
+console.ConsoleConstructor;
+node_modules\@types\node\console.d.ts:70:             * `console.assert()`
+writes a message if `value` is
+[falsy](https://developer.mozilla.org/en-US/docs/Glossary/Falsy) or omitted.
+It only
+node_modules\@types\node\console.d.ts:78:             * console.assert(true,
+'does nothing');
+node_modules\@types\node\console.d.ts:80:             * console.assert(false,
+'Whoops %s work', 'didn\'t');
+node_modules\@types\node\console.d.ts:83:             * console.assert();
+node_modules\@types\node\console.d.ts:92:             * When `stdout` is a
+TTY, calling `console.clear()` will attempt to clear the
+node_modules\@types\node\console.d.ts:95:             * The specific operation
+of `console.clear()` can vary across operating systems
+node_modules\@types\node\console.d.ts:96:             * and terminal types.
+For most Linux operating systems, `console.clear()` operates similarly to the
+`clear` shell command. On Windows, `console.clear()` will clear only the
+output in the
+node_modules\@types\node\console.d.ts:104:             * number of times
+`console.count()` has been called with the given `label`.
+node_modules\@types\node\console.d.ts:107:             * > console.count()
+node_modules\@types\node\console.d.ts:110:             * >
+console.count('default')
+node_modules\@types\node\console.d.ts:113:             * > console.count('abc')
+node_modules\@types\node\console.d.ts:116:             * > console.count('xyz')
+node_modules\@types\node\console.d.ts:119:             * > console.count('abc')
+node_modules\@types\node\console.d.ts:122:             * > console.count()
+node_modules\@types\node\console.d.ts:135:             * >
+console.count('abc');
+node_modules\@types\node\console.d.ts:138:             * >
+console.countReset('abc');
+node_modules\@types\node\console.d.ts:140:             * >
+console.count('abc');
+node_modules\@types\node\console.d.ts:150:             * The `console.debug()`
+function is an alias for {@link log}.
+node_modules\@types\node\console.d.ts:161:             * This method calls
+`console.log()` passing it the arguments received.
+node_modules\@types\node\console.d.ts:174:             * console.error('error
+#%d', code);
+node_modules\@types\node\console.d.ts:176:             *
+console.error('error', code);
+node_modules\@types\node\console.d.ts:206:             * The `console.info()`
+function is an alias for {@link log}.
+node_modules\@types\node\console.d.ts:218:             * console.log('count:
+%d', count);
+node_modules\@types\node\console.d.ts:220:             * console.log('count:',
+count);
+node_modules\@types\node\console.d.ts:234:             *
+console.table(Symbol());
+node_modules\@types\node\console.d.ts:237:             *
+console.table(undefined);
+node_modules\@types\node\console.d.ts:240:             * console.table([{ a:
+1, b: 'Y' }, { a: 'Z', b: 2 }]);
+node_modules\@types\node\console.d.ts:248:             * console.table([{ a:
+1, b: 'Y' }, { a: 'Z', b: 2 }], ['a']);
+node_modules\@types\node\console.d.ts:264:             * time is 3869ms,
+`console.timeEnd()` displays "3.869s".
+node_modules\@types\node\console.d.ts:274:             *
+console.time('bunch-of-stuff');
+node_modules\@types\node\console.d.ts:276:             *
+console.timeEnd('bunch-of-stuff');
+node_modules\@types\node\console.d.ts:288:             *
+console.time('process');
+node_modules\@types\node\console.d.ts:290:             *
+console.timeLog('process', value);
+node_modules\@types\node\console.d.ts:293:             *
+console.timeEnd('process');
+node_modules\@types\node\console.d.ts:304:             * console.trace('Show
+me');
+node_modules\@types\node\console.d.ts:322:             * The `console.warn()`
+function is an alias for {@link error}.
+node_modules\@types\node\console.d.ts:328:             * This method does not
+display anything unless used in the inspector. The `console.profile()`
+node_modules\@types\node\console.d.ts:333:             *
+console.profile('MyLabel');
+node_modules\@types\node\console.d.ts:335:             *
+console.profileEnd('MyLabel');
+node_modules\@types\node\console.d.ts:351:             * This method does not
+display anything unless used in the inspector. The `console.timeStamp()`
+node_modules\@types\node\console.d.ts:363:         * * A `Console` class with
+methods such as `console.log()`, `console.error()` and `console.warn()` that
+can be used to write to any Node.js stream.
+node_modules\@types\node\console.d.ts:375:         * console.log('hello
+world');
+node_modules\@types\node\console.d.ts:377:         * console.log('hello %s',
+'world');
+node_modules\@types\node\console.d.ts:379:         * console.error(new
+Error('Whoops, something bad happened'));
+node_modules\@types\node\console.d.ts:391:         * console.warn(`Danger
+${name}! Danger!`);
+node_modules\@types\node\console.d.ts:400:         * const myConsole = new
+console.Console(out, err);
+node_modules\@types\node\console.d.ts:402:         * myConsole.log('hello
+world');
+node_modules\@types\node\console.d.ts:404:         * myConsole.log('hello %s',
+'world');
+node_modules\@types\node\console.d.ts:406:         * myConsole.error(new
+Error('Whoops, something bad happened'));
+node_modules\@types\node\console.d.ts:410:         * myConsole.warn(`Danger
+${name}! Danger!`);
+node_modules\@types\node\console.d.ts:413:         * @see
+[source](https://github.com/nodejs/node/blob/v20.11.1/lib/console.js)
+node_modules\@types\node\crypto.d.ts:13: * console.log(hash);
+node_modules\@types\node\crypto.d.ts:41:         *
+console.log(challenge.toString('utf8'));
+node_modules\@types\node\crypto.d.ts:54:         * console.log(publicKey);
+node_modules\@types\node\crypto.d.ts:68:         *
+console.log(Certificate.verifySpkac(Buffer.from(spkac)));
+node_modules\@types\node\crypto.d.ts:225:     *
+console.log(`${hash.digest('hex')} ${filename}`);
+node_modules\@types\node\crypto.d.ts:270:     *
+console.log(`${hmac.digest('hex')} ${filename}`);
+node_modules\@types\node\crypto.d.ts:309:     *
+console.log(data.toString('hex'));
+node_modules\@types\node\crypto.d.ts:342:     *
+console.log(hash.digest('hex'));
+node_modules\@types\node\crypto.d.ts:370:         *
+console.log(hash.copy().digest('hex'));
+node_modules\@types\node\crypto.d.ts:373:         *
+console.log(hash.copy().digest('hex'));
+node_modules\@types\node\crypto.d.ts:376:         *
+console.log(hash.copy().digest('hex'));
+node_modules\@types\node\crypto.d.ts:434:     *
+console.log(data.toString('hex'));
+node_modules\@types\node\crypto.d.ts:469:     *
+console.log(hmac.digest('hex'));
+node_modules\@types\node\crypto.d.ts:588:         *
+console.log(keyObject.symmetricKeySize);
+node_modules\@types\node\crypto.d.ts:842:     *     cipher.on('end', () =>
+console.log(encrypted));
+node_modules\@types\node\crypto.d.ts:915:     *     console.log(encrypted);
+node_modules\@types\node\crypto.d.ts:1143:     *   console.log(decrypted);
+node_modules\@types\node\crypto.d.ts:1205:     * console.log(decrypted);
+node_modules\@types\node\crypto.d.ts:1313:     *
+console.log(key.export().toString('hex'));  // 46e..........620
+node_modules\@types\node\crypto.d.ts:1338:     *
+console.log(key.export().toString('hex'));  // e89..........41e
+node_modules\@types\node\crypto.d.ts:1454:     *
+console.log(verify.verify(publicKey, signature, 'hex'));
+node_modules\@types\node\crypto.d.ts:1479:     *
+console.log(verify.verify(publicKey, signature));
+node_modules\@types\node\crypto.d.ts:1831:     * console.log(aliceSecret ===
+bobSecret);
+node_modules\@types\node\crypto.d.ts:1866:     *
+console.log(derivedKey.toString('hex'));  // '3745e48...08d59ae'
+node_modules\@types\node\crypto.d.ts:1907:     *
+console.log(key.toString('hex'));  // '3745e48...08d59ae'
+node_modules\@types\node\crypto.d.ts:1936:     *   console.log(`${buf.length}
+bytes of random data: ${buf.toString('hex')}`);
+node_modules\@types\node\crypto.d.ts:1951:     * console.log(
+node_modules\@types\node\crypto.d.ts:1994:     *   console.log(`Random number
+chosen from (0, 1, 2): ${n}`);
+node_modules\@types\node\crypto.d.ts:2005:     * console.log(`Random number
+chosen from (0, 1, 2): ${n}`);
+node_modules\@types\node\crypto.d.ts:2015:     * console.log(`The dice rolled:
+${n}`);
+node_modules\@types\node\crypto.d.ts:2034:     *
+console.log(randomFillSync(buf).toString('hex'));
+node_modules\@types\node\crypto.d.ts:2037:     *
+console.log(buf.toString('hex'));
+node_modules\@types\node\crypto.d.ts:2041:     *
+console.log(buf.toString('hex'));
+node_modules\@types\node\crypto.d.ts:2051:     *
+console.log(Buffer.from(randomFillSync(a).buffer,
+node_modules\@types\node\crypto.d.ts:2055:     *
+console.log(Buffer.from(randomFillSync(b).buffer,
+node_modules\@types\node\crypto.d.ts:2059:     *
+console.log(Buffer.from(randomFillSync(c)).toString('hex'));
+node_modules\@types\node\crypto.d.ts:2082:     *
+console.log(buf.toString('hex'));
+node_modules\@types\node\crypto.d.ts:2087:     *
+console.log(buf.toString('hex'));
+node_modules\@types\node\crypto.d.ts:2093:     *
+console.log(buf.toString('hex'));
+node_modules\@types\node\crypto.d.ts:2112:     *
+console.log(Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength)
+node_modules\@types\node\crypto.d.ts:2119:     *
+console.log(Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength)
+node_modules\@types\node\crypto.d.ts:2126:     *
+console.log(Buffer.from(buf).toString('hex'));
+node_modules\@types\node\crypto.d.ts:2191:     *
+console.log(derivedKey.toString('hex'));  // '3745e48...08d59ae'
+node_modules\@types\node\crypto.d.ts:2196:     *
+console.log(derivedKey.toString('hex'));  // '3745e48...aa39b34'
+node_modules\@types\node\crypto.d.ts:2237:     *
+console.log(key1.toString('hex'));  // '3745e48...08d59ae'
+node_modules\@types\node\crypto.d.ts:2240:     *
+console.log(key2.toString('hex'));  // '3745e48...aa39b34'
+node_modules\@types\node\crypto.d.ts:2318:     * console.log(getCiphers()); //
+['aes-128-cbc', 'aes-128-ccm', ...]
+node_modules\@types\node\crypto.d.ts:2330:     * console.log(getCurves()); //
+['Oakley-EC2N-3', 'Oakley-EC2N-4', ...]
+node_modules\@types\node\crypto.d.ts:2354:     * console.log(getHashes()); //
+['DSA', 'DSA-SHA', 'DSA-SHA1', ...]
+node_modules\@types\node\crypto.d.ts:2427:         *
+console.log(uncompressedKey === ecdh.getPublicKey('hex'));
+node_modules\@types\node\crypto.d.ts:3464:     *
+console.log(crypto.hash('sha1', string));
+node_modules\@types\node\crypto.d.ts:3470:     *
+console.log(crypto.hash('sha1', Buffer.from(base64, 'base64'), 'buffer'));
+node_modules\@types\node\crypto.d.ts:3551:     *
+console.log(Buffer.from(derivedKey).toString('hex'));  // '24156e2...5391653'
+node_modules\@types\node\crypto.d.ts:3586:     *
+console.log(Buffer.from(derivedKey).toString('hex'));  // '24156e2...5391653'
+node_modules\@types\node\crypto.d.ts:3674:     * console.log(x509.subject);
+node_modules\@types\node\dgram.d.ts:10: *   console.error(`server
+error:\n${err.stack}`);
+node_modules\@types\node\dgram.d.ts:15: *   console.log(`server got: ${msg}
+from ${rinfo.address}:${rinfo.port}`);
+node_modules\@types\node\dgram.d.ts:20: *   console.log(`server listening
+${address.address}:${address.port}`);
+node_modules\@types\node\dgram.d.ts:77:     *   console.log(`server got:
+${msg} from ${rinfo.address}:${rinfo.port}`);
+node_modules\@types\node\dgram.d.ts:157:         *   console.error(`server
+error:\n${err.stack}`);
+node_modules\@types\node\dgram.d.ts:162:         *   console.log(`server got:
+${msg} from ${rinfo.address}:${rinfo.port}`);
+node_modules\@types\node\dgram.d.ts:167:         *   console.log(`server
+listening ${address.address}:${address.port}`);
+node_modules\@types\node\dns.d.ts:15: *   console.log('address: %j family:
+IPv%s', address, family);
+node_modules\@types\node\dns.d.ts:31: *   console.log(`addresses:
+${JSON.stringify(addresses)}`);
+node_modules\@types\node\dns.d.ts:38: *       console.log(`reverse for ${a}:
+${JSON.stringify(hostnames)}`);
+node_modules\@types\node\dns.d.ts:147:     *   console.log('address: %j
+family: IPv%s', address, family));
+node_modules\@types\node\dns.d.ts:153:     *   console.log('addresses: %j',
+addresses));
+node_modules\@types\node\dns.d.ts:203:     *   console.log(hostname, service);
+node_modules\@types\node\domain.d.ts:70:         *   console.error('Caught
+error!', er);
+node_modules\@types\node\events.d.ts:31: *   console.log('an event occurred!');
+node_modules\@types\node\events.d.ts:125:         * console.log(value);
+node_modules\@types\node\events.d.ts:135:         *   console.error('error
+happened', err);
+node_modules\@types\node\events.d.ts:149:         *   .then(([err]) =>
+console.log('ok', err.message))
+node_modules\@types\node\events.d.ts:150:         *   .catch((err) =>
+console.error('error', err.message));
+node_modules\@types\node\events.d.ts:168:         *     console.log('event
+emitted!');
+node_modules\@types\node\events.d.ts:171:         *
+console.error('Waiting for the event was canceled!');
+node_modules\@types\node\events.d.ts:173:         *       console.error('There
+was an error', error.message);
+node_modules\@types\node\events.d.ts:207:         *   console.log(event); //
+prints ['bar'] [42]
+node_modules\@types\node\events.d.ts:238:         *     console.log(event); //
+prints ['bar'] [42]
+node_modules\@types\node\events.d.ts:262:         *   console.log(event); //
+prints ['bar'] [42]
+node_modules\@types\node\events.d.ts:265:         * console.log('done'); //
+prints 'done'
+node_modules\@types\node\events.d.ts:289:         *
+console.log(listenerCount(myEmitter, 'event'));
+node_modules\@types\node\events.d.ts:312:         *   const listener = () =>
+console.log('Events are fun');
+node_modules\@types\node\events.d.ts:314:         *
+console.log(getEventListeners(ee, 'foo')); // [ [Function: listener] ]
+node_modules\@types\node\events.d.ts:318:         *   const listener = () =>
+console.log('Events are fun');
+node_modules\@types\node\events.d.ts:320:         *
+console.log(getEventListeners(et, 'foo')); // [ [Function: listener] ]
+node_modules\@types\node\events.d.ts:341:         *
+console.log(getMaxListeners(ee)); // 10
+node_modules\@types\node\events.d.ts:343:         *
+console.log(getMaxListeners(ee)); // 11
+node_modules\@types\node\events.d.ts:347:         *
+console.log(getMaxListeners(et)); // 10
+node_modules\@types\node\events.d.ts:349:         *
+console.log(getMaxListeners(et)); // 11
+node_modules\@types\node\events.d.ts:652:                 *
+console.log('someone connected!');
+node_modules\@types\node\events.d.ts:664:                 * myEE.on('foo', ()
+=> console.log('a'));
+node_modules\@types\node\events.d.ts:665:                 *
+myEE.prependListener('foo', () => console.log('b'));
+node_modules\@types\node\events.d.ts:682:                 *   console.log('Ah,
+we have our first user!');
+node_modules\@types\node\events.d.ts:694:                 * myEE.once('foo',
+() => console.log('a'));
+node_modules\@types\node\events.d.ts:695:                 *
+myEE.prependOnceListener('foo', () => console.log('b'));
+node_modules\@types\node\events.d.ts:711:                 *
+console.log('someone connected!');
+node_modules\@types\node\events.d.ts:733:                 *   console.log('A');
+node_modules\@types\node\events.d.ts:738:                 *   console.log('B');
+node_modules\@types\node\events.d.ts:774:                 *
+console.log('pong');
+node_modules\@types\node\events.d.ts:826:                 *
+console.log('someone connected!');
+node_modules\@types\node\events.d.ts:828:                 *
+console.log(util.inspect(server.listeners('connection')));
+node_modules\@types\node\events.d.ts:841:                 *
+emitter.once('log', () => console.log('log once'));
+node_modules\@types\node\events.d.ts:854:                 * emitter.on('log',
+() => console.log('log persistently'));
+node_modules\@types\node\events.d.ts:877:                 *
+console.log('Helloooo! first listener');
+node_modules\@types\node\events.d.ts:881:                 *
+console.log(`event with parameters ${arg1}, ${arg2} in second listener`);
+node_modules\@types\node\events.d.ts:886:                 *
+console.log(`event with parameters ${parameters} in third listener`);
+node_modules\@types\node\events.d.ts:889:                 *
+console.log(myEmitter.listeners('event'));
+node_modules\@types\node\events.d.ts:923:                 *
+console.log('someone connected!');
+node_modules\@types\node\events.d.ts:939:                 *   console.log('Ah,
+we have our first user!');
+node_modules\@types\node\events.d.ts:963:                 *
+console.log(myEE.eventNames());
+node_modules\@types\node\fs.d.ts:267:     *     console.log(dirent.name);
+node_modules\@types\node\fs.d.ts:269:     *   console.error(err);
+node_modules\@types\node\fs.d.ts:545:     *   console.log('Rename complete!');
+node_modules\@types\node\fs.d.ts:578:     *   console.log('path/file.txt was
+truncated');
+node_modules\@types\node\fs.d.ts:787:     *   console.log('The permissions for
+file "my_file.txt" have been changed!');
+node_modules\@types\node\fs.d.ts:891:     *
+console.log(stats.isDirectory());
+node_modules\@types\node\fs.d.ts:892:     *     console.log(stats);
+node_modules\@types\node\fs.d.ts:1541:     *   console.log('path/file.txt was
+deleted');
+node_modules\@types\node\fs.d.ts:1850:     *   console.log(directory);
+node_modules\@types\node\fs.d.ts:1870:     *   console.log(directory);
+node_modules\@types\node\fs.d.ts:1880:     *   console.log(directory);
+node_modules\@types\node\fs.d.ts:2711:     *   console.log(data);
+node_modules\@types\node\fs.d.ts:2967:     *   console.log('The file has been
+saved!');
+node_modules\@types\node\fs.d.ts:3072:     *   console.log('The "data to
+append" was appended to file!');
+node_modules\@types\node\fs.d.ts:3157:     *   console.log('The "data to
+append" was appended to file!');
+node_modules\@types\node\fs.d.ts:3214:     *   console.log(`the current mtime
+is: ${curr.mtime}`);
+node_modules\@types\node\fs.d.ts:3215:     *   console.log(`the previous mtime
+was: ${prev.mtime}`);
+node_modules\@types\node\fs.d.ts:3265:     *   console.log(`the current mtime
+is: ${curr.mtime}`);
+node_modules\@types\node\fs.d.ts:3266:     *   console.log(`the previous mtime
+was: ${prev.mtime}`);
+node_modules\@types\node\fs.d.ts:3409:     *   console.log(e ? 'it exists' :
+'no passwd!');
+node_modules\@types\node\fs.d.ts:3430:     *     console.error('myfile already
+exists');
+node_modules\@types\node\fs.d.ts:3454:     *       console.error('myfile
+already exists');
+node_modules\@types\node\fs.d.ts:3490:     *     console.error('myfile does
+not exist');
+node_modules\@types\node\fs.d.ts:3503:     *       console.error('myfile does
+not exist');
+node_modules\@types\node\fs.d.ts:3552:     *   console.log('The path exists.');
+node_modules\@types\node\fs.d.ts:3689:     *   console.log(`${file} ${err ?
+'does not exist' : 'exists'}`);
+node_modules\@types\node\fs.d.ts:3694:     *   console.log(`${file} ${err ?
+'is not readable' : 'is readable'}`);
+node_modules\@types\node\fs.d.ts:3699:     *   console.log(`${file} ${err ?
+'is not writable' : 'is writable'}`);
+node_modules\@types\node\fs.d.ts:3704:     *   console.log(`${file} ${err ?
+'is not' : 'is'} readable and writable`);
+node_modules\@types\node\fs.d.ts:3720:     *     console.error('myfile already
+exists');
+node_modules\@types\node\fs.d.ts:3746:     *       console.error('myfile
+already exists');
+node_modules\@types\node\fs.d.ts:3770:     *       console.error('myfile does
+not exist');
+node_modules\@types\node\fs.d.ts:3799:     *       console.error('myfile does
+not exist');
+node_modules\@types\node\fs.d.ts:3860:     *   console.log('can read/write');
+node_modules\@types\node\fs.d.ts:3862:     *   console.error('no access!');
+node_modules\@types\node\fs.d.ts:4038:     *   console.log('source.txt was
+copied to destination.txt');
+node_modules\@types\node\fs.d.ts:4081:     * console.log('source.txt was
+copied to destination.txt');
+node_modules\@types\node\http.d.ts:840:         * const earlyHintsCallback =
+() => console.log('early hints message sent');
+node_modules\@types\node\http.d.ts:1250:         *       console.error(
+node_modules\@types\node\http.d.ts:1287:         *
+console.log(request.headers);
+node_modules\@types\node\http.d.ts:1314:         *
+console.log(request.headersDistinct);
+node_modules\@types\node\http.d.ts:1339:         *
+console.log(request.rawHeaders);
+node_modules\@types\node\http.d.ts:1746:     *   console.log(`STATUS:
+${res.statusCode}`);
+node_modules\@types\node\http.d.ts:1747:     *   console.log(`HEADERS:
+${JSON.stringify(res.headers)}`);
+node_modules\@types\node\http.d.ts:1750:     *     console.log(`BODY:
+${chunk}`);
+node_modules\@types\node\http.d.ts:1753:     *     console.log('No more data
+in response.');
+node_modules\@types\node\http.d.ts:1758:     *   console.error(`problem with
+request: ${e.message}`);
+node_modules\@types\node\http.d.ts:1929:     *
+console.error(error.message);
+node_modules\@types\node\http.d.ts:1941:     *       console.log(parsedData);
+node_modules\@types\node\http.d.ts:1943:     *       console.error(e.message);
+node_modules\@types\node\http.d.ts:1947:     *   console.error(`Got error:
+${e.message}`);
+node_modules\@types\node\http.d.ts:1982:     *   console.error(err instanceof
+TypeError); // --> true
+node_modules\@types\node\http.d.ts:1983:     *   console.error(err.code); //
+--> 'ERR_INVALID_HTTP_TOKEN'
+node_modules\@types\node\http.d.ts:1984:     *   console.error(err.message);
+// --> 'Header name must be a valid HTTP token [""]'
+node_modules\@types\node\http.d.ts:2010:     *   console.error(err instanceof
+TypeError); // --> true
+node_modules\@types\node\http.d.ts:2011:     *   console.error(err.code ===
+'ERR_HTTP_INVALID_HEADER_VALUE'); // --> true
+node_modules\@types\node\http.d.ts:2012:     *   console.error(err.message);
+// --> 'Invalid value "undefined" for header "x-my-header"'
+node_modules\@types\node\http.d.ts:2018:     *   console.error(err instanceof
+TypeError); // --> true
+node_modules\@types\node\http.d.ts:2019:     *   console.error(err.code ===
+'ERR_INVALID_CHAR'); // --> true
+node_modules\@types\node\http.d.ts:2020:     *   console.error(err.message);
+// --> 'Invalid character in header content ["x-my-header"]'
+node_modules\@types\node\http2.d.ts:552:         *       console.error(err);
+node_modules\@types\node\http2.d.ts:783:         *     console.log(`Ping
+acknowledged in ${duration} milliseconds`);
+node_modules\@types\node\http2.d.ts:784:         *     console.log(`With
+payload '${payload.toString()}'`);
+node_modules\@types\node\http2.d.ts:952:         *
+console.log(headers[HTTP2_HEADER_STATUS]);
+node_modules\@types\node\http2.d.ts:1652:         *
+console.log(request.headers);
+node_modules\@types\node\http2.d.ts:1705:         *
+console.log(request.rawHeaders);
+node_modules\@types\node\http2.d.ts:2494:     *
+console.log(packed.toString('base64'));
+node_modules\@types\node\https.d.ts:375:     *   console.log('statusCode:',
+res.statusCode);
+node_modules\@types\node\https.d.ts:376:     *   console.log('headers:',
+res.headers);
+node_modules\@types\node\https.d.ts:384:     *   console.error(e);
+node_modules\@types\node\https.d.ts:482:     *       console.log('Subject
+Common Name:', cert.subject.CN);
+node_modules\@types\node\https.d.ts:483:     *       console.log('
+Certificate SHA256 fingerprint:', cert.fingerprint256);
+node_modules\@types\node\https.d.ts:486:     *       console.log('  Public key
+ping-sha256:', sha256(cert.pubkey));
+node_modules\@types\node\https.d.ts:497:     *   console.log('All OK. Server
+matched our pinned cert or public key');
+node_modules\@types\node\https.d.ts:498:     *   console.log('statusCode:',
+res.statusCode);
+node_modules\@types\node\https.d.ts:500:     *   console.log('headers:',
+res.headers['public-key-pins']);
+node_modules\@types\node\https.d.ts:506:     *   console.error(e.message);
+node_modules\@types\node\https.d.ts:551:     *   console.log('statusCode:',
+res.statusCode);
+node_modules\@types\node\https.d.ts:552:     *   console.log('headers:',
+res.headers);
+node_modules\@types\node\https.d.ts:559:     *   console.error(e);
+node_modules\@types\node\index.d.ts:49:/// <reference path="console.d.ts" />
+node_modules\@types\node\inspector.generated.d.ts:697:             * Console
+context descriptor for calls on non-default console context (not console.*):
+'anonymous#unique-logger-id' for call on unnamed context,
+'name#unique-logger-id' for call on named context.
+node_modules\@types\node\inspector.generated.d.ts:1499:             * Location
+of console.profile().
+node_modules\@types\node\inspector.generated.d.ts:1503:             * Profile
+title passed as an argument to console.profile().
+node_modules\@types\node\inspector.generated.d.ts:1510:             * Location
+of console.profileEnd().
+node_modules\@types\node\inspector.generated.d.ts:1515:             * Profile
+title passed as an argument to console.profile().
+node_modules\@types\node\inspector.generated.d.ts:1853:         *
+(error, { result }) => console.log(result));
+node_modules\@types\node\inspector.generated.d.ts:2088:        post(method:
+'Console.enable', callback?: (err: Error | null) => void): void;
+node_modules\@types\node\inspector.generated.d.ts:2092:        post(method:
+'Console.disable', callback?: (err: Error | null) => void): void;
+node_modules\@types\node\inspector.generated.d.ts:2096:        post(method:
+'Console.clearMessages', callback?: (err: Error | null) => void): void;
+node_modules\@types\node\inspector.generated.d.ts:2261:
+addListener(event: 'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:2263:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:2336:        emit(event:
+'Console.messageAdded', message:
+InspectorNotification<Console.MessageAddedEventDataType>): boolean;
+node_modules\@types\node\inspector.generated.d.ts:2411:        on(event:
+'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:2413:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:2528:        once(event:
+'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:2530:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:2645:
+prependListener(event: 'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:2647:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:2762:
+prependOnceListener(event: 'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:2764:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:2874:    // These methods
+are exposed by the V8 inspector console API (inspector/v8-console.h).
+node_modules\@types\node\inspector.generated.d.ts:2902:     * An object to
+send messages to the remote inspector console.
+node_modules\@types\node\inspector.generated.d.ts:3022:         *
+console.log(result);
+node_modules\@types\node\inspector.generated.d.ts:3024:         *
+console.error(error);
+node_modules\@types\node\inspector.generated.d.ts:3219:        post(method:
+'Console.enable'): Promise<void>;
+node_modules\@types\node\inspector.generated.d.ts:3223:        post(method:
+'Console.disable'): Promise<void>;
+node_modules\@types\node\inspector.generated.d.ts:3227:        post(method:
+'Console.clearMessages'): Promise<void>;
+node_modules\@types\node\inspector.generated.d.ts:3374:
+addListener(event: 'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:3376:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:3449:        emit(event:
+'Console.messageAdded', message:
+InspectorNotification<Console.MessageAddedEventDataType>): boolean;
+node_modules\@types\node\inspector.generated.d.ts:3524:        on(event:
+'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:3526:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:3641:        once(event:
+'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:3643:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:3758:
+prependListener(event: 'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:3760:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\inspector.generated.d.ts:3875:
+prependOnceListener(event: 'Console.messageAdded', listener: (message:
+InspectorNotification<Console.MessageAddedEventDataType>) => void): this;
+node_modules\@types\node\inspector.generated.d.ts:3877:         * Sent when
+new profile recording is started using console.profile() call.
+node_modules\@types\node\net.d.ts:176:         *   console.log('socket
+timeout');
+node_modules\@types\node\net.d.ts:596:         *     console.error('Address in
+use, retrying...');
+node_modules\@types\node\net.d.ts:643:         *   console.log('opened server
+on', server.address());
+node_modules\@types\node\net.d.ts:780:         *
+console.log(blockList.check('123.123.123.123'));  // Prints: true
+node_modules\@types\node\net.d.ts:781:         *
+console.log(blockList.check('10.0.0.3'));  // Prints: true
+node_modules\@types\node\net.d.ts:782:         *
+console.log(blockList.check('222.111.111.222'));  // Prints: false
+node_modules\@types\node\net.d.ts:785:         *
+console.log(blockList.check('::ffff:7b7b:7b7b', 'ipv6')); // Prints: true
+node_modules\@types\node\net.d.ts:786:         *
+console.log(blockList.check('::ffff:123.123.123.123', 'ipv6')); // Prints: true
+node_modules\@types\node\net.d.ts:831:     *   console.log('client connected');
+node_modules\@types\node\net.d.ts:833:     *     console.log('client
+disconnected');
+node_modules\@types\node\net.d.ts:842:     *   console.log('server bound');
+node_modules\@types\node\net.d.ts:856:     *   console.log('server bound');
+node_modules\@types\node\perf_hooks.d.ts:16: *
+console.log(items.getEntries()[0].duration);
+node_modules\@types\node\perf_hooks.d.ts:379:         *   console.log('hello
+world');
+node_modules\@types\node\perf_hooks.d.ts:385:         *
+console.log(list.getEntries()[0].duration);
+node_modules\@types\node\perf_hooks.d.ts:421:         *
+console.log(perfObserverList.getEntries());
+node_modules\@types\node\perf_hooks.d.ts:464:         *
+console.log(perfObserverList.getEntriesByName('meow'));
+node_modules\@types\node\perf_hooks.d.ts:476:         *
+console.log(perfObserverList.getEntriesByName('nope')); // []
+node_modules\@types\node\perf_hooks.d.ts:478:         *
+console.log(perfObserverList.getEntriesByName('test', 'mark'));
+node_modules\@types\node\perf_hooks.d.ts:490:         *
+console.log(perfObserverList.getEntriesByName('test', 'measure')); // []
+node_modules\@types\node\perf_hooks.d.ts:515:         *
+console.log(perfObserverList.getEntriesByType('mark'));
+node_modules\@types\node\perf_hooks.d.ts:844:     * console.log(h.min);
+node_modules\@types\node\perf_hooks.d.ts:845:     * console.log(h.max);
+node_modules\@types\node\perf_hooks.d.ts:846:     * console.log(h.mean);
+node_modules\@types\node\perf_hooks.d.ts:847:     * console.log(h.stddev);
+node_modules\@types\node\perf_hooks.d.ts:848:     * console.log(h.percentiles);
+node_modules\@types\node\perf_hooks.d.ts:849:     *
+console.log(h.percentile(50));
+node_modules\@types\node\perf_hooks.d.ts:850:     *
+console.log(h.percentile(99));
+node_modules\@types\node\process.d.ts:355:                 *
+console.log(`Benchmark took ${diff[0] * NS_PER_SEC + diff[1]} nanoseconds`);
+node_modules\@types\node\process.d.ts:378:                 *
+console.log(`Benchmark took ${end - start} nanoseconds`);
+node_modules\@types\node\process.d.ts:598:                 *
+console.log(`${index}: ${val}`);
+node_modules\@types\node\process.d.ts:688:                 *
+console.log(`Starting directory: ${cwd()}`);
+node_modules\@types\node\process.d.ts:691:                 *
+console.log(`New directory: ${cwd()}`);
+node_modules\@types\node\process.d.ts:693:                 *
+console.error(`chdir: ${err}`);
+node_modules\@types\node\process.d.ts:708:                 *
+console.log(`Current directory: ${cwd()}`);
+node_modules\@types\node\process.d.ts:783:                 *
+console.warn(warning.name);    // 'Warning'
+node_modules\@types\node\process.d.ts:784:                 *
+console.warn(warning.message); // 'Something happened!'
+node_modules\@types\node\process.d.ts:785:                 *
+console.warn(warning.code);    // 'MY_WARNING'
+node_modules\@types\node\process.d.ts:786:                 *
+console.warn(warning.stack);   // Stack trace
+node_modules\@types\node\process.d.ts:787:                 *
+console.warn(warning.detail);  // 'This is some additional information'
+node_modules\@types\node\process.d.ts:858:                 *
+console.log(env.foo);
+node_modules\@types\node\process.d.ts:869:                 *
+console.log(env.test);
+node_modules\@types\node\process.d.ts:872:                 *
+console.log(env.test);
+node_modules\@types\node\process.d.ts:883:                 *
+console.log(env.TEST);
+node_modules\@types\node\process.d.ts:893:                 *
+console.log(env.test);
+node_modules\@types\node\process.d.ts:992:                 *
+console.log('Before:', getActiveResourcesInfo());
+node_modules\@types\node\process.d.ts:994:                 *
+console.log('After:', getActiveResourcesInfo());
+node_modules\@types\node\process.d.ts:1017:                 *
+console.log(`Current gid: ${process.getgid()}`);
+node_modules\@types\node\process.d.ts:1036:                 *
+console.log(`Current gid: ${process.getgid()}`);
+node_modules\@types\node\process.d.ts:1039:                 *
+console.log(`New gid: ${process.getgid()}`);
+node_modules\@types\node\process.d.ts:1041:                 *
+console.log(`Failed to set gid: ${err}`);
+node_modules\@types\node\process.d.ts:1061:                 *
+console.log(`Current uid: ${process.getuid()}`);
+node_modules\@types\node\process.d.ts:1080:                 *
+console.log(`Current uid: ${process.getuid()}`);
+node_modules\@types\node\process.d.ts:1083:                 *
+console.log(`New uid: ${process.getuid()}`);
+node_modules\@types\node\process.d.ts:1085:                 *
+console.log(`Failed to set uid: ${err}`);
+node_modules\@types\node\process.d.ts:1104:                 *
+console.log(`Current uid: ${process.geteuid()}`);
+node_modules\@types\node\process.d.ts:1123:                 *
+console.log(`Current uid: ${process.geteuid()}`);
+node_modules\@types\node\process.d.ts:1126:                 *
+console.log(`New uid: ${process.geteuid()}`);
+node_modules\@types\node\process.d.ts:1128:                 *
+console.log(`Failed to set uid: ${err}`);
+node_modules\@types\node\process.d.ts:1148:                 *
+console.log(`Current gid: ${process.getegid()}`);
+node_modules\@types\node\process.d.ts:1167:                 *
+console.log(`Current gid: ${process.getegid()}`);
+node_modules\@types\node\process.d.ts:1170:                 *
+console.log(`New gid: ${process.getegid()}`);
+node_modules\@types\node\process.d.ts:1172:                 *
+console.log(`Failed to set gid: ${err}`);
+node_modules\@types\node\process.d.ts:1193:                 *
+console.log(process.getgroups()); // [ 16, 21, 297 ]
+node_modules\@types\node\process.d.ts:1215:                 *
+console.log(process.getgroups()); // new groups
+node_modules\@types\node\process.d.ts:1217:                 *
+console.log(`Failed to set groups: ${err}`);
+node_modules\@types\node\process.d.ts:1276:                 *
+console.log(`Version: ${version}`);
+node_modules\@types\node\process.d.ts:1293:                 *
+console.log(versions);
+node_modules\@types\node\process.d.ts:1382:                 *
+console.log('Got SIGHUP signal.');
+node_modules\@types\node\process.d.ts:1386:                 *
+console.log('Exiting.');
+node_modules\@types\node\process.d.ts:1421:                 *
+console.log(`This process is pid ${pid}`);
+node_modules\@types\node\process.d.ts:1433:                 * console.log(`The
+parent process is pid ${ppid}`);
+node_modules\@types\node\process.d.ts:1463:                 *
+console.log(`This processor architecture is ${arch}`);
+node_modules\@types\node\process.d.ts:1485:                 *
+console.log(`This platform is ${platform}`);
+node_modules\@types\node\process.d.ts:1544:                 *
+console.log(cpuUsage(startUsage));
+node_modules\@types\node\process.d.ts:1561:                 *
+console.log('start');
+node_modules\@types\node\process.d.ts:1563:                 *
+console.log('nextTick callback');
+node_modules\@types\node\process.d.ts:1565:                 *
+console.log('scheduled');
+node_modules\@types\node\process.d.ts:1793:                 *
+console.log(resourceUsage());
+node_modules\@types\node\readline.d.ts:27: * console.log(`Thank you for your
+valuable feedback: ${answer}`);
+node_modules\@types\node\readline.d.ts:75:         *   console.log(
+node_modules\@types\node\readline.d.ts:162:         *   console.log(`Oh, so
+your favorite food is ${answer}`);
+node_modules\@types\node\readline.d.ts:173:         *   console.log(`Oh, so
+your favorite food is ${answer}`);
+node_modules\@types\node\readline.d.ts:177:         *   console.log('The food
+question timed out');
+node_modules\@types\node\readline.d.ts:406:     *   console.log(`Received:
+${line}`);
+node_modules\@types\node\readline.d.ts:462:     *       console.log('world!');
+node_modules\@types\node\readline.d.ts:465:     *       console.log(`Say what?
+I might have heard '${line.trim()}'`);
+node_modules\@types\node\readline.d.ts:470:     *   console.log('Have a great
+day!');
+node_modules\@types\node\readline.d.ts:497:     *     console.log(`Line from
+file: ${line}`);
+node_modules\@types\node\readline.d.ts:516:     *   console.log(`Line from
+file: ${line}`);
+node_modules\@types\node\readline.d.ts:540:     *     console.log('File
+processed.');
+node_modules\@types\node\readline.d.ts:542:     *     console.error(err);
+node_modules\@types\node\repl.d.ts:267:         *     console.log(`Hello,
+${name}!`);
+node_modules\@types\node\repl.d.ts:272:         *   console.log('Goodbye!');
+node_modules\@types\node\sea.d.ts:23: * echo 'console.log(`Hello,
+${process.argv[2]}!`);' > hello.js
+node_modules\@types\node\stream.d.ts:197:             *   console.log('Stream
+is readable (new data received in buffer)');
+node_modules\@types\node\stream.d.ts:200:             *     console.log(`Read
+${chunk.length} bytes of data...`);
+node_modules\@types\node\stream.d.ts:206:             *   console.log('Reached
+end of stream.');
+node_modules\@types\node\stream.d.ts:266:             *   console.log('Got %d
+characters of string data:', chunk.length);
+node_modules\@types\node\stream.d.ts:281:             *
+console.log(`Received ${chunk.length} bytes of data.`);
+node_modules\@types\node\stream.d.ts:283:             *   console.log('There
+will be no additional data for 1 second.');
+node_modules\@types\node\stream.d.ts:285:             *     console.log('Now
+data will start flowing again.');
+node_modules\@types\node\stream.d.ts:306:             *
+console.log('Reached the end, but did not read anything.');
+node_modules\@types\node\stream.d.ts:348:             *   console.log('Stop
+writing to file.txt.');
+node_modules\@types\node\stream.d.ts:350:             *
+console.log('Manually close the file stream.');
+node_modules\@types\node\stream.d.ts:860:             *   console.log('Write
+completed, do more writes now.');
+node_modules\@types\node\stream.d.ts:1336:         *   console.log(value); //
+hello
+node_modules\@types\node\stream.d.ts:1337:         *   console.log(done); //
+false
+node_modules\@types\node\stream.d.ts:1377:         *     console.error('Stream
+failed.', err);
+node_modules\@types\node\stream.d.ts:1379:         *     console.log('Stream
+is done reading.');
+node_modules\@types\node\stream.d.ts:1469:         *
+console.error('Pipeline failed.', err);
+node_modules\@types\node\stream.d.ts:1471:         *
+console.log('Pipeline succeeded.');
+node_modules\@types\node\stream.d.ts:1504:         *       console.log(err);
+// No such file
+node_modules\@types\node\string_decoder.d.ts:17: *
+console.log(decoder.write(cent)); // Prints: ¢
+node_modules\@types\node\string_decoder.d.ts:20: *
+console.log(decoder.write(euro)); // Prints: €
+node_modules\@types\node\string_decoder.d.ts:37: *
+console.log(decoder.end(Buffer.from([0xAC]))); // Prints: €
+node_modules\@types\node\test.d.ts:1010:         *   before(() =>
+console.log('about to run some test'));
+node_modules\@types\node\test.d.ts:1026:         *   after(() =>
+console.log('finished running tests'));
+node_modules\@types\node\test.d.ts:1042:         *   beforeEach(() =>
+console.log('about to run a test'));
+node_modules\@types\node\test.d.ts:1059:         *   afterEach(() =>
+console.log('finished running a test'));
+node_modules\@types\node\tls.d.ts:1056:     *   console.log('server connected',
+node_modules\@types\node\tls.d.ts:1063:     *   console.log('server bound');
+node_modules\@types\node\tls.d.ts:1103:     *   console.log('client connected',
+node_modules\@types\node\tls.d.ts:1110:     *   console.log(data);
+node_modules\@types\node\tls.d.ts:1113:     *   console.log('server ends
+connection');
+node_modules\@types\node\tls.d.ts:1202:     * console.log(tls.getCiphers());
+// ['aes128-gcm-sha256', 'aes128-sha', ...]
+node_modules\@types\node\trace_events.d.ts:15: * * `node.console`: Enables
+capture of `console.time()` and `console.count()` output.
+node_modules\@types\node\trace_events.d.ts:81: *   console.info('Received
+SIGINT.');
+node_modules\@types\node\trace_events.d.ts:128:         *
+console.log(trace_events.getEnabledCategories());
+node_modules\@types\node\trace_events.d.ts:133:         *
+console.log(trace_events.getEnabledCategories());
+node_modules\@types\node\trace_events.d.ts:178:     * Given the file `test.js`
+below, the command `node --trace-event-categories node.perf test.js` will
+print `'node.async_hooks,node.perf'` to the console.
+node_modules\@types\node\trace_events.d.ts:189:     *
+console.log(trace_events.getEnabledCategories());
+node_modules\@types\node\url.d.ts:255:     *
+console.log(url.domainToASCII('español.com'));
+node_modules\@types\node\url.d.ts:257:     *
+console.log(url.domainToASCII('中文.com'));
+node_modules\@types\node\url.d.ts:259:     *
+console.log(url.domainToASCII('xn--iñvalid.com'));
+node_modules\@types\node\url.d.ts:274:     *
+console.log(url.domainToUnicode('xn--espaol-zwa.com'));
+node_modules\@types\node\url.d.ts:276:     *
+console.log(url.domainToUnicode('xn--fiq228c.com'));
+node_modules\@types\node\url.d.ts:278:     *
+console.log(url.domainToUnicode('xn--iñvalid.com'));
+node_modules\@types\node\url.d.ts:336:     *
+console.log(urlToHttpOptions(myURL));
+node_modules\@types\node\url.d.ts:406:         * console.log(otherBlob.size);
+node_modules\@types\node\url.d.ts:455:         * console.log(myURL.hash);
+node_modules\@types\node\url.d.ts:459:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:473:         * console.log(myURL.host);
+node_modules\@types\node\url.d.ts:477:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:490:         * console.log(myURL.hostname);
+node_modules\@types\node\url.d.ts:495:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:500:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:512:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:516:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:533:         * console.log(myURL.origin);
+node_modules\@types\node\url.d.ts:539:         * console.log(idnURL.origin);
+node_modules\@types\node\url.d.ts:542:         * console.log(idnURL.hostname);
+node_modules\@types\node\url.d.ts:552:         * console.log(myURL.password);
+node_modules\@types\node\url.d.ts:556:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:570:         * console.log(myURL.pathname);
+node_modules\@types\node\url.d.ts:574:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:603:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:609:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:611:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:615:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:617:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:622:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:627:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:632:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:638:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:650:         * console.log(myURL.port);
+node_modules\@types\node\url.d.ts:660:         * console.log(myURL.protocol);
+node_modules\@types\node\url.d.ts:664:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:676:         * console.log(myURL.search);
+node_modules\@types\node\url.d.ts:680:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:703:         * console.log(myURL.search);
+// prints ?foo=~bar
+node_modules\@types\node\url.d.ts:708:         * console.log(myURL.search);
+// prints ?foo=%7Ebar
+node_modules\@types\node\url.d.ts:717:         * console.log(myURL.username);
+node_modules\@types\node\url.d.ts:721:         * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:746:         *
+console.log(JSON.stringify(myURLs));
+node_modules\@types\node\url.d.ts:767:     *
+console.log(myURL.searchParams.get('abc'));
+node_modules\@types\node\url.d.ts:771:     * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:776:     * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:784:     * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:786:     *
+console.log(newSearchParams.toString());
+node_modules\@types\node\url.d.ts:791:     * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:794:     * console.log(myURL.href);
+node_modules\@types\node\url.d.ts:832:         *   console.log(name, value,
+myURL.searchParams === searchParams);
+node_modules\@types\node\url.d.ts:872:         *   console.log(name);
+node_modules\@types\node\url.d.ts:890:         *
+console.log(params.toString());
+node_modules\@types\node\url.d.ts:895:         *
+console.log(params.toString());
+node_modules\@types\node\url.d.ts:915:         *
+console.log(params.toString());
+node_modules\@types\node\util.d.ts:177:     *   console.error(name);  // ENOENT
+node_modules\@types\node\util.d.ts:192:     *   console.error(name);  // ENOENT
+node_modules\@types\node\util.d.ts:298:     * console.log(inspect(obj));
+node_modules\@types\node\util.d.ts:310:     * console.log(util.inspect(util, {
+showHidden: true, depth: null }));
+node_modules\@types\node\util.d.ts:326:     * console.log(util.inspect(o, {
+compact: true, depth: 5, breakLength: 80 }));
+node_modules\@types\node\util.d.ts:338:     * console.log(util.inspect(o, {
+compact: false, depth: 5, breakLength: 80 }));
+node_modules\@types\node\util.d.ts:379:     * console.log(inspect(weakSet, {
+showHidden: true }));
+node_modules\@types\node\util.d.ts:395:     * console.log(inspect(o1, {
+sorted: true }));
+node_modules\@types\node\util.d.ts:397:     * console.log(inspect(o1, {
+sorted: (a, b) => b.localeCompare(a) }));
+node_modules\@types\node\util.d.ts:422:     * console.log(inspect(thousand, {
+numericSeparator: true }));
+node_modules\@types\node\util.d.ts:424:     * console.log(inspect(million, {
+numericSeparator: true }));
+node_modules\@types\node\util.d.ts:426:     * console.log(inspect(bigNumber, {
+numericSeparator: true }));
+node_modules\@types\node\util.d.ts:428:     * console.log(inspect(bigDecimal,
+{ numericSeparator: true }));
+node_modules\@types\node\util.d.ts:567:     * console.log(stream instanceof
+EventEmitter); // true
+node_modules\@types\node\util.d.ts:568:     * console.log(MyStream.super_ ===
+EventEmitter); // true
+node_modules\@types\node\util.d.ts:571:     *   console.log(`Received data:
+"${data}"`);
+node_modules\@types\node\util.d.ts:590:     *   console.log(`Received data:
+"${data}"`);
+node_modules\@types\node\util.d.ts:605:     * environment variable, then the
+returned function operates similar to `console.error()`. If not, then the
+returned function is a no-op.
+node_modules\@types\node\util.d.ts:934:     *
+console.log(util.stripVTControlCharacters('\u001B[4mvalue\u001B[0m'));
+node_modules\@types\node\util.d.ts:956:     *   console.log(ret);
+node_modules\@types\node\util.d.ts:1094:     *   console.log(`This directory
+is owned by ${stats.uid}`);
+node_modules\@types\node\util.d.ts:1127:     * // naiveBar().then(a =>
+console.log(a));
+node_modules\@types\node\util.d.ts:1129:     * naiveBar.call(foo).then((a) =>
+console.log(a)); // '42'
+node_modules\@types\node\util.d.ts:1132:     * bindBar().then((a) =>
+console.log(a)); // '42'
+node_modules\@types\node\util.d.ts:1264:     * console.log(errorMessage);
+node_modules\@types\node\util.d.ts:1270:     * console.log(
+node_modules\@types\node\util.d.ts:1279:     * console.log(
+node_modules\@types\node\util.d.ts:1304:     *
+console.log(decoder.decode(u8arr)); // Hello
+node_modules\@types\node\util.d.ts:1442:     * console.log(values,
+positionals);
+node_modules\@types\node\util.d.ts:1669:         * console.log(myMIME.type);
+node_modules\@types\node\util.d.ts:1672:         * console.log(myMIME.type);
+node_modules\@types\node\util.d.ts:1674:         * console.log(String(myMIME));
+node_modules\@types\node\util.d.ts:1686:         * console.log(myMIME.subtype);
+node_modules\@types\node\util.d.ts:1689:         * console.log(myMIME.subtype);
+node_modules\@types\node\util.d.ts:1691:         * console.log(String(myMIME));
+node_modules\@types\node\util.d.ts:1704:         * console.log(myMIME.essence);
+node_modules\@types\node\util.d.ts:1707:         * console.log(myMIME.essence);
+node_modules\@types\node\util.d.ts:1709:         * console.log(String(myMIME));
+node_modules\@types\node\util.d.ts:1760:         *   console.log(name);
+node_modules\@types\node\util.d.ts:1778:         *
+console.log(params.toString());
+node_modules\@types\node\util.d.ts:2104:     *
+console.log(util.types.isNativeError(new Error()));  // true
+node_modules\@types\node\util.d.ts:2105:     *
+console.log(util.types.isNativeError(new TypeError()));  // true
+node_modules\@types\node\util.d.ts:2106:     *
+console.log(util.types.isNativeError(new RangeError()));  // true
+node_modules\@types\node\util.d.ts:2113:     *
+console.log(util.types.isNativeError(new MyError()));  // true
+node_modules\@types\node\util.d.ts:2123:     *
+console.log(util.types.isNativeError(myError)); // true
+node_modules\@types\node\util.d.ts:2124:     * console.log(myError instanceof
+Error); // false
+node_modules\@types\node\util.d.ts:2133:     *
+console.log(util.types.isNativeError(myError)); // false
+node_modules\@types\node\util.d.ts:2134:     * console.log(myError instanceof
+Error); // true
+node_modules\@types\node\v8.d.ts:61:     *
+console.log(v8.cachedDataVersionTag()); // 3947234607
+node_modules\@types\node\v8.d.ts:66:     *
+console.log(v8.cachedDataVersionTag()); // 183726201
+node_modules\@types\node\v8.d.ts:189:     * provided by the Chromium DevTools
+console. It can be used to search for objects that have the matching
+constructor on its prototype chain
+node_modules\@types\node\v8.d.ts:204:     * console.log(queryObjects(A)); // 0
+node_modules\@types\node\v8.d.ts:206:     * console.log(queryObjects(A)); // 1
+node_modules\@types\node\v8.d.ts:208:     * console.log(queryObjects(A, {
+format: 'summary' }));
+node_modules\@types\node\v8.d.ts:212:     * console.log(queryObjects(B)); // 1
+node_modules\@types\node\v8.d.ts:214:     * console.log(queryObjects(B, {
+format: 'summary' }));
+node_modules\@types\node\v8.d.ts:220:     * console.log(queryObjects(A));  // 3
+node_modules\@types\node\v8.d.ts:222:     * console.log(queryObjects(A, {
+format: 'summary' }));
+node_modules\@types\node\v8.d.ts:283:     *     console.log(`worker heapdump:
+${filename}`);
+node_modules\@types\node\v8.d.ts:285:     *     console.log(`main thread
+heapdump: ${writeHeapSnapshot()}`);
+node_modules\@types\node\v8.d.ts:558:         *   console.log(profiler.stop());
+node_modules\@types\node\v8.d.ts:789:     *
+console.log(shelf.storage.get(name));
+node_modules\@types\node\vm.d.ts:32: * console.log(context.x); // 42
+node_modules\@types\node\vm.d.ts:33: * console.log(context.y); // 17
+node_modules\@types\node\vm.d.ts:35: * console.log(x); // 1; y is not defined.
+node_modules\@types\node\vm.d.ts:249:         * console.log(context);
+node_modules\@types\node\vm.d.ts:287:         * console.log(contexts);
+node_modules\@types\node\vm.d.ts:323:         * console.log(globalVar);
+node_modules\@types\node\vm.d.ts:388:         *
+console.log(script.sourceMapURL);
+node_modules\@types\node\vm.d.ts:415:     * console.log(context);
+node_modules\@types\node\vm.d.ts:418:     * console.log(global.globalVar);
+node_modules\@types\node\vm.d.ts:472:     * console.log(contextObject);
+node_modules\@types\node\vm.d.ts:509:     * console.log(contextObject);
+node_modules\@types\node\vm.d.ts:543:     * console.log(`vmResult:
+'${vmResult}', localVar: '${localVar}'`);
+node_modules\@types\node\vm.d.ts:547:     * console.log(`evalResult:
+'${evalResult}', localVar: '${localVar}'`);
+node_modules\@types\node\vm.d.ts:576:     *   console.log('Server running at
+http://127.0.0.1:8124/');
+node_modules\@types\node\vm.d.ts:627:     *     console.log(result);
+node_modules\@types\node\vm.d.ts:635:     *     console.log(context.a);
+node_modules\@types\node\vm.d.ts:652:     *     console.log(result);
+node_modules\@types\node\vm.d.ts:697:     *   print: console.log,
+node_modules\@types\node\worker_threads.d.ts:78:     * port1.on('message',
+(message) => console.log('received', message));
+node_modules\@types\node\worker_threads.d.ts:136:         *
+port1.on('message', (message) => console.log(message));
+node_modules\@types\node\worker_threads.d.ts:158:         *
+port1.on('message', (message) => console.log(message));
+node_modules\@types\node\worker_threads.d.ts:345:     *
+console.log('received:', value);
+node_modules\@types\node\worker_threads.d.ts:508:     *
+console.log(event.data);
+node_modules\@types\node\worker_threads.d.ts:570:     *
+console.log(typedArray1);
+node_modules\@types\node\worker_threads.d.ts:571:     *
+console.log(typedArray2);
+node_modules\@types\node\worker_threads.d.ts:604:     *
+console.log(receiveMessageOnPort(port2));
+node_modules\@types\node\worker_threads.d.ts:606:     *
+console.log(receiveMessageOnPort(port2));
+node_modules\@types\node\worker_threads.d.ts:637:     *
+console.log(getEnvironmentData('Hello'));  // Prints 'World!'.
+node_modules\@types\node\zlib.d.ts:32: *     console.error('An error
+occurred:', err);
+node_modules\@types\node\zlib.d.ts:51: *     console.error('An error
+occurred:', err);
+node_modules\@types\node\zlib.d.ts:64: *     console.error('An error
+occurred:', err);
+node_modules\@types\node\zlib.d.ts:67: *
+console.log(buffer.toString('base64'));
+node_modules\@types\node\zlib.d.ts:73: *     console.error('An error
+occurred:', err);
+node_modules\@types\node\zlib.d.ts:76: *   console.log(buffer.toString());
+node_modules\@types\node\zlib.d.ts:85: *   .then((buf) =>
+console.log(buf.toString()))
+node_modules\@types\node\zlib.d.ts:87: *     console.error('An error
+occurred:', err);
+node_modules\@types\react\ts5.0\index.d.ts:172:     * <div ref={(node) =>
+console.log(node)} />
+node_modules\@types\react\ts5.0\index.d.ts:257:     * <Component
+ref={(current) => console.log(current)} />
+node_modules\@types\react\index.d.ts:172:     * <div ref={(node) =>
+console.log(node)} />
+node_modules\@types\react\index.d.ts:257:     * <Component ref={(current) =>
+console.log(current)} />
+node_modules\@typescript-eslint\typescript-estree\dist\parseSettings\index.d.ts
+:81:     * Log function, if not `console.log`.
+node_modules\@typescript-eslint\typescript-estree\dist\parseSettings\index.d.ts
+:109:     * Whether deprecated AST properties should skip calling console.warn
+on accesses.
+node_modules\@typescript-eslint\typescript-estree\dist\parser-options.d.ts:78:
+    * Whether deprecated AST properties should skip calling console.warn on
+accesses.
+node_modules\bson\src\extended_json.ts:406: * console.log(EJSON.parse(text, {
+relaxed: false }));
+node_modules\bson\src\extended_json.ts:409: * console.log(EJSON.parse(text));
+node_modules\bson\src\extended_json.ts:446: * console.log(EJSON.stringify(doc,
+{ relaxed: false }));
+node_modules\bson\src\extended_json.ts:449: *
+console.log(EJSON.stringify(doc));
+node_modules\bson\bson.d.ts:1497: * console.log(EJSON.parse(text, { relaxed:
+false }));
+node_modules\bson\bson.d.ts:1500: * console.log(EJSON.parse(text));
+node_modules\bson\bson.d.ts:1576: * console.log(EJSON.stringify(doc, {
+relaxed: false }));
+node_modules\bson\bson.d.ts:1579: * console.log(EJSON.stringify(doc));
+node_modules\callsites\index.d.ts:81:
+console.log(callsites()[0].getFileName());
+node_modules\fastq\test\example.ts:10:  console.log('the result is', result)
+node_modules\fastq\test\example.ts:21:console.log('the queue tasks are',
+queue.getQueue())
+node_modules\fastq\test\example.ts:41:  console.log('the result is', result)
+node_modules\fastq\test\example.ts:60:  console.log('the result is', done)
+node_modules\fastq\test\example.ts:65:  console.log('the result is', done)
+node_modules\find-up\index.d.ts:26:
+console.log(findUp.sync.exists('/Users/sindresorhus/unicorn.png'));
+node_modules\find-up\index.d.ts:51:             console.log(findUp.sync(directory => {
+node_modules\find-up\index.d.ts:72:             console.log(await
+findUp.exists('/Users/sindresorhus/unicorn.png'));
+node_modules\find-up\index.d.ts:105:            console.log(await findUp('unicorn.png'));
+node_modules\find-up\index.d.ts:108:            console.log(await findUp(['rainbow.png',
+'unicorn.png']));
+node_modules\find-up\index.d.ts:127:            console.log(await findUp(async directory
+=> {
+node_modules\framer-motion\dist\types\index.d.ts:977: *     !isPresent &&
+console.log("I've been removed!")
+node_modules\mongodb\src\client-side-encryption\state_machine.ts:81:
+console.error(msg);
+node_modules\mongodb\src\gridfs\upload.ts:95:   *
+console.log(this.gridFSFile)
+node_modules\mongodb\src\admin.ts:38: *   console.log(db.name);
+node_modules\mongodb\src\collection.ts:164: *   console.log(`${pet.name} is a
+${pet.kind}!`);
+node_modules\mongodb\src\collection.ts:1087:   *   .on('change', change =>
+console.log(change._id.toFixed(4)));
+node_modules\mongodb\src\collection.ts:1152:   * changeStream.on('change',
+console.log);
+node_modules\mongodb\src\db.ts:583:   * changeStream.on('change', console.log);
+node_modules\mongodb\src\error.ts:899: *     console.log(`Oh no! writer's
+block!`, error);
+node_modules\mongodb\src\mongo_client.ts:986:   * changeStream.on('change',
+console.log);
+node_modules\mongodb\src\utils.ts:984: *  if (warning.code ===
+MONGODB_WARNING_CODE) console.error('Ah an important warning! :)')
+node_modules\mongodb\src\utils.ts:1440: *   console.log('aborted',
+this.reason);
+node_modules\mongodb\mongodb.d.ts:364: *   console.log(db.name);
+node_modules\mongodb\mongodb.d.ts:2628: *   console.log(`${pet.name} is a
+${pet.kind}!`);
+node_modules\mongodb\mongodb.d.ts:3049:     *   .on('change', change =>
+console.log(change._id.toFixed(4)));
+node_modules\mongodb\mongodb.d.ts:3114:     * changeStream.on('change',
+console.log);
+node_modules\mongodb\mongodb.d.ts:4088:     * changeStream.on('change',
+console.log);
+node_modules\mongodb\mongodb.d.ts:5012:     *     console.log(this.gridFSFile)
+node_modules\mongodb\mongodb.d.ts:5886:     * changeStream.on('change',
+console.log);
+node_modules\mongodb\mongodb.d.ts:6910: *     console.log(`Oh no! writer's
+block!`, error);
+node_modules\mongoose\types\mongooseoptions.d.ts:74:     * If `true`, prints
+the operations mongoose sends to MongoDB to the console.
+node_modules\motion-dom\dist\index.d.ts:1434: *   console.log(info.point.x,
+info.point.y)
+node_modules\motion-dom\dist\index.d.ts:1447:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:1462:     *
+console.log(info.delta.x, info.delta.y)
+node_modules\motion-dom\dist\index.d.ts:1477:     *
+console.log(info.offset.x, info.offset.y)
+node_modules\motion-dom\dist\index.d.ts:1491:     *
+console.log(info.velocity.x, info.velocity.y)
+node_modules\motion-dom\dist\index.d.ts:1843:     *   console.log(latest.x,
+latest.opacity)
+node_modules\motion-dom\dist\index.d.ts:1861:     *   console.log("Animation
+started")
+node_modules\motion-dom\dist\index.d.ts:1879:     *   console.log("Animation
+completed")
+node_modules\motion-dom\dist\index.d.ts:1885:     *     console.log('Completed
+animating', definition)
+node_modules\motion-dom\dist\index.d.ts:1906:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:1926:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:1947:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:1964:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:1993:     * <motion.div
+onHoverStart={() => console.log('Hover starts')} />
+node_modules\motion-dom\dist\index.d.ts:2001:     * <motion.div onHoverEnd={()
+=> console.log("Hover ends")} />
+node_modules\motion-dom\dist\index.d.ts:2012: *   console.log(info.point.x,
+info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2027:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2043:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2058:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2073:     *
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2334:     *     (event, info) =>
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2349:     *     (event, info) =>
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2364:     *     (event, info) =>
+console.log(info.point.x, info.point.y)
+node_modules\motion-dom\dist\index.d.ts:2379:     *   onDirectionLock={axis =>
+console.log(axis)}
+node_modules\motion-dom\dist\index.d.ts:2392:     *   onDragTransitionEnd={()
+=> console.log('Drag transition complete')}
+node_modules\next\dist\compiled\@edge-runtime\primitives\index.d.ts:2:export {
+console } from './console.d.js';
+node_modules\next\dist\server\node-environment-extensions\fast-set-immediate.ex
+ternal.d.ts:31: *   console.log("timeout 1")
+node_modules\next\dist\server\node-environment-extensions\fast-set-immediate.ex
+ternal.d.ts:33: *     console.log("immediate!!!")
+node_modules\next\dist\server\node-environment-extensions\fast-set-immediate.ex
+ternal.d.ts:37: *   console.log("timeout 2")
+node_modules\next\node_modules\postcss\lib\container.d.ts:418:   *
+console.log(`Your CSS uses ${ selectors.length } selectors`)
+node_modules\next\node_modules\postcss\lib\lazy-result.d.ts:33:   *
+console.log(result.css)
+node_modules\next\node_modules\postcss\lib\lazy-result.d.ts:35:   *
+console.error(error)
+node_modules\next\node_modules\postcss\lib\lazy-result.d.ts:49:   *
+console.log('processing ended')
+node_modules\next\node_modules\postcss\lib\lazy-result.d.ts:64:   *
+console.log(result.css)
+node_modules\next\node_modules\postcss\lib\postcss.d.ts:431: *
+console.log(result.css)
+node_modules\next\node_modules\postcss\lib\processor.d.ts:25: *
+processor.process(css1).then(result => console.log(result.css))
+node_modules\next\node_modules\postcss\lib\processor.d.ts:26: *
+processor.process(css2).then(result => console.log(result.css))
+node_modules\next\node_modules\postcss\lib\processor.d.ts:65:   *
+console.log(result.css)
+node_modules\next\node_modules\postcss\lib\result.d.ts:55: *
+console.log(result.css)
+node_modules\next\node_modules\postcss\lib\result.d.ts:185:   *
+console.warn(warn.toString())
+node_modules\p-locate\index.d.ts:42:    console.log(foundPath);
+node_modules\path-exists\index.d.ts:13:         console.log(await
+pathExists('foo.ts'));
+node_modules\postcss\lib\container.d.ts:444:   * console.log(`Your CSS uses ${
+selectors.length } selectors`)
+node_modules\postcss\lib\lazy-result.d.ts:33:   *   console.log(result.css)
+node_modules\postcss\lib\lazy-result.d.ts:35:   *   console.error(error)
+node_modules\postcss\lib\lazy-result.d.ts:49:   *   console.log('processing
+ended')
+node_modules\postcss\lib\lazy-result.d.ts:64:   *   console.log(result.css)
+node_modules\postcss\lib\postcss.d.ts:446: *   console.log(result.css)
+node_modules\postcss\lib\processor.d.ts:25: *
+processor.process(css1).then(result => console.log(result.css))
+node_modules\postcss\lib\processor.d.ts:26: *
+processor.process(css2).then(result => console.log(result.css))
+node_modules\postcss\lib\processor.d.ts:65:   *      console.log(result.css)
+node_modules\postcss\lib\result.d.ts:54: *  console.log(result.css)
+node_modules\postcss\lib\result.d.ts:194:   *   console.warn(warn.toString())
+node_modules\react-redux\src\hooks\useSelector.ts:199:
+console.warn(
+node_modules\react-redux\src\hooks\useSelector.ts:226:
+console.warn(
+node_modules\react-redux\src\utils\warning.ts:9:  if (typeof console !==
+'undefined' && typeof console.error === 'function') {
+node_modules\react-redux\src\utils\warning.ts:10:    console.error(message)
+node_modules\redux\src\utils\warning.ts:8:  if (typeof console !== 'undefined'
+&& typeof console.error === 'function') {
+node_modules\redux\src\utils\warning.ts:9:    console.error(message)
+node_modules\reselect\src\autotrackMemoize\autotracking.ts:124:
+console.warn('Not a valid cell! ', cell)
+node_modules\reselect\src\autotrackMemoize\utils.ts:6:    console.error(msg)
+node_modules\reselect\src\devModeChecks\identityFunctionCheck.ts:44:
+console.warn(
+node_modules\reselect\src\devModeChecks\inputStabilityCheck.ts:46:
+console.warn(
+node_modules\shebang-regex\index.d.ts:8:const string = '#!/usr/bin/env
+node\nconsole.log("unicorns");';
+node_modules\ts-api-utils\lib\index.d.ts:18: *    console.log(`Found comment
+at position ${comment.pos}: '${fullText}'.`);
+node_modules\ts-api-utils\lib\index.d.ts:31: *    console.log(`Found comment
+at position ${comment.pos}: '${fullText}'.`);
+node_modules\ts-api-utils\lib\index.d.ts:44: *    console.log(`Found comment
+at position ${pos}: '${text}'.`);
+node_modules\ts-api-utils\lib\index.d.ts:2045: *    console.log(`Found token
+at position: ${token.pos}.`);
+node_modules\ts-api-utils\lib\index.d.ts:2058: *        console.log("Found token:",
+token.getText());
+node_modules\ts-api-utils\lib\index.d.ts:2073: *        console.log("Found token:",
+token.getText());
+node_modules\ts-api-utils\lib\index.d.ts:3044: *
+console.log(`${identifier.getText()} is used ${information.uses.length}
+time(s).`);
+node_modules\tsconfig-paths\src\register.ts:59:    console.warn(
+node_modules\typescript\lib\lib.decorators.d.ts:131:     *
+console.log(this.message);
+node_modules\typescript\lib\lib.dom.d.ts:37839:     * The
+**`console.assert()`** static method writes an error message to the console if
+the assertion is false.
+node_modules\typescript\lib\lib.dom.d.ts:37845:     * The
+**`console.clear()`** static method clears the console if possible.
+node_modules\typescript\lib\lib.dom.d.ts:37851:     * The
+**`console.count()`** static method logs the number of times that this
+particular call to `count()` has been called.
+node_modules\typescript\lib\lib.dom.d.ts:37857:     * The
+**`console.countReset()`** static method resets counter used with
+console/count_static.
+node_modules\typescript\lib\lib.dom.d.ts:37863:     * The
+**`console.debug()`** static method outputs a message to the console at the
+'debug' log level.
+node_modules\typescript\lib\lib.dom.d.ts:37869:     * The **`console.dir()`**
+static method displays a list of the properties of the specified JavaScript
+object.
+node_modules\typescript\lib\lib.dom.d.ts:37875:     * The
+**`console.dirxml()`** static method displays an interactive tree of the
+descendant elements of the specified XML/HTML element.
+node_modules\typescript\lib\lib.dom.d.ts:37881:     * The
+**`console.error()`** static method outputs a message to the console at the
+'error' log level.
+node_modules\typescript\lib\lib.dom.d.ts:37887:     * The
+**`console.group()`** static method creates a new inline group in the Web
+console log, causing any subsequent console messages to be indented by an
+additional level, until console/groupEnd_static is called.
+node_modules\typescript\lib\lib.dom.d.ts:37893:     * The
+**`console.groupCollapsed()`** static method creates a new inline group in the
+console.
+node_modules\typescript\lib\lib.dom.d.ts:37899:     * The
+**`console.groupEnd()`** static method exits the current inline group in the
+console.
+node_modules\typescript\lib\lib.dom.d.ts:37905:     * The **`console.info()`**
+static method outputs a message to the console at the 'info' log level.
+node_modules\typescript\lib\lib.dom.d.ts:37911:     * The **`console.log()`**
+static method outputs a message to the console.
+node_modules\typescript\lib\lib.dom.d.ts:37917:     * The
+**`console.table()`** static method displays tabular data as a table.
+node_modules\typescript\lib\lib.dom.d.ts:37923:     * The **`console.time()`**
+static method starts a timer you can use to track how long an operation takes.
+node_modules\typescript\lib\lib.dom.d.ts:37929:     * The
+**`console.timeEnd()`** static method stops a timer that was previously
+started by calling console/time_static.
+node_modules\typescript\lib\lib.dom.d.ts:37935:     * The
+**`console.timeLog()`** static method logs the current value of a timer that
+was previously started by calling console/time_static.
+node_modules\typescript\lib\lib.dom.d.ts:37942:     * The
+**`console.trace()`** static method outputs a stack trace to the console.
+node_modules\typescript\lib\lib.dom.d.ts:37948:     * The **`console.warn()`**
+static method outputs a warning message to the console at the 'warning' log
+level.
+node_modules\typescript\lib\lib.webworker.d.ts:12682:     * The
+**`console.assert()`** static method writes an error message to the console if
+the assertion is false.
+node_modules\typescript\lib\lib.webworker.d.ts:12688:     * The
+**`console.clear()`** static method clears the console if possible.
+node_modules\typescript\lib\lib.webworker.d.ts:12694:     * The
+**`console.count()`** static method logs the number of times that this
+particular call to `count()` has been called.
+node_modules\typescript\lib\lib.webworker.d.ts:12700:     * The
+**`console.countReset()`** static method resets counter used with
+console/count_static.
+node_modules\typescript\lib\lib.webworker.d.ts:12706:     * The
+**`console.debug()`** static method outputs a message to the console at the
+'debug' log level.
+node_modules\typescript\lib\lib.webworker.d.ts:12712:     * The
+**`console.dir()`** static method displays a list of the properties of the
+specified JavaScript object.
+node_modules\typescript\lib\lib.webworker.d.ts:12718:     * The
+**`console.dirxml()`** static method displays an interactive tree of the
+descendant elements of the specified XML/HTML element.
+node_modules\typescript\lib\lib.webworker.d.ts:12724:     * The
+**`console.error()`** static method outputs a message to the console at the
+'error' log level.
+node_modules\typescript\lib\lib.webworker.d.ts:12730:     * The
+**`console.group()`** static method creates a new inline group in the Web
+console log, causing any subsequent console messages to be indented by an
+additional level, until console/groupEnd_static is called.
+node_modules\typescript\lib\lib.webworker.d.ts:12736:     * The
+**`console.groupCollapsed()`** static method creates a new inline group in the
+console.
+node_modules\typescript\lib\lib.webworker.d.ts:12742:     * The
+**`console.groupEnd()`** static method exits the current inline group in the
+console.
+node_modules\typescript\lib\lib.webworker.d.ts:12748:     * The
+**`console.info()`** static method outputs a message to the console at the
+'info' log level.
+node_modules\typescript\lib\lib.webworker.d.ts:12754:     * The
+**`console.log()`** static method outputs a message to the console.
+node_modules\typescript\lib\lib.webworker.d.ts:12760:     * The
+**`console.table()`** static method displays tabular data as a table.
+node_modules\typescript\lib\lib.webworker.d.ts:12766:     * The
+**`console.time()`** static method starts a timer you can use to track how
+long an operation takes.
+node_modules\typescript\lib\lib.webworker.d.ts:12772:     * The
+**`console.timeEnd()`** static method stops a timer that was previously
+started by calling console/time_static.
+node_modules\typescript\lib\lib.webworker.d.ts:12778:     * The
+**`console.timeLog()`** static method logs the current value of a timer that
+was previously started by calling console/time_static.
+node_modules\typescript\lib\lib.webworker.d.ts:12785:     * The
+**`console.trace()`** static method outputs a stack trace to the console.
+node_modules\typescript\lib\lib.webworker.d.ts:12791:     * The
+**`console.warn()`** static method outputs a warning message to the console at
+the 'warning' log level.
+node_modules\use-callback-ref\dist\es2015\useRef.d.ts:8: * const ref =
+useCallbackRef(0, (newValue, oldValue) => console.log(oldValue, '->',
+newValue);
+node_modules\use-callback-ref\dist\es2019\useRef.d.ts:8: * const ref =
+useCallbackRef(0, (newValue, oldValue) => console.log(oldValue, '->',
+newValue);
+node_modules\use-callback-ref\dist\es5\useRef.d.ts:8: * const ref =
+useCallbackRef(0, (newValue, oldValue) => console.log(oldValue, '->',
+newValue);
+node_modules\yocto-queue\index.d.ts:21: console.log(queue.size);
+node_modules\yocto-queue\index.d.ts:24: console.log(...queue);
+node_modules\yocto-queue\index.d.ts:27: console.log(queue.dequeue());
+node_modules\yocto-queue\index.d.ts:30: console.log(queue.dequeue());
+node_modules\zod\src\v3\benchmarks\datetime.ts:53:
+console.log(`${datetimeValidationSuite.name!}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\discriminatedUnion.ts:54:
+console.log(`${(doubleSuite as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\discriminatedUnion.ts:75:
+console.log(`${(manySuite as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\index.ts:57:  console.log("Exiting...");
+node_modules\zod\src\v3\benchmarks\ipv4.ts:48:    console.log(`${suite.name!}:
+${e.target}`);
+node_modules\zod\src\v3\benchmarks\object.ts:32:    console.log(`${(emptySuite
+as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\object.ts:48:    console.log(`${(shortSuite
+as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\object.ts:64:    console.log(`${(longSuite
+as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:21:    console.log(`z.enum:
+${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:55:    console.log(`long
+z.enum: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:71:
+console.log(`z.undefined: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:89:
+console.log(`z.literal: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:110:
+console.log(`z.number: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:141:    console.log(`z.date:
+${e.target}`);
+node_modules\zod\src\v3\benchmarks\primitives.ts:157:
+console.log(`z.symbol: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\realworld.ts:58:
+console.log(`${(shortSuite as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\string.ts:50:
+console.log(`${SUITE_NAME}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\union.ts:54:    console.log(`${(doubleSuite
+as any).name}: ${e.target}`);
+node_modules\zod\src\v3\benchmarks\union.ts:75:    console.log(`${(manySuite
+as any).name}: ${e.target}`);
+node_modules\zod\src\v4\classic\tests\discriminated-unions.test.ts:464:  //
+console.log(FreeConfig.shape.type);
+node_modules\zod\src\v4\classic\tests\refine.test.ts:472:        //
+console.log("running check...");
+node_modules\zod\src\v4\classic\tests\refine.test.ts:473:        //
+console.log(data);
+node_modules\zod\src\v4\classic\tests\refine.test.ts:474:        //
+console.log(data.password);
+node_modules\zod\src\v4\classic\tests\to-json-schema.test.ts:21:    //
+`console.error` should make `vitest` trow an unhandled error
+node_modules\zod\src\v4\classic\tests\to-json-schema.test.ts:23:
+console.error(
+node_modules\zod\src\v4\classic\tests\to-json-schema.test.ts:2829:  //
+console.log(JSON.stringify(zodToJsonSchema(HelloSchema), null, 2));
+node_modules\zod\src\v4\core\doc.ts:41:    // console.log(lines.join("\n"));
+scripts\seed.ts:13:    console.error('❌ ERROR: MONGODB_URI is not defined in
+.env.local');
+scripts\seed.ts:58:        console.log('⏳ [SYSTEM]: Connecting to Cluster...');
+scripts\seed.ts:61:        console.log('🧹 [SYSTEM]: Purging existing
+Nodes...');
+scripts\seed.ts:65:        console.log('📡 [SYSTEM]: Injecting Project
+Registry...');
+scripts\seed.ts:68:        console.log('📐 [SYSTEM]: Constructing Kitchen
+Spatial Data...');
+scripts\seed.ts:71:        console.log('\n🎉 [SUCCESS]: Database Seeded
+Successfully!');
+scripts\seed.ts:74:        console.error('❌ [CRITICAL ERROR]: Seed Failure:');
+scripts\seed.ts:75:        console.error(error);

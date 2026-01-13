@@ -1,82 +1,113 @@
 'use client';
 
-import React, { memo, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useRef, useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 
-interface Star {
-    id: number;
-    top: number;
-    left: number;
-    delay: number;
-    duration: number;
-    size: number;
-    glow: boolean;
-}
-
-interface StarfieldProps {
+interface StarFieldProps {
     starCount?: number;
 }
 
-const Starfield = memo(({ starCount = 150 }: StarfieldProps) => {
-    // Increased default count to 150 to make sure they are visible through blur
-    const [stars, setStars] = useState<Star[]>([]);
-    const [isMounted, setIsMounted] = useState(false);
+export default function StarField({ starCount = 120 }: { starCount?: number }) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [mounted, setMounted] = useState(false);
+    const { theme } = useTheme();
 
     useEffect(() => {
-        setIsMounted(true);
-        const generatedStars: Star[] = Array.from({ length: starCount }).map((_, i) => ({
-            id: i,
-            top: Math.random() * 100,
-            left: Math.random() * 100,
-            delay: Math.random() * 5,
-            duration: 5 + Math.random() * 7,
-            size: Math.random() > 0.8 ? 2 : 1, // More size 2 stars for visibility
-            glow: Math.random() > 0.8,
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted || !canvasRef.current) return;
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let animationFrameId: number;
+        
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const isDark = theme === 'dark';
+
+        // Create stars with stable initial positions
+        const stars = Array.from({ length: starCount }).map(() => ({
+            x: Math.random(),
+            y: Math.random(),
+            size: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.7 + 0.3,
+            pulse: Math.random() * 0.01 + 0.005,
+            isViolet: Math.random() > 0.8,
+            blinkDir: Math.random() > 0.5 ? 1 : -1
         }));
 
-        setStars(generatedStars);
-    }, [starCount]);
+        const draw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // FIX 1: Change bg-black to bg-transparent so it doesn't block the body background
-    if (!isMounted) return <div className="fixed inset-0 bg-transparent z-[-2]" />;
+            stars.forEach((star) => {
+                // Pulse effect
+                star.opacity += star.pulse * star.blinkDir;
+                if (star.opacity > 1) {
+                    star.opacity = 1;
+                    star.blinkDir = -1;
+                } else if (star.opacity < 0.2) {
+                    star.opacity = 0.2;
+                    star.blinkDir = 1;
+                }
+
+                const px = star.x * canvas.width;
+                const py = star.y * canvas.height;
+
+                ctx.beginPath();
+                ctx.arc(px, py, star.size, 0, Math.PI * 2);
+                
+                const starOpacity = isDark ? star.opacity : star.opacity * 0.2;
+                const starColor = isDark 
+                    ? (star.isViolet ? `rgba(139, 92, 246, ${starOpacity})` : `rgba(255, 255, 255, ${starOpacity})`)
+                    : (star.isViolet ? `rgba(139, 92, 246, ${starOpacity})` : `rgba(15, 23, 42, ${starOpacity})`);
+
+                ctx.fillStyle = starColor;
+                
+                if (isDark && star.size > 1.5) {
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = star.isViolet ? '#8b5cf6' : '#ffffff';
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+                
+                ctx.fill();
+            });
+
+            animationFrameId = requestAnimationFrame(draw);
+        };
+
+        draw();
+
+        return () => {
+            window.removeEventListener('resize', resizeCanvas);
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, [mounted, starCount, theme]);
+
+    if (!mounted) {
+        return <div className="fixed inset-0 bg-background z-[-1]" />;
+    }
 
     return (
-        /* FIX 2: Removed bg-black from here. The 'body' already has bg-black.
-           If this container has bg-black, it might overlap other layers incorrectly. */
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-2] bg-transparent">
-            {stars.map((star) => (
-                <motion.div
-                    key={star.id}
-                    initial={{ opacity: 0 }}
-                    animate={{
-                        opacity: [0.2, 0.8, 0.2], // Start at 0.2 instead of 0
-                        scale: star.glow ? [1, 1.2, 1] : 1
-                    }}
-                    transition={{
-                        duration: star.duration,
-                        repeat: Infinity,
-                        delay: star.delay,
-                        ease: "easeInOut"
-                    }}
-                    className="absolute rounded-full bg-white"
-                    style={{
-                        top: `${star.top}%`,
-                        left: `${star.left}%`,
-                        width: `${star.size}px`,
-                        height: `${star.size}px`,
-                        /* FIX 4: Stronger glow for depth */
-                        boxShadow: star.glow ? '0 0 15px 2px rgba(255, 255, 255, 0.6)' : 'none',
-                        willChange: "opacity",
-                    }}
-                />
-            ))}
-
-            {/* VIGNETTE: Keep this but ensure it is subtle */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
+        <div className="fixed inset-0 z-[-1] pointer-events-none overflow-hidden bg-transparent">
+            <canvas
+                ref={canvasRef}
+                className="w-full h-full block"
+            />
+            {/* Ambient Nebula Gradients - Faint in light mode */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_0%,rgba(0,0,0,0.4)_100%)] dark:opacity-100 opacity-10" />
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-magic-purple/5 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-magic-purple/10 blur-[150px] rounded-full pointer-events-none" />
         </div>
     );
-});
-
-Starfield.displayName = "Starfield";
-
-export default Starfield;
+}

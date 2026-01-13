@@ -1,19 +1,17 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 
-// 3D Coordinate System: The "Address" of every object
 const CoordinateSchema = new Schema({
-    x: { type: Number, required: true },      // Horizontal (from left corner)
-    y: { type: Number, required: true },      // Vertical (from floor)
-    z: { type: Number, default: 0 },         // Depth (offset from wall face)
-    width: { type: Number, required: true },
-    height: { type: Number, required: true },
-    depth: { type: Number, required: true }   // Thickness/Volume
-});
+    x: { type: Number, required: true, min: 0 },
+    y: { type: Number, required: true, min: 0 },
+    z: { type: Number, default: 0 },
+    width: { type: Number, required: true, min: 1 },
+    height: { type: Number, required: true, min: 1 },
+    depth: { type: Number, required: true, min: 0 }
+}, { _id: false }); // Disable _id for sub-documents to keep the DB light
 
 const KitchenSchema = new Schema({
     projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
-    // Client & Project Identity
-    clientName: { type: String, required: true },
+    clientName: { type: String, required: true, trim: true },
     phone: { type: String, required: true },
     address: { type: String },
     status: {
@@ -21,48 +19,55 @@ const KitchenSchema = new Schema({
         enum: ['draft', 'measuring', 'designing', 'ordered', 'installed'],
         default: 'draft'
     },
+    img: String,
+    url: String,
+    github: String,
+    stars: {
+        type: Number,
+        default: 0
+    },
+    tags: [String],
 
-    // The Physical Room (The Canvas)
     walls: [{
-        label: { type: String, default: 'Wall' }, // e.g., "Wall A"
-        length: { type: Number, required: true }, // in cm
+        label: { type: String, default: 'Wall' },
+        length: { type: Number, required: true },
         height: { type: Number, default: 240 },
         thickness: { type: Number, default: 10 }
+        // Note: MongoDB will automatically generate an _id for each wall here
     }],
 
-    // Fixed Architectural Elements (Things the AI cannot move)
     obstacles: [{
         type: {
             type: String,
-            enum: ['window', 'door', 'socket', 'pipe', 'pillar', 'radiator', 'clearance']
+            enum: ['window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'],
+            required: true
         },
-        wallIndex: { type: Number, required: true }, // Link to walls array index
+        // We'll use the index for now as per your UI logic,
+        // but store it as wallIndex for consistency
+        wallIndex: { type: Number, required: true },
         position: CoordinateSchema
     }],
 
-    // Kitchen Components (Things the AI/User places)
     appliances: [{
-        name: { type: String, required: true }, // e.g., "Fridge", "Sink"
+        name: { type: String, required: true },
         wallIndex: { type: Number, required: true },
         position: CoordinateSchema,
-        isFixed: { type: Boolean, default: false } // If true, AI won't suggest moving it
+        isFixed: { type: Boolean, default: false },
+        brandModel: { type: String } // Helpful for technical cut-outs
     }],
 
-    // Global Project Standards (The "Kitchen Man's" Rules)
     standards: {
         baseCabinetDepth: { type: Number, default: 60 },
         wallCabinetDepth: { type: Number, default: 35 },
         countertopThickness: { type: Number, default: 4 },
-        kickplateHeight: { type: Number, default: 10 } // Space for feet at bottom
+        kickplateHeight: { type: Number, default: 10 }
     },
 
-    // Financials (Protected from mass-assignment in API)
     totalPrice: { type: Number, default: 0 },
     material: { type: String },
     color: { type: String }
 
 }, { timestamps: true });
 
-// Export the model
 const Kitchen = models.Kitchen || model('Kitchen', KitchenSchema);
 export default Kitchen;
