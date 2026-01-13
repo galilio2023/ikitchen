@@ -7,5 +7,8 @@ export default withAuth({
 });
 
 export const config = {
-    matcher: ['/((?!api/auth|_next/static|_next/image|favicon.ico|login).*)']
+    // We use a more explicit negative lookahead for Vercel
+    matcher: [
+        "/((?!api/auth|_next/static|_next/image|favicon.ico|login|manifest.json).*)",
+    ],
 };
