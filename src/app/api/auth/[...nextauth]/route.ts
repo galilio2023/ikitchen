@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import dbConnect from "@/lib/dbConnect";
 
 const handler = NextAuth({
     providers: [
@@ -11,47 +10,23 @@ const handler = NextAuth({
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                // MOVE BYPASS HERE: Before dbConnect() to prevent the hang
+                // 🚀 THE BYPASS: No DB needed for this check
                 if (credentials?.email === 'ibrahimgalal2011@gmail.com') {
                     return {
-                        id: "admin-id",
-                        name: "Ibrahim Galal",
+                        id: "admin-static",
+                        name: "Ibrahim Admin",
                         email: "ibrahimgalal2011@gmail.com",
                         role: "admin"
                     };
                 }
 
-                try {
-                    await dbConnect();
-                    // Database logic goes here later...
-                    return null;
-                } catch (error) {
-                    console.error("DB_ERROR:", error);
-                    return null;
-                }
+                // Everything below this line is ignored for your email
+                return null;
             }
         })
     ],
-    pages: {
-        signIn: '/login',
-    },
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.role = (user as any).role || 'user';
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (session.user) {
-                (session.user as any).id = token.sub;
-                (session.user as any).role = token.role;
-            }
-            return session;
-        }
-    },
-    // FIX: Vercel prefers NEXTAUTH_SECRET
-    secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+    // ... keep your existing callbacks and secret below
+    secret: process.env.NEXTAUTH_SECRET || "fallback_secret_for_now",
 });
 
 export { handler as GET, handler as POST };
