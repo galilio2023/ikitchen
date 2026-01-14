@@ -11,6 +11,7 @@ const CoordinateSchema = new Schema({
 
 const KitchenSchema = new Schema({
     projectId: { type: Schema.Types.ObjectId, ref: 'Project' },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     clientName: { type: String, required: true, trim: true },
     phone: { type: String, required: true },
     address: { type: String },

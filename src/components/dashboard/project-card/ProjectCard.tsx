@@ -35,24 +35,26 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     return (
         <motion.div
             whileHover={{ scale: 1.01, y: -5 }}
-            className="group relative glass-brilliant p-8 rounded-[2.5rem] transition-all duration-500 hover:border-magic-purple/40 h-full flex flex-col justify-between border-border bg-transparent"
+            className="group relative glass-brilliant p-10 rounded-[3rem] transition-all duration-500 hover:border-magic-purple/40 h-full flex flex-col border-border bg-transparent shadow-xl hover:shadow-magic-purple/10"
         >
             {/* GSAP Shimmer Overlay */}
-            <div className="absolute inset-0 overflow-hidden rounded-[2.5rem] pointer-events-none">
+            <div className="absolute inset-0 overflow-hidden rounded-[3rem] pointer-events-none">
                 <div 
                     ref={shimmerRef}
-                    className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                    className="absolute inset-0 w-2/3 h-full bg-gradient-to-r from-transparent via-magic-purple/5 to-transparent"
                     style={{ transform: 'translateX(-150%) skewX(-20deg)' }}
                 />
             </div>
+
             {/* 1. AMBIENT LIGHT LEAKS */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[var(--color-magic-purple)]/5 blur-[50px] group-hover:bg-[var(--color-magic-purple)]/15 transition-colors pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[var(--color-magic-cyan)]/5 blur-[50px] group-hover:bg-[var(--color-magic-cyan)]/15 transition-colors pointer-events-none" />
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-magic-purple/5 blur-[60px] group-hover:bg-magic-purple/15 transition-all duration-700 pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-magic-cyan/5 blur-[60px] group-hover:bg-magic-cyan/15 transition-all duration-700 pointer-events-none" />
 
             <CardHeader 
                 id={String(id || '')} 
                 status={project?.status} 
                 isCompleted={isCompleted} 
+                date={project?.createdAt}
             />
 
             <CardIdentity 
@@ -66,7 +68,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 isCompleted={isCompleted} 
             />
 
-            <CardFooter id={String(id || '')} />
+            <CardFooter 
+                id={String(id || '')} 
+                totalPrice={project?.totalPrice}
+            />
         </motion.div>
     );
 }

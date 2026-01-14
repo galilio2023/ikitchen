@@ -66,10 +66,10 @@ export default function StarField({ starCount = 120 }: { starCount?: number }) {
                 ctx.beginPath();
                 ctx.arc(px, py, star.size, 0, Math.PI * 2);
                 
-                const starOpacity = isDark ? star.opacity : star.opacity * 0.2;
+                const starOpacity = isDark ? star.opacity : star.opacity * 0.5;
                 const starColor = isDark 
                     ? (star.isViolet ? `rgba(139, 92, 246, ${starOpacity})` : `rgba(255, 255, 255, ${starOpacity})`)
-                    : (star.isViolet ? `rgba(139, 92, 246, ${starOpacity})` : `rgba(15, 23, 42, ${starOpacity})`);
+                    : (star.isViolet ? `rgba(124, 58, 237, ${starOpacity})` : `rgba(100, 116, 139, ${starOpacity})`);
 
                 ctx.fillStyle = starColor;
                 

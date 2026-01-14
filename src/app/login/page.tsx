@@ -8,7 +8,7 @@ import { Shield, Lock, User } from 'lucide-react';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('ibrahimgalal2011@gmail.com');
-    const [password, setPassword] = useState('voyager');
+    const [password, setPassword] = useState('@Ibrahim@galal@1');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
@@ -28,8 +28,8 @@ export default function LoginPage() {
             setError('ACCESS_DENIED: Invalid_Credentials');
             setLoading(false);
         } else {
-            // 5. Visual confirmation (Redirect to project)
-            router.push('/projects/69640cabfd8fb247833e0842');
+            // 5. Visual confirmation (Redirect to dashboard)
+            router.push('/dashboard');
         }
     };
 
@@ -51,37 +51,37 @@ export default function LoginPage() {
                     <h1 className="text-2xl font-black uppercase tracking-tighter text-foreground italic">
                         VOYAGER<span className="text-foreground/20 not-italic">_AUTH</span>
                     </h1>
-                    <p className="text-[9px] font-mono text-foreground/40 uppercase tracking-[0.4em] mt-2">Neural_Sync_Required</p>
+                    <p className="text-[9px] font-mono text-foreground/60 uppercase tracking-[0.4em] mt-2">Neural_Sync_Required</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 ml-1">Entity_Identifier</label>
+                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/50 ml-1">Entity_Identifier</label>
                             <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40" />
                                 <input
                                     required
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="EMAIL..."
-                                    className="w-full h-12 pl-12 pr-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground bg-accent/30 border border-border placeholder:text-muted-foreground focus:outline-none focus:border-magic-cyan/40 transition-all"
+                                    className="w-full h-12 pl-12 pr-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground bg-accent/50 border border-border placeholder:text-muted-foreground focus:outline-none focus:border-magic-cyan/40 transition-all"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 ml-1">Secure_Key</label>
+                            <label className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/50 ml-1">Secure_Key</label>
                             <div className="relative">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/20" />
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40" />
                                 <input
                                     required
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="PASSWORD..."
-                                    className="w-full h-12 pl-12 pr-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground bg-accent/30 border border-border placeholder:text-muted-foreground focus:outline-none focus:border-magic-cyan/40 transition-all"
+                                    className="w-full h-12 pl-12 pr-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground bg-accent/50 border border-border placeholder:text-muted-foreground focus:outline-none focus:border-magic-cyan/40 transition-all"
                                 />
                             </div>
                         </div>
@@ -103,7 +103,7 @@ export default function LoginPage() {
                 </form>
 
                 <div className="mt-8 text-center">
-                    <p className="text-[8px] text-white/20 uppercase tracking-[0.2em]">
+                    <p className="text-[8px] text-foreground/20 uppercase tracking-[0.2em]">
                         Voyager_OS v4.2 © 2026 iKitchen Systems
                     </p>
                 </div>

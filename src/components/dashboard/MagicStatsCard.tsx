@@ -133,7 +133,7 @@ export default function MagicStatsCard({ label, value, icon: Icon, status, isSca
             {/* 3. MAGIC GLOW: Dual radial gradients following cursor */}
             <div 
                 ref={glowRef}
-                className="absolute inset-0 w-[400px] h-[400px] pointer-events-none opacity-0 mix-blend-screen dark:mix-blend-screen mix-blend-multiply blur-[80px]"
+                className="absolute inset-0 w-[400px] h-[400px] pointer-events-none opacity-0 dark:mix-blend-screen mix-blend-soft-light blur-[80px]"
                 style={{
                     background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.4) 0%, transparent 70%), radial-gradient(circle at 70% 70%, rgba(6, 182, 212, 0.4) 0%, transparent 70%)',
                     borderRadius: '50%',
@@ -173,7 +173,7 @@ export default function MagicStatsCard({ label, value, icon: Icon, status, isSca
                 </div>
 
                 <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] !text-foreground/30">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] !text-foreground/50">
                         {label}
                     </p>
                     <h3 className="text-2xl font-mono font-black tracking-tighter !text-foreground uppercase truncate">

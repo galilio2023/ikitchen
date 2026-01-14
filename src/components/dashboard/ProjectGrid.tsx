@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { IKitchen } from "@/types/kitchen";
-import { cn } from "@/lib/utils";
 import ProjectCard from "./project-card/ProjectCard";
 import EmptyDashboard from "./EmptyDashboard";
 import gsap from "gsap";
@@ -38,14 +37,10 @@ export default function ProjectGrid({ projects, isSearch }: ProjectGridProps) {
 
     return (
         <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project: IKitchen, index: number) => (
+            {projects.map((project: IKitchen) => (
                 <div 
                     key={project._id?.toString() || project.id}
-                    className={cn(
-                        "project-card-wrapper",
-                        index % 4 === 0 ? "md:col-span-2 md:row-span-1" : 
-                        index % 4 === 3 ? "md:col-span-1 md:row-span-2" : ""
-                    )}
+                    className="project-card-wrapper"
                 >
                     <ProjectCard project={project} />
                 </div>

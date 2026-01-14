@@ -85,22 +85,22 @@ export default function DashboardPage() {
             <section className="glass-brilliant rounded-[2.5rem] overflow-hidden shadow-2xl border border-border">
                 <div className="p-8 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-6 bg-accent/10">
                     <div className="space-y-1">
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/80">Active_Nodes</h2>
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/60">Active_Nodes</h2>
                         <div className="flex items-center gap-2">
                             <GitBranch size={12} className="text-magic-purple" />
-                            <span className="text-[9px] font-mono text-foreground/20 uppercase tracking-widest">registry/v1.0.4</span>
+                            <span className="text-[9px] font-mono text-foreground/40 uppercase tracking-widest">registry/v1.0.4</span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4 flex-1 max-w-md">
                         <div className="relative flex-1 group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-foreground/20 group-focus-within:text-magic-purple transition-colors" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-foreground/40 group-focus-within:text-magic-purple transition-colors" />
                             <input 
                                 type="text"
                                 placeholder="Search_Registry..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-accent/30 border border-border rounded-xl py-3 pl-12 pr-4 text-[10px] font-mono uppercase tracking-widest text-foreground placeholder:text-foreground/10 focus:outline-none focus:border-magic-purple/40 focus:bg-accent/50 transition-all"
+                                className="w-full bg-accent/30 border border-border rounded-xl py-3 pl-12 pr-4 text-[10px] font-mono uppercase tracking-widest text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-magic-purple/40 focus:bg-accent/50 transition-all"
                             />
                         </div>
                         <CreateProjectModal />

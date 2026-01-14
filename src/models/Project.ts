@@ -59,7 +59,8 @@ const ProjectSchema = new Schema<IProjectDocument>({
     tags: [String],
     owner: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     }
 }, {
     timestamps: true,
