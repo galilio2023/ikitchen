@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import { compare, genSalt, hash } from 'bcryptjs';
 
 export interface IUser {
     _id?: string;
@@ -49,45 +49,43 @@ const UserSchema = new Schema<IUserDocument>({
 // Compare password method - using a regular function to ensure 'this' context
 UserSchema.methods.comparePassword = async function(password: string): Promise<boolean> {
     console.log(`[USER MODEL] verifyPassword starting for: ${this.email}`);
-    if (!password || !this.password) return false;
+    if (!password || !this.password) {
+        console.log(`[USER MODEL] verifyPassword: Missing password or hash`);
+        return false;
+    }
     try {
-        return await bcrypt.compare(password, this.password);
+        const isMatch = await compare(password, this.password);
+        console.log(`[USER MODEL] verifyPassword result: ${isMatch}`);
+        return isMatch;
     } catch (err) {
         console.error(`[USER MODEL] verifyPassword error:`, err);
         return false;
     }
 };
 
-// Hash password before saving - using explicit callback 'next' for maximum compatibility
-UserSchema.pre('save', function(next) {
+// Hash password before saving
+UserSchema.pre('save', async function() {
     const user = this;
     
     // Only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) {
-        return next();
+        return;
     }
 
     try {
-        bcrypt.genSalt(10, (err, salt) => {
-            if (err) return next(err);
-            bcrypt.hash(user.password as string, salt, (err, hash) => {
-                if (err) return next(err);
-                user.password = hash;
-                next();
-            });
-        });
+        console.log(`[USER MODEL] Hashing password for: ${user.email}`);
+        const salt = await genSalt(10);
+        user.password = await hash(user.password as string, salt);
+        console.log(`[USER MODEL] Password hashed successfully`);
     } catch (err: any) {
-        next(err);
+        console.error('[USER MODEL] Error hashing password:', err);
+        throw err;
     }
 });
 
 console.log('[USER MODEL] Initializing User model...');
 
-// Force model removal in development to ensure schema updates are applied
-if (process.env.NODE_ENV === 'development' && mongoose.models.User) {
-    delete mongoose.models.User;
-}
-
+// Standard Next.js model initialization to avoid re-registration errors
 const User = mongoose.models.User || mongoose.model<IUserDocument>('User', UserSchema);
 
 console.log('[USER MODEL] User model ready.');

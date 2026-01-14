@@ -9,6 +9,11 @@ if (!cached) {
 }
 
 async function dbConnect() {
+    if (!MONGODB_URI) {
+        console.error('[DB CONNECT] CRITICAL: MONGODB_URI is not defined in environment variables.');
+        throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+    }
+
     // 1. Return existing connection if healthy
     if (cached.conn && mongoose.connection.readyState === 1) {
         return cached.conn;
