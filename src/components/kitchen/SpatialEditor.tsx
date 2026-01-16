@@ -40,9 +40,29 @@ export default function SpatialEditor() {
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         const typeString = e.dataTransfer.getData("obstacleType");
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = Math.round((e.clientX - rect.left) / GRID_SIZE) * GRID_SIZE;
-        const y = Math.round((e.clientY - rect.top) / GRID_SIZE) * GRID_SIZE;
+        const container = e.currentTarget as HTMLDivElement;
+        if (!container || !currentWall) return;
+
+        // 1. Re-calculate the current scale (Match SpatialCanvas logic)
+        const padding = window.innerWidth < 1024 ? 20 : 40;
+        const availableWidth = container.offsetWidth - (padding * 2);
+        const scale = Math.min(availableWidth / currentWall.length, 1.5);
+
+        // 2. Calculate offsets used for centering
+        const offsetX = (container.offsetWidth - (currentWall.length * scale)) / 2;
+        const offsetY = (container.offsetHeight - (currentWall.height * scale)) / 2;
+
+        const rect = container.getBoundingClientRect();
+        const dropX = e.clientX - rect.left;
+        const dropY = e.clientY - rect.top;
+
+        // 3. REVERSE the scale to get real CM
+        const unscaledX = (dropX - offsetX) / scale;
+        const unscaledY = (dropY - offsetY) / scale;
+
+        // 4. Snap to grid
+        const x = Math.round(unscaledX / GRID_SIZE) * GRID_SIZE;
+        const y = Math.round(unscaledY / GRID_SIZE) * GRID_SIZE;
 
         if (typeString) {
             dispatch(addObstacle({ type: typeString as ObstacleType, wallIndex: activeWallIndex, x, y }));

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { IObstacle } from "@/types/kitchen";
+
+import { IKitchen, IObstacle } from "@/types/kitchen";
 import { Settings2, Maximize2, Move, Box, Palette, Sparkles, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/lib/hooks";
@@ -14,7 +15,20 @@ interface InspectorFieldProps {
     onChange: (v: number) => void;
 }
 
-export default function SpatialInspector({ selectedNode, currentKitchen, onVisualize, isRendering }: any) {
+
+interface SpatialInspectorProps {
+    selectedNode: (IObstacle & { isAppliance?: boolean; name?: string; }) | null;
+    currentKitchen: IKitchen | null;
+    onVisualize: () => void;
+    isRendering: boolean;
+}
+
+export default function SpatialInspector({
+                                             selectedNode,
+                                             currentKitchen,
+                                             onVisualize,
+                                             isRendering
+                                         }: SpatialInspectorProps) {
     const dispatch = useAppDispatch();
 
     if (!selectedNode) {
