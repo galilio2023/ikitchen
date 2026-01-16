@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import { IKitchen } from '@/types/kitchen';
 import SpatialNode from './SpatialNode';
 import SpatialControls from './SpatialControls';
+import { motion } from 'framer-motion';
 
 interface SpatialCanvasProps {
     currentKitchen: IKitchen | null;
@@ -18,62 +19,97 @@ interface SpatialCanvasProps {
 }
 
 export default function SpatialCanvas({
-    currentKitchen,
-    currentWall,
-    renderableObstacles,
-    selectedObstacleId,
-    onDrop,
-    onDragOver,
-    onCanvasClick,
-    onNodeClick,
-    onNodeDragStart
-}: SpatialCanvasProps) {
+                                          currentKitchen,
+                                          currentWall,
+                                          renderableObstacles,
+                                          selectedObstacleId,
+                                          onDrop,
+                                          onDragOver,
+                                          onCanvasClick,
+                                          onNodeClick,
+                                          onNodeDragStart
+                                      }: SpatialCanvasProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
+
+    // DYNAMIC SCALING LOGIC: Ensures the wall fits any screen width
+    useLayoutEffect(() => {
+        const handleResize = () => {
+            if (containerRef.current && currentWall) {
+                const padding = 40; // Desktop padding
+                const mobilePadding = 20;
+                const activePadding = window.innerWidth < 768 ? mobilePadding : padding;
+
+                const availableWidth = containerRef.current.offsetWidth - (activePadding * 2);
+                const wallWidth = currentWall.length;
+                const newScale = Math.min(availableWidth / wallWidth, 1.5); // Max scale 1.5x
+                setScale(newScale);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [currentWall]);
+
     return (
         <div
+            ref={containerRef}
             onDragOver={onDragOver}
             onDrop={onDrop}
             onClick={onCanvasClick}
-            className="relative w-full h-full bg-transparent overflow-hidden cursor-crosshair border border-border shadow-inner"
+            className="relative w-full h-full bg-transparent overflow-hidden cursor-crosshair border border-border shadow-inner flex items-center justify-center"
             style={{
                 backgroundImage: `radial-gradient(circle at 2px 2px, rgba(6, 182, 212, 0.15) 1px, transparent 0)`,
                 backgroundSize: '40px 40px'
             }}
         >
-            {/* Wall Boundary */}
-            {currentWall && (
-                <div 
-                    className="absolute border-2 border-magic-cyan/20 bg-magic-cyan/5 pointer-events-none transition-all duration-500"
-                    style={{
-                        left: 0,
-                        top: 0,
-                        width: currentWall.length,
-                        height: currentWall.height,
-                    }}
-                >
-                    <div className="absolute top-2 right-4 text-[10px] font-mono text-magic-cyan/40 uppercase tracking-widest">
-                        {currentWall.label} :: {currentWall.length}x{currentWall.height} CM
+            {/* SCALABLE WRAPPER: Keeps all coordinates connected regardless of screen size */}
+            <motion.div
+                animate={{ scale }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                style={{
+                    width: currentWall?.length || '100%',
+                    height: currentWall?.height || '100%',
+                    position: 'relative'
+                }}
+            >
+                {/* Wall Boundary */}
+                {currentWall && (
+                    <div
+                        className="absolute border-2 border-magic-cyan/20 bg-magic-cyan/5 pointer-events-none"
+                        style={{
+                            left: 0,
+                            top: 0,
+                            width: '100%',
+                            height: '100%',
+                        }}
+                    >
+                        <div className="absolute -top-6 left-0 text-[8px] font-mono text-magic-cyan/40 uppercase tracking-widest">
+                            {currentWall.label} :: {currentWall.length}x{currentWall.height} CM
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* Render Hardware Nodes */}
-            {renderableObstacles.map((obs) => (
-                <SpatialNode
-                    key={obs.renderKey}
-                    id={obs.id}
-                    type={obs.type}
-                    x={obs.position.x}
-                    y={obs.position.y}
-                    isSelected={selectedObstacleId === obs.id}
-                    onDragStart={() => onNodeDragStart(obs.id)}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        if (obs.id) onNodeClick(obs.id);
-                    }}
-                />
-            ))}
+                {/* Render Hardware Nodes */}
+                {renderableObstacles.map((obs) => (
+                    <SpatialNode
+                        key={obs.renderKey}
+                        id={obs.id}
+                        type={obs.type}
+                        x={obs.position.x}
+                        y={obs.position.y}
+                        isSelected={selectedObstacleId === obs.id}
+                        onDragStart={() => onNodeDragStart(obs.id)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (obs.id) onNodeClick(obs.id);
+                        }}
+                    />
+                ))}
+            </motion.div>
 
-            {/* Offline Guard / Controls Layer */}
+            {/* Offline Guard */}
             <SpatialControls isOffline={!currentKitchen} />
         </div>
     );

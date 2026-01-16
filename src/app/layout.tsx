@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <StoreProvider>
                 <GlobalCreateProjectModal />
                 {/* 3. LAYER 2: Main Content (The relative z-10 ensures it stays above stars) */}
-                <div className="relative z-10 h-dvh flex flex-col overflow-hidden">
+                <div className="relative z-10 h-dvh  flex flex-col overflow-hidden">
                     {children}
                 </div>
             </StoreProvider>

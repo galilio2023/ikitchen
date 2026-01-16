@@ -1,25 +1,30 @@
 'use client';
 
 import React from 'react';
-import { Ruler, Info, Box, Layers, ArrowRight } from 'lucide-react';
+import { Ruler, Info, Box, Layers } from 'lucide-react';
 
 export default function MeasurementsPage() {
     return (
-        <div className="space-y-10 p-10 max-w-5xl mx-auto font-mono">
+        /* FIXED: Responsive padding p-4 md:p-10 */
+        <div className="space-y-6 md:space-y-10 p-4 md:p-10 max-w-5xl mx-auto font-mono">
             <header className="space-y-2">
                 <div className="flex items-center gap-3">
                     <div className="p-3 bg-magic-purple/10 border border-magic-purple/20 rounded-2xl text-magic-purple">
                         <Ruler size={24} />
                     </div>
-                    <h1 className="text-3xl font-black uppercase tracking-tighter text-white italic">
+                    <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-white italic">
                         Unit_Specs<span className="text-white/20 not-italic">.cfg</span>
                     </h1>
                 </div>
-                <p className="text-[10px] text-white/40 uppercase tracking-[0.4em] ml-14">Standard_Architectural_Units</p>
+                {/* FIXED: Removed aggressive margin on mobile for better centering/flow */}
+                <p className="text-[10px] text-white/40 uppercase tracking-[0.4em] ml-0 md:ml-14">
+                    Standard_Architectural_Units
+                </p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <section className="glass-brilliant p-8 rounded-[2.5rem] border border-white/20 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                {/* SECTION: Base Cabinets */}
+                <section className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/20 space-y-6">
                     <h2 className="text-xs font-black uppercase tracking-widest text-white/80 border-b border-white/10 pb-4 flex items-center gap-2">
                         <Box size={16} className="text-magic-purple" />
                         Base_Cabinets
@@ -38,7 +43,8 @@ export default function MeasurementsPage() {
                     </div>
                 </section>
 
-                <section className="glass-brilliant p-8 rounded-[2.5rem] border border-white/20 space-y-6">
+                {/* SECTION: Wall Cabinets */}
+                <section className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/20 space-y-6">
                     <h2 className="text-xs font-black uppercase tracking-widest text-white/80 border-b border-white/10 pb-4 flex items-center gap-2">
                         <Layers size={16} className="text-magic-cyan" />
                         Wall_Cabinets
@@ -58,9 +64,10 @@ export default function MeasurementsPage() {
                 </section>
             </div>
 
-            <div className="glass-brilliant p-8 rounded-[2.5rem] border border-white/20 bg-magic-purple/5">
-                <div className="flex items-start gap-4">
-                    <div className="p-2 bg-magic-purple/20 rounded-lg text-magic-purple">
+            {/* Neural Note - Callout */}
+            <div className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/20 bg-magic-purple/5">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                    <div className="p-2 bg-magic-purple/20 rounded-lg text-magic-purple shrink-0">
                         <Info size={16} />
                     </div>
                     <div className="space-y-2">

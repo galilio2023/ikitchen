@@ -6,7 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import gsap from "gsap";
 
-export function SidebarLink({ href, icon, label, active }: { href: string, icon: React.ReactNode, label: string, active: boolean }) {
+interface SidebarLinkProps {
+    href: string;
+    icon: React.ReactNode;
+    label: string;
+    active: boolean;
+    onClick?: () => void; // Added for mobile menu closing
+}
+
+export function SidebarLink({ href, icon, label, active, onClick }: SidebarLinkProps) {
     const iconRef = useRef<HTMLSpanElement>(null);
     const glowRef = useRef<HTMLDivElement>(null);
 
@@ -16,13 +24,19 @@ export function SidebarLink({ href, icon, label, active }: { href: string, icon:
     };
 
     const handleMouseLeave = () => {
-        gsap.to(iconRef.current, { scale: active ? 1.1 : 1, color: active ? '#8b5cf6' : 'currentColor', duration: 0.3, ease: "power2.in" });
+        gsap.to(iconRef.current, {
+            scale: active ? 1.1 : 1,
+            color: active ? '#8b5cf6' : 'currentColor',
+            duration: 0.3,
+            ease: "power2.in"
+        });
         gsap.to(glowRef.current, { opacity: 0, scale: 1, duration: 0.4, ease: "power2.in" });
     };
 
     return (
         <Link
             href={href}
+            onClick={onClick}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={cn(
@@ -43,23 +57,23 @@ export function SidebarLink({ href, icon, label, active }: { href: string, icon:
                     />
                 )}
             </AnimatePresence>
-            
+
             {/* Hover Glow */}
-            <div 
+            <div
                 ref={glowRef}
                 className="absolute inset-0 bg-magic-purple/10 blur-xl opacity-0 pointer-events-none"
             />
 
-            <span 
+            <span
                 ref={iconRef}
                 className={cn(
-                    "transition-none",
+                    "transition-none z-10",
                     active ? "text-magic-purple scale-110" : ""
                 )}
             >
                 {icon}
             </span>
-            <span className={cn("transition-all", active ? "translate-x-1" : "group-hover:translate-x-1")}>
+            <span className={cn("transition-all z-10", active ? "translate-x-1" : "group-hover:translate-x-1")}>
                 {label}
             </span>
         </Link>
