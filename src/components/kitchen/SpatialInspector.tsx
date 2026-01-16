@@ -5,7 +5,14 @@ import { IObstacle } from "@/types/kitchen";
 import { Settings2, Maximize2, Move, Box, Palette, Sparkles, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/lib/hooks";
-import { updateObstacleDetails, setSelectedObstacle, saveKitchen } from "@/lib/features/kitchens/kitchenSlice";
+import { updateObstacleDetails, setSelectedObstacle } from "@/lib/features/kitchens/kitchenSlice";
+
+// Explicitly defining the props for helper components to satisfy TS Strict mode
+interface InspectorFieldProps {
+    label: string;
+    value: number;
+    onChange: (v: number) => void;
+}
 
 export default function SpatialInspector({ selectedNode, currentKitchen, onVisualize, isRendering }: any) {
     const dispatch = useAppDispatch();
@@ -20,7 +27,6 @@ export default function SpatialInspector({ selectedNode, currentKitchen, onVisua
     }
 
     return (
-        /* FIXED: Added 'fixed lg:relative' to float on top of mobile canvas when a node is selected */
         <aside className="fixed inset-x-0 bottom-0 z-[60] lg:relative lg:inset-auto w-full lg:w-80 h-[70vh] lg:h-full border-t lg:border-t-0 lg:border-l border-border p-6 flex flex-col gap-6 overflow-y-auto bg-background/95 lg:bg-accent/5 backdrop-blur-2xl rounded-t-[3rem] lg:rounded-none shadow-2xl">
             <div className="flex items-center justify-between lg:justify-end gap-2 border-b lg:border-0 border-border pb-4 lg:pb-0">
                 <button onClick={() => dispatch(setSelectedObstacle(null))} className="lg:hidden p-2 rounded-full bg-accent">
@@ -39,8 +45,17 @@ export default function SpatialInspector({ selectedNode, currentKitchen, onVisua
                     Spatial_Coordinates
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                    <CoordinateBox label="POS_X" value={selectedNode.position.x} onChange={(v) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { x: v } }))} />
-                    <CoordinateBox label="POS_Y" value={selectedNode.position.y} onChange={(v) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { y: v } }))} />
+                    {/* Fixed: Added (v: number) type to inline handlers */}
+                    <CoordinateBox
+                        label="POS_X"
+                        value={selectedNode.position.x}
+                        onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { x: v } }))}
+                    />
+                    <CoordinateBox
+                        label="POS_Y"
+                        value={selectedNode.position.y}
+                        onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { y: v } }))}
+                    />
                 </div>
             </section>
 
@@ -51,8 +66,16 @@ export default function SpatialInspector({ selectedNode, currentKitchen, onVisua
                     Dimensional_Specs
                 </div>
                 <div className="space-y-2">
-                    <DimensionRow label="Width" value={selectedNode.position.width} onChange={(v) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { width: v } }))} />
-                    <DimensionRow label="Height" value={selectedNode.position.height} onChange={(v) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { height: v } }))} />
+                    <DimensionRow
+                        label="Width"
+                        value={selectedNode.position.width}
+                        onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { width: v } }))}
+                    />
+                    <DimensionRow
+                        label="Height"
+                        value={selectedNode.position.height}
+                        onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { height: v } }))}
+                    />
                 </div>
             </section>
 
@@ -67,20 +90,31 @@ export default function SpatialInspector({ selectedNode, currentKitchen, onVisua
     );
 }
 
-function CoordinateBox({ label, value, onChange }: any) {
+// Fixed: Added Prop types to avoid implicit 'any'
+function CoordinateBox({ label, value, onChange }: InspectorFieldProps) {
     return (
         <div className="glass-brilliant p-3 rounded-xl border border-border">
             <p className="text-[7px] font-mono text-foreground/20 mb-1 uppercase tracking-widest">{label}</p>
-            <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full bg-transparent text-sm font-mono text-foreground focus:outline-none" />
+            <input
+                type="number"
+                value={value}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="w-full bg-transparent text-sm font-mono text-foreground focus:outline-none"
+            />
         </div>
     );
 }
 
-function DimensionRow({ label, value, onChange }: any) {
+function DimensionRow({ label, value, onChange }: InspectorFieldProps) {
     return (
         <div className="glass-brilliant p-4 rounded-xl border border-border flex items-center justify-between">
             <p className="text-[8px] font-mono text-foreground/20 uppercase tracking-widest">{label}</p>
-            <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-16 bg-transparent text-xs font-mono text-foreground font-black text-right focus:outline-none" />
+            <input
+                type="number"
+                value={value}
+                onChange={(e) => onChange(Number(e.target.value))}
+                className="w-16 bg-transparent text-xs font-mono text-foreground font-black text-right focus:outline-none"
+            />
         </div>
     );
 }
