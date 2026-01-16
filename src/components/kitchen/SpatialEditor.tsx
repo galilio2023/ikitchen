@@ -41,22 +41,27 @@ export default function SpatialEditor() {
         e.preventDefault();
         const typeString = e.dataTransfer.getData("obstacleType");
         const container = e.currentTarget as HTMLDivElement;
+
+        // Safety check for Wall and Container
         if (!container || !currentWall) return;
 
-        // 1. Re-calculate the current scale (Match SpatialCanvas logic)
+        // 1. Re-calculate scale and offset (Must match SpatialCanvas logic)
         const padding = window.innerWidth < 1024 ? 20 : 40;
         const availableWidth = container.offsetWidth - (padding * 2);
         const scale = Math.min(availableWidth / currentWall.length, 1.5);
 
-        // 2. Calculate offsets used for centering
-        const offsetX = (container.offsetWidth - (currentWall.length * scale)) / 2;
-        const offsetY = (container.offsetHeight - (currentWall.height * scale)) / 2;
+        const scaledWidth = currentWall.length * scale;
+        const scaledHeight = currentWall.height * scale;
+        const offsetX = (container.offsetWidth - scaledWidth) / 2;
+        const offsetY = (container.offsetHeight - scaledHeight) / 2;
 
         const rect = container.getBoundingClientRect();
+
+        // 2. Get relative mouse position
         const dropX = e.clientX - rect.left;
         const dropY = e.clientY - rect.top;
 
-        // 3. REVERSE the scale to get real CM
+        // 3. Translate screen pixels back to architectural CM
         const unscaledX = (dropX - offsetX) / scale;
         const unscaledY = (dropY - offsetY) / scale;
 
@@ -65,9 +70,19 @@ export default function SpatialEditor() {
         const y = Math.round(unscaledY / GRID_SIZE) * GRID_SIZE;
 
         if (typeString) {
-            dispatch(addObstacle({ type: typeString as ObstacleType, wallIndex: activeWallIndex, x, y }));
+            const type = typeString as ObstacleType;
+            dispatch(addObstacle({
+                type,
+                wallIndex: activeWallIndex,
+                x,
+                y
+            }));
         } else if (draggingId) {
-            dispatch(updateObstaclePosition({ id: draggingId, x, y }));
+            dispatch(updateObstaclePosition({
+                id: draggingId,
+                x,
+                y
+            }));
             setDraggingId(null);
         }
     };
