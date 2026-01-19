@@ -6,6 +6,8 @@ import StoreProvider from "@/lib/StoreProvider";
 import GlobalCreateProjectModal from "@/components/modals/GlobalCreateProjectModal";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Toaster } from "sonner";
 
 const inter = Inter({ 
     subsets: ["latin"],
@@ -24,24 +26,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en" className={`${inter.variable}`} suppressHydrationWarning>
         <body className="font-sans bg-background text-foreground antialiased h-dvh relative overflow-hidden">
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-        >
-            {/* 1. LAYER 0: Background Visuals (Mounted first, no logic) */}
-            <Starfield starCount={120} />
+        <ErrorBoundary>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+            >
+                {/* 1. LAYER 0: Background Visuals (Mounted first, no logic) */}
+                <Starfield starCount={120} />
 
-            {/* 2. LAYER 1: State Provider (Wraps the logic tree) */}
-            <StoreProvider>
-                <GlobalCreateProjectModal />
-                {/* 3. LAYER 2: Main Content (The relative z-10 ensures it stays above stars) */}
-                <div className="relative z-10 h-dvh  flex flex-col overflow-hidden">
-                    {children}
-                </div>
-            </StoreProvider>
-        </ThemeProvider>
+                {/* 2. LAYER 1: State Provider (Wraps the logic tree) */}
+                <StoreProvider>
+                    <Toaster 
+                        position="top-right" 
+                        expand={false}
+                        richColors
+                        closeButton
+                    />
+                    <GlobalCreateProjectModal />
+                    {/* 3. LAYER 2: Main Content (The relative z-10 ensures it stays above stars) */}
+                    <div className="relative z-10 h-dvh  flex flex-col overflow-hidden">
+                        {children}
+                    </div>
+                </StoreProvider>
+            </ThemeProvider>
+        </ErrorBoundary>
         </body>
         </html>
     );

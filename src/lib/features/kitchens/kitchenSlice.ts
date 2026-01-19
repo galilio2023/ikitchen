@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { IKitchen, IObstacle, ObstacleType } from '@/types/kitchen';
+import { IKitchen, IObstacle, IAppliance, ObstacleType } from '@/types/kitchen';
+
+interface ApplianceWithId {
+    _id?: { toString: () => string };
+    id?: string;
+    [key: string]: unknown;
+}
 
 interface KitchenState {
     items: IKitchen[];
@@ -153,7 +159,7 @@ export const kitchenSlice = createSlice({
             state.currentKitchen.walls.push(newWall);
             state.activeWallIndex = state.currentKitchen.walls.length - 1;
         },
-        updateWall: (state, action: PayloadAction<{ index: number; updates: any }>) => {
+        updateWall: (state, action: PayloadAction<{ index: number; updates: Partial<IKitchen['walls'][0]> }>) => {
             if (!state.currentKitchen || !state.currentKitchen.walls[action.payload.index]) return;
             state.currentKitchen.walls[action.payload.index] = {
                 ...state.currentKitchen.walls[action.payload.index],
@@ -167,7 +173,7 @@ export const kitchenSlice = createSlice({
                 state.activeWallIndex = state.currentKitchen.walls.length - 1;
             }
         },
-        applyDesign: (state, action: PayloadAction<{ obstacles: any[], appliances: any[] }>) => {
+        applyDesign: (state, action: PayloadAction<{ obstacles: IObstacle[]; appliances: IAppliance[] }>) => {
             if (!state.currentKitchen) return;
             // For now, we'll append or replace. Let's replace appliances and append obstacles.
             state.currentKitchen.appliances = action.payload.appliances;
@@ -188,7 +194,7 @@ export const kitchenSlice = createSlice({
                 obs.position.x = action.payload.x;
                 obs.position.y = action.payload.y;
             } else {
-                const app = state.currentKitchen.appliances.find(a => ((a as any)._id?.toString() || (a as any).id) === action.payload.id);
+                const app = state.currentKitchen.appliances.find(a => ((a as unknown as ApplianceWithId)._id?.toString() || (a as unknown as ApplianceWithId).id) === action.payload.id);
                 if (app) {
                     app.position.x = action.payload.x;
                     app.position.y = action.payload.y;
@@ -202,7 +208,7 @@ export const kitchenSlice = createSlice({
             if (obs) {
                 obs.position = { ...obs.position, ...action.payload.updates };
             } else {
-                const app = state.currentKitchen.appliances.find(a => ((a as any)._id?.toString() || (a as any).id) === action.payload.id);
+                const app = state.currentKitchen.appliances.find(a => ((a as unknown as ApplianceWithId)._id?.toString() || (a as unknown as ApplianceWithId).id) === action.payload.id);
                 if (app) {
                     app.position = { ...app.position, ...action.payload.updates };
                 }
@@ -234,11 +240,11 @@ export const kitchenSlice = createSlice({
                 // Ensure payload is an array to prevent .map() from hitting an undefined object
                 const payload = Array.isArray(action.payload) ? action.payload : [];
 
-                state.items = payload.map((item: any) => ({
+                state.items = payload.map((item: IKitchen) => ({
                     ...item, // Keeps all fields for TS compliance
                     id: item._id || item.id, // Standardizes ID for the Link keys
-                    clientName: item.client || item.clientName // Map client (Project) to clientName (IKitchen)
-                }));
+                    clientName: item.clientName // Use clientName directly
+                })) as IKitchen[];
             })
             .addCase(fetchAllKitchens.rejected, (state, action) => {
                 state.loading = false;

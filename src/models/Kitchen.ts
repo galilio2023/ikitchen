@@ -70,5 +70,11 @@ const KitchenSchema = new Schema({
 
 }, { timestamps: true });
 
+// Database indexes for query optimization
+KitchenSchema.index({ projectId: 1 }); // Get kitchens by project
+KitchenSchema.index({ userId: 1, status: 1 }); // Get user's kitchens filtered by status
+KitchenSchema.index({ createdAt: -1 }); // Sort by creation date
+KitchenSchema.index({ clientName: 'text' }); // Full-text search on client name
+
 const Kitchen = models.Kitchen || model('Kitchen', KitchenSchema);
 export default Kitchen;

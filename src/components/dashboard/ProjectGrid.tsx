@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { IKitchen } from "@/types/kitchen";
-import ProjectCard from "./project-card/ProjectCard";
+import EnterpriseProjectCard from "./project-card/EnterpriseProjectCard";
 import EmptyDashboard from "./EmptyDashboard";
+import { motionVariants } from "@/lib/animations";
 import gsap from "gsap";
 
 interface ProjectGridProps {
@@ -19,10 +21,13 @@ export default function ProjectGrid({ projects, isSearch }: ProjectGridProps) {
 
         const ctx = gsap.context(() => {
             gsap.from(".project-card-wrapper", {
-                y: 20,
+                y: 40,
                 autoAlpha: 0,
                 duration: 0.8,
-                stagger: 0.1,
+                stagger: {
+                    each: 0.12,
+                    ease: "power2.out"
+                },
                 ease: "power3.out",
                 clearProps: "all"
             });
@@ -36,15 +41,22 @@ export default function ProjectGrid({ projects, isSearch }: ProjectGridProps) {
     }
 
     return (
-        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div 
+            ref={gridRef} 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6"
+            variants={motionVariants.container}
+            initial="hidden"
+            animate="visible"
+        >
             {projects.map((project: IKitchen) => (
-                <div 
+                <motion.div 
                     key={project._id?.toString() || project.id}
                     className="project-card-wrapper"
+                    variants={motionVariants.item}
                 >
-                    <ProjectCard project={project} />
-                </div>
+                    <EnterpriseProjectCard project={project} />
+                </motion.div>
             ))}
-        </div>
+        </motion.div>
     );
 }

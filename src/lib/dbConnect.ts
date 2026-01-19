@@ -2,10 +2,21 @@ import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-let cached = (global as any).mongoose;
+interface MongooseCache {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose> | null;
+}
 
-if (!cached) {
-    cached = (global as any).mongoose = { conn: null, promise: null };
+// Extend global type for mongoose cache
+declare global {
+    // eslint-disable-next-line no-var
+    var mongoose: MongooseCache | undefined;
+}
+
+let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+
+if (!global.mongoose) {
+    global.mongoose = cached;
 }
 
 async function dbConnect() {

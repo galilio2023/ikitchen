@@ -12,8 +12,11 @@ export default function StarField({ starCount = 120 }: { starCount?: number }) {
     const [mounted, setMounted] = useState(false);
     const { theme } = useTheme();
 
+    // Fix: Use layout effect or a ref to prevent setState during render
     useEffect(() => {
-        setMounted(true);
+        // Delay state update to next tick to avoid synchronous setState in effect
+        const timer = setTimeout(() => setMounted(true), 0);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {

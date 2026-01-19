@@ -54,7 +54,7 @@ export type ObstacleType =
     | 'clearance';
 
 /** Alias for backward compatibility with existing components */
-export interface Obstacle extends IObstacle {}
+export type Obstacle = IObstacle;
 
 export interface IObstacle {
     id: string; // Unique ID for selection and drag-drop tracking

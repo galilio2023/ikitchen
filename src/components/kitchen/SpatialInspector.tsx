@@ -7,6 +7,7 @@ import { Settings2, Maximize2, Move, Box, Palette, Sparkles, Loader2, X } from "
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/lib/hooks";
 import { updateObstacleDetails, setSelectedObstacle } from "@/lib/features/kitchens/kitchenSlice";
+import AIDesignGenerator from './AIDesignGenerator';
 
 // Explicitly defining the props for helper components to satisfy TS Strict mode
 interface InspectorFieldProps {
@@ -16,8 +17,24 @@ interface InspectorFieldProps {
 }
 
 
+interface RenderableNode {
+    id: string;
+    type: string;
+    position: {
+        x: number;
+        y: number;
+        z?: number;
+        width: number;
+        height: number;
+        depth?: number;
+    };
+    isAppliance?: boolean;
+    name?: string;
+    wallIndex?: number;
+}
+
 interface SpatialInspectorProps {
-    selectedNode: (IObstacle & { isAppliance?: boolean; name?: string; }) | null;
+    selectedNode: RenderableNode | null;
     currentKitchen: IKitchen | null;
     onVisualize: () => void;
     isRendering: boolean;
@@ -33,9 +50,16 @@ export default function SpatialInspector({
 
     if (!selectedNode) {
         return (
-            <aside className="hidden lg:flex w-80 flex-none border-l border-border p-6 flex flex-col items-center justify-center text-center bg-accent/5 backdrop-blur-xl h-full">
-                <Settings2 size={24} className="text-foreground/20 mb-4" />
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/20">Inspector_Standby</p>
+            <aside className="hidden lg:flex w-80 flex-none border-l border-border p-6 flex-col bg-accent/5 backdrop-blur-xl h-full overflow-y-auto">
+                <div className="flex-none mb-6 text-center">
+                    <Settings2 size={24} className="text-foreground/20 mb-2 mx-auto" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/20">Inspector_Standby</p>
+                </div>
+                
+                {/* AI Design Generator when no node is selected */}
+                <div className="flex-1">
+                    <AIDesignGenerator />
+                </div>
             </aside>
         );
     }

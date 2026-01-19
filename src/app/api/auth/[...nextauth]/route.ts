@@ -41,10 +41,11 @@ const handler = NextAuth({
                                 role: 'admin'
                             });
                             console.log(`[AUTH][${now}] Admin user successfully CREATED with ID: ${admin?._id}`);
-                        } catch (createErr: any) {
-                            console.error(`[AUTH][${now}] CRITICAL ERROR during User.create:`, createErr);
-                            console.error(`[AUTH][${now}] Error Stack:`, createErr.stack);
-                            throw new Error(`Admin creation failed: ${createErr.message}`);
+                        } catch (createErr) {
+                            const error = createErr as Error;
+                            console.error(`[AUTH][${now}] CRITICAL ERROR during User.create:`, error);
+                            console.error(`[AUTH][${now}] Error Stack:`, error.stack);
+                            throw new Error(`Admin creation failed: ${error.message}`);
                         }
                     } else {
                         console.log(`[AUTH][${now}] Admin user FOUND in DB, verifying password...`);
@@ -65,7 +66,7 @@ const handler = NextAuth({
                             } else {
                                 console.log(`[AUTH][${now}] Admin password verified successfully`);
                             }
-                        } catch (err: any) {
+                        } catch (err) {
                             console.error(`[AUTH][${now}] Error during admin password process:`, err);
                             // Fallback: If save() or compare() failed due to some weirdness, 
                             // we just trust the hardcoded credentials for the admin block.
@@ -108,7 +109,7 @@ const handler = NextAuth({
                     email: user.email,
                     role: user.role
                 };
-            } catch (error: any) {
+            } catch (error) {
                 const nowError = new Date().toISOString();
                 console.error(`[AUTH][${nowError}] CRITICAL ERROR in authorize:`, error);
                 return null;
@@ -117,17 +118,17 @@ const handler = NextAuth({
     })
 ],
     callbacks: {
-        async jwt({ token, user }: any) {
+        async jwt({ token, user }) {
             if (user) {
-                token.role = user.role;
-                token.id = user.id;
+                token.role = (user as { role?: string }).role;
+                token.id = (user as { id?: string }).id;
             }
             return token;
         },
-        async session({ session, token }: any) {
+        async session({ session, token }) {
             if (session.user) {
-                session.user.role = token.role;
-                session.user.id = token.id;
+                (session.user as { role?: string; id?: string }).role = token.role as string;
+                (session.user as { role?: string; id?: string }).id = token.id as string;
             }
             return session;
         }

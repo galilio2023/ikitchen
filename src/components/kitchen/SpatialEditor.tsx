@@ -30,10 +30,22 @@ export default function SpatialEditor() {
             ...obs, isAppliance: false, id: obs.id || obs._id?.toString() || `obs-${index}`,
             renderKey: obs._id?.toString() || obs.id || `obs-${index}-${obs.position.x}`
         }));
-        const appliances = (currentKitchen?.appliances ?? []).filter(app => app.wallIndex === activeWallIndex).map((app, index) => ({
-            ...app, type: 'appliance' as any, isAppliance: true, id: (app as any)._id?.toString() || (app as any).id || `app-${index}`,
-            renderKey: (app as any)._id?.toString() || (app as any).id || `app-${index}-${app.position.x}`
-        }));
+        interface ApplianceWithId {
+            _id?: { toString: () => string };
+            id?: string;
+            [key: string]: unknown;
+        }
+
+        const appliances = (currentKitchen?.appliances ?? []).filter(app => app.wallIndex === activeWallIndex).map((app, index) => {
+            const appWithId = app as unknown as ApplianceWithId;
+            return {
+                ...app,
+                type: 'appliance' as const,
+                isAppliance: true,
+                id: appWithId._id?.toString() || appWithId.id || `app-${index}`,
+                renderKey: appWithId._id?.toString() || appWithId.id || `app-${index}-${app.position.x}`
+            };
+        });
         return [...obstacles, ...appliances];
     }, [currentKitchen?.obstacles, currentKitchen?.appliances, activeWallIndex]);
 
@@ -159,7 +171,7 @@ export default function SpatialEditor() {
             {/* RIGHT PANEL: Inspector (Handles mobile visibility internally) */}
             <div className={cn("flex-none", selectedObstacleId ? "block" : "hidden lg:block")}>
                 <SpatialInspector
-                    selectedNode={renderableNodes.find(n => n.id === selectedObstacleId) as any}
+                    selectedNode={renderableNodes.find(n => n.id === selectedObstacleId) || null}
                     currentKitchen={currentKitchen}
                     onVisualize={() => setIsRendering(true)}
                     isRendering={isRendering}

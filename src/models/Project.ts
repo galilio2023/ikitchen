@@ -74,4 +74,9 @@ ProjectSchema.virtual('id').get(function() {
     return this._id.toHexString();
 });
 
+// Database indexes for query optimization
+ProjectSchema.index({ owner: 1, createdAt: -1 }); // Most common query: get user's projects sorted by date
+ProjectSchema.index({ status: 1 }); // Filter by status
+ProjectSchema.index({ name: 'text', client: 'text' }); // Full-text search on name and client
+
 export default mongoose.models.Project || mongoose.model<IProjectDocument>('Project', ProjectSchema);
