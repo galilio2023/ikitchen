@@ -87,6 +87,8 @@ export const generatedDesignSchema = z.object({
   };
 });
 
+export type GeneratedDesign = z.infer<typeof generatedDesignSchema>;
+
 // Default standards for 2026 - these are the canonical values
 export const DEFAULT_STANDARDS = Object.freeze({
   baseCabinetHeight: 85,       // Standard base cabinet height
