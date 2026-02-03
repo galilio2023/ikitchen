@@ -11,7 +11,7 @@ interface ExtendedUser {
   name?: string | null;
   email?: string | null;
   image?: string | null;
-  role?: string;
+  role: string;
 }
 
 export const authOptions: NextAuthOptions = {
