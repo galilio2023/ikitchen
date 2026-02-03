@@ -13,17 +13,16 @@ import { detectOverlaps } from "@/lib/validationHelpers";
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // Authenticateuser
+    // Authenticate user
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
-    const { id: kitchenId } = params;
+    const { id: kitchenId } = await params;
     const {
       generatedDesign,
       applyUnitsAsObstacles = false,
@@ -89,30 +88,38 @@ export async function PATCH(
     let newObstacles = [...(kitchen.obstacles || [])];
 
     if (applyUnitsAsObstacles) {
-      const convertedUnits = validatedDesign.units.map((unit: any) => ({
-        id:
-          unit.id ||
-          `ai_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-        type: unit.type,
-        x: unit.position.x,
-        y: unit.position.y,
-        width: unit.position.width,
-        height: unit.position.height,
-        z: unit.position.depth || 0, // Mapping depth to z-axis
-        wallIndex: unit.wallIndex,
-        name: unit.name,
-        metadata: {
-          generatedBy: "ai",
-          acceptedAt: new Date().toISOString(),
-        },
-      }));
+      const convertedUnits = validatedDesign.units.map((unit) => {
+        // Map 'cabinet' to 'clearance' to satisfy Mongoose enum validation
+        // or keep as is if it matches allowed types.
+        // Allowed: 'window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'
+        let type = unit.type;
+        if (type === 'cabinet') {
+            type = 'clearance';
+        } else if (!['window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'].includes(type)) {
+            type = 'clearance'; // Fallback
+        }
+
+        return {
+            id: unit.id || `ai_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            type: type,
+            wallIndex: unit.wallIndex,
+            position: {
+                x: unit.position.x,
+                y: unit.position.y,
+                width: unit.position.width,
+                height: unit.position.height,
+                z: unit.position.depth || 0,
+                depth: unit.position.depth || 0
+            }
+        };
+      });
 
       // Append the new AI units to existing obstacles
       newObstacles = [...newObstacles, ...convertedUnits];
     }
 
     // 6. Persist to MongoDB
-    // We update the obstacles AND push a snapshotto the history array
+    // We update the obstacles AND push a snapshot to the history array
     const updatedKitchen = await Kitchen.findOneAndUpdate(
       { _id: kitchenId, userId: session.user.id },
       {

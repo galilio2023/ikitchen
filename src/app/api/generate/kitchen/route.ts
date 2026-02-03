@@ -13,7 +13,7 @@ import {
   checkAisleWidth,
   checkIslandSize,
 } from "@/lib/validationHelpers";
-import { createHash } from "crypto"; // FIX: Use createHash for modern Node
+import { createHash } from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -116,8 +116,8 @@ export async function POST(req: NextRequest) {
     );
 
     const checks = {
-      workTriangle: checkWorkTriangle(design.units as any, DEFAULT_STANDARDS),
-      aisleWidth: checkAisleWidth(design.units as any, DEFAULT_STANDARDS),
+      workTriangle: checkWorkTriangle(design.units, DEFAULT_STANDARDS),
+      aisleWidth: checkAisleWidth(design.units, DEFAULT_STANDARDS),
       islandSize: checkIslandSize(0, 0, DEFAULT_STANDARDS), // Simplified for now
     };
 

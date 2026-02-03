@@ -31,6 +31,8 @@ export default function ProjectDetailsPage() {
   // 1. Initial Data Fetch
   useEffect(() => {
     if (id) {
+      // Reset content visibility to re-trigger animation when navigating between projects.
+      setShowContent(false);
       dispatch(fetchKitchenById(id as string));
       setInitData(true);
     }

@@ -141,7 +141,8 @@ export const acceptAiLayout = createAsyncThunk<
     if (!kitchenId) return rejectWithValue("No kitchen selected");
 
     try {
-      const response = await fetch(`/api/projects/${kitchenId}/design`, {
+      // FIXED: Use /api/kitchens/[id]/design instead of /api/projects/[id]/design
+      const response = await fetch(`/api/kitchens/${kitchenId}/design`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

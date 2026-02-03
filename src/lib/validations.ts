@@ -18,7 +18,7 @@ export const kitchenStandardsSchema = z.object({
 
 // Enum for valid unit types
 const unitTypeSchema = z.enum([
-  'socket', 'vent', 'window', 'door', 'appliance', 'pipe', 'pillar', 'radiator', 'clearance'
+  'socket', 'vent', 'window', 'door', 'appliance', 'pipe', 'pillar', 'radiator', 'clearance', 'cabinet'
 ]);
 
 // Schema for unit position
@@ -41,6 +41,7 @@ const positionSchema = z.object({
 
 // Schema for individual unit
 const unitSchema = z.object({
+  id: z.string().min(1).describe("Unique identifier for the unit"),
   type: unitTypeSchema.describe("Type of unit"),
   wallIndex: z.number().int().min(0).describe("Index of the wall this unit belongs to"),
   position: positionSchema.describe("Position of the unit"),
