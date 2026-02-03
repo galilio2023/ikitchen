@@ -28,10 +28,19 @@ export function AICommandInput() {
           data.units.forEach((unit: any) => {
             dispatch(
               addObstacle({
-                type: unit.type,
+                // Generates a fallback ID to prevent substring errors in UI
+                id:
+                  unit.id || `ai_${Math.random().toString(36).substring(2, 7)}`,
+                type: unit.type || "UNIT",
                 wallIndex: 0,
-                x: unit.x,
-                y: unit.y,
+                position: {
+                  x: unit.x ?? 0,
+                  y: unit.y ?? 0,
+                  z: 0, // Added to satisfy ICoordinate
+                  width: unit.width ?? 60,
+                  height: unit.height ?? 90,
+                  depth: unit.depth ?? 60, // Added to satisfy ICoordinate
+                },
               }),
             );
           });
@@ -39,7 +48,7 @@ export function AICommandInput() {
         setPrompt("");
       }
     } catch (error) {
-      // Error handledby AI core
+      console.error("AI_UPLINK_CRITICAL_FAILURE:", error);
     } finally {
       setLoading(false);
     }
@@ -65,6 +74,7 @@ export function AICommandInput() {
           className="w-full h-20 p-3 rounded-xl text-[10px] font-mono tracking-widest text-foreground placeholder:text-muted-foreground bg-accent/20 border border-border focus:outline-none focus:ring-2 focus:ring-magic-cyan transition-all resize-none scrollbar-hide"
         />
         <button
+          type="submit"
           disabled={loading || !prompt.trim()}
           className="absolute bottom-3 right-3 p-2 rounded-lg bg-magic-cyan/20 border border-magic-cyan/40 text-magic-cyan hover:bg-magic-cyan hover:text-primary-foreground transition-all disabled:opacity-50 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
         >
