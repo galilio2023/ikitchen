@@ -5,6 +5,15 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import { compare, hash, genSalt } from "bcryptjs";
 
+// Extend the default user type
+interface ExtendedUser {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role?: string;
+}
+
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -14,7 +23,6 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                const now = new Date().toISOString();
                 try {
                     if (!credentials?.email || !credentials?.password) return null;
 
@@ -41,14 +49,14 @@ export const authOptions: NextAuthOptions = {
                                 await User.updateOne({ _id: admin._id }, { $set: { password: hashed } });
                             }
                         }
-                        return { id: admin._id.toString(), name: admin.name, email: admin.email, role: admin.role };
+                        return { id: admin._id.toString(), name: admin.name, email: admin.email, role: admin.role } as ExtendedUser;
                     }
 
                     // Regular User Path
                     const user = await User.findOne({ email }).select('+password');
                     if (!user || !(await compare(credentials.password, user.password))) return null;
 
-                    return { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
+                    return { id: user._id.toString(), name: user.name, email: user.email, role: user.role } as ExtendedUser;
                 } catch (error) {
                     console.error(`[AUTH][${new Date().toISOString()}] CRITICAL ERROR:`, error);
                     return null;
@@ -59,19 +67,20 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                token.role = (user as any).role;
-                token.id = (user as any).id;
+                token.role = (user as ExtendedUser).role;
+                token.id = (user as ExtendedUser).id;
             }
             return token;
         },
         async session({ session, token }) {
-            if (session.user) {
-                (session.user as any).role = token.role;
-                (session.user as any).id = token.id;
+            if (session.user && token) {
+                session.user.role = token.role as string;
+                session.user.id = token.id as string;
             }
             return session;
         }
     },
     pages: { signIn: '/login' },
     secret: process.env.NEXTAUTH_SECRET || "fallback_secret_for_now",
+    debug: process.env.NODE_ENV === 'development',
 };

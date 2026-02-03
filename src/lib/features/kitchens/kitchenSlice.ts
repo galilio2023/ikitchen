@@ -1,431 +1,380 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { IKitchen, IObstacle, IAppliance, ObstacleType } from '@/types/kitchen';
-import { IProject } from '@/models/Project';
-import { GeneratedDesign } from '@/lib/validations';
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "@/lib/store";
+import { IKitchen, IObstacle, IWall } from "@/types/kitchen";
+import { kitchenAiService } from "@/services/aiService";
+import { GeneratedDesign } from "@/lib/validations";
 
-interface ApplianceWithId {
-    _id?: { toString: () => string };
-    id?: string;
-    [key: string]: unknown;
-}
+// --- ASYNC THUNKS ---
 
-interface KitchenState {
-    items: IKitchen[];
-    currentKitchen: IKitchen | null;
-    currentProject: IProject | null;
-    selectedObstacleId: string | null;
-    activeWallIndex: number;
-    loading: boolean;
-    error: string | null;
-}
-
-const initialState: KitchenState = {
-    items: [],
-    currentKitchen: null,
-    currentProject: null,
-    selectedObstacleId: null,
-    activeWallIndex: 0,
-    loading: false,
-    error: null,
-};
-
-/** * THUNK: Fetch All Projects (For Dashboard)
- * Renamed to fetchAllKitchens to fix Next.js TS71002 error
- */
-export const fetchAllKitchens = createAsyncThunk(
-    'kitchen/fetchAll',
-    async (_, { rejectWithValue }) => {
-        try {
-            // Ensure this matches your actual API folder name!
-            const response = await fetch('/api/projects');
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'REGISTRY_FETCH_FAILURE');
-            }
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred');
-        }
+export const fetchKitchenById = createAsyncThunk<
+  any, // Returns { project: IProject, kitchen: IKitchen }
+  string,
+  { rejectValue: string }
+>("kitchen/fetchById", async (id, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`/api/projects/${id}`);
+    if (!response.ok) {
+      const error = await response.json();
+      return rejectWithValue(error.message || "Failed to fetch kitchen");
     }
-);
-
-/** * THUNK: Fetch Single Kitchen by ID */
-export const fetchKitchenById = createAsyncThunk(
-    'kitchen/fetchById',
-    async (id: string, { rejectWithValue }) => {
-        try {
-            const response = await fetch(`/api/projects/${id}`);
-            if (response.status === 404) return rejectWithValue('SIGNAL_LOST');
-            if (!response.ok) throw new Error('FETCH_SYNC_FAILED');
-            
-            const data = await response.json();
-            if (!data.project) return rejectWithValue('NODE_NOT_FOUND');
-            
-            return data;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred');
-        }
-    }
-);
-
-/** * THUNK: Save/Persist Kitchen Changes */
-export const saveKitchen = createAsyncThunk(
-    'kitchen/save',
-    async (kitchen: IKitchen, { rejectWithValue }) => {
-        try {
-            const response = await fetch(`/api/projects/${kitchen.id || kitchen._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(kitchen),
-            });
-            if (!response.ok) throw new Error('DATABASE_SAVE_FAILURE');
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred');
-        }
-    }
-);
-
-/** * THUNK: Initializing a New Node */
-export const addProjectThunk = createAsyncThunk(
-    'kitchen/addProject',
-    async (kitchenData: Partial<IKitchen>, { rejectWithValue }) => {
-        try {
-            const response = await fetch('/api/projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(kitchenData),
-            });
-            if (!response.ok) throw new Error('UPLINK_INITIALIZATION_FAILED');
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred');
-        }
-    }
-);
-
-/** * THUNK: Deleting a Project */
-export const deleteProjectThunk = createAsyncThunk(
-    'kitchen/deleteProject',
-    async (id: string, { rejectWithValue }) => {
-        try {
-            const response = await fetch(`/api/projects/${id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) throw new Error('TERMINATION_FAILED');
-            return id;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred');
-        }
-    }
-);
-
-/** * THUNK: Patching Project Metadata */
-export const patchProjectThunk = createAsyncThunk(
-    'kitchen/patchProject',
-    async ({ id, data }: { id: string, data: Partial<IProject> }, { rejectWithValue }) => {
-        try {
-            const response = await fetch(`/api/projects/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            if (!response.ok) throw new Error('UPDATE_SYNC_FAILED');
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred');
-        }
-    }
-);
-
-/** * THUNK: Generate AI Layout */
-export const generateAiLayout = createAsyncThunk(
-    'kitchen/generateAiLayout',
-    async (projectId: string, { rejectWithValue }) => {
-        try {
-            const response = await fetch(`/api/generate/kitchen`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ projectId }),
-            });
-            if (!response.ok) throw new Error('AI_GENERATION_FAILED');
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            if (error instanceof Error) {
-                return rejectWithValue(error.message);
-            }
-            return rejectWithValue('An unknown error occurred during AI generation');
-        }
-    }
-);
-
-export const kitchenSlice = createSlice({
-    name: 'kitchen',
-    initialState,
-    reducers: {
-        setSelectedObstacle: (state, action: PayloadAction<string | null>) => {
-            state.selectedObstacleId = action.payload;
-        },
-        setActiveWallIndex: (state, action: PayloadAction<number>) => {
-            state.activeWallIndex = action.payload;
-            state.selectedObstacleId = null;
-        },
-        addWall: (state) => {
-            if (!state.currentKitchen) return;
-            const newWall = {
-                id: `wall-${Date.now()}`,
-                label: `Wall ${state.currentKitchen.walls.length + 1}`,
-                length: 300,
-                height: 240,
-                thickness: 10
-            };
-            state.currentKitchen.walls.push(newWall);
-            state.activeWallIndex = state.currentKitchen.walls.length - 1;
-        },
-        updateWall: (state, action: PayloadAction<{ index: number; updates: Partial<IKitchen['walls'][0]> }>) => {
-            if (!state.currentKitchen || !state.currentKitchen.walls[action.payload.index]) return;
-            state.currentKitchen.walls[action.payload.index] = {
-                ...state.currentKitchen.walls[action.payload.index],
-                ...action.payload.updates
-            };
-        },
-        removeWall: (state, action: PayloadAction<number>) => {
-            if (!state.currentKitchen || state.currentKitchen.walls.length <= 1) return;
-            state.currentKitchen.walls.splice(action.payload, 1);
-            if (state.activeWallIndex >= state.currentKitchen.walls.length) {
-                state.activeWallIndex = state.currentKitchen.walls.length - 1;
-            }
-        },
-        applyDesign: (state, action: PayloadAction<{ obstacles: IObstacle[]; appliances: IAppliance[] }>) => {
-            if (!state.currentKitchen) return;
-            // For now, we'll append or replace. Let's replace appliances and append obstacles.
-            state.currentKitchen.appliances = action.payload.appliances;
-            // Filter out existing AI-generated obstacles if we had a way to identify them, 
-            // but for now let's just append new ones that aren't already there.
-            action.payload.obstacles.forEach(newObs => {
-                state.currentKitchen!.obstacles.push({
-                    ...newObs,
-                    id: `obs-ai-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`
-                });
-            });
-            state.currentKitchen.updatedAt = new Date().toISOString();
-        },
-        updateObstaclePosition: (state, action: PayloadAction<{ id: string; x: number; y: number }>) => {
-            if (!state.currentKitchen) return;
-            const obs = state.currentKitchen.obstacles.find(o => (o._id?.toString() || o.id) === action.payload.id);
-            if (obs) {
-                obs.position.x = action.payload.x;
-                obs.position.y = action.payload.y;
-            } else {
-                const app = state.currentKitchen.appliances.find(a => ((a as unknown as ApplianceWithId)._id?.toString() || (a as unknown as ApplianceWithId).id) === action.payload.id);
-                if (app) {
-                    app.position.x = action.payload.x;
-                    app.position.y = action.payload.y;
-                }
-            }
-            state.currentKitchen.updatedAt = new Date().toISOString();
-        },
-        updateObstacleDetails: (state, action: PayloadAction<{ id: string; updates: Partial<IObstacle['position']> }>) => {
-            if (!state.currentKitchen) return;
-            const obs = state.currentKitchen.obstacles.find(o => (o._id?.toString() || o.id) === action.payload.id);
-            if (obs) {
-                obs.position = { ...obs.position, ...action.payload.updates };
-            } else {
-                const app = state.currentKitchen.appliances.find(a => ((a as unknown as ApplianceWithId)._id?.toString() || (a as unknown as ApplianceWithId).id) === action.payload.id);
-                if (app) {
-                    app.position = { ...app.position, ...action.payload.updates };
-                }
-            }
-            state.currentKitchen.updatedAt = new Date().toISOString();
-        },
-        addObstacle: (state, action: PayloadAction<{ type: ObstacleType; wallIndex: number; x: number; y: number }>) => {
-            if (!state.currentKitchen) return;
-            const newObstacle: IObstacle = {
-                id: `obs-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                type: action.payload.type,
-                wallIndex: action.payload.wallIndex,
-                position: { x: action.payload.x, y: action.payload.y, z: 0, width: 60, height: 60, depth: 5 }
-            };
-            state.currentKitchen.obstacles.push(newObstacle);
-            state.selectedObstacleId = newObstacle.id;
-        },
-        // New reducers for AI design handling
-        acceptAiLayout: (state, action: PayloadAction<GeneratedDesign>) => {
-            if (!state.currentKitchen) return;
-            
-            // Apply the generated design to the current kitchen
-            const { layoutType, aiReasoning, units } = action.payload;
-            
-            // Convert units to obstacles and appliances as needed
-            const obstacles = units
-                .filter(unit => ['window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'].includes(unit.type))
-                .map(unit => ({
-                    id: unit.id,
-                    type: unit.type as ObstacleType,
-                    wallIndex: unit.wallIndex,
-                    position: unit.position
-                }));
-                
-            const appliances = units
-                .filter(unit => unit.type === 'cabinet')
-                .map(unit => ({
-                    name: unit.type,
-                    wallIndex: unit.wallIndex,
-                    position: unit.position,
-                    isFixed: true
-                }));
-            
-            // Update the current kitchen with the new design
-            state.currentKitchen.obstacles = [...state.currentKitchen.obstacles, ...obstacles];
-            state.currentKitchen.appliances = [...state.currentKitchen.appliances, ...appliances];
-            
-            // Clear the generated design by setting it to undefined
-            state.currentKitchen.generatedDesign = undefined;
-        },
-        discardAiLayout: (state) => {
-            if (!state.currentKitchen) return;
-            // Clear the generated design without applying it by setting to undefined
-            state.currentKitchen.generatedDesign = undefined;
-        }
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchAllKitchens.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchAllKitchens.fulfilled, (state, action) => {
-                state.loading = false;
-                state.error = null;
-
-                // Ensure payload is an array to prevent .map() from hitting an undefined object
-                const payload = Array.isArray(action.payload) ? action.payload : [];
-
-                state.items = payload.map((item: IKitchen) => ({
-                    ...item, // Keeps all fields for TS compliance
-                    id: item._id || item.id, // Standardizes ID for the Link keys
-                    clientName: item.clientName // Use clientName directly
-                })) as IKitchen[];
-            })
-            .addCase(fetchAllKitchens.rejected, (state, action) => {
-                state.loading = false;
-                state.items = []; // Clear projects to stop the lock
-                state.error = null; // SILENT_FAILURE: Allow UI to render Empty State gracefully
-            })
-            .addCase(fetchKitchenById.pending, (state) => {
-                state.loading = true;
-                state.currentKitchen = null;
-                state.currentProject = null;
-            })
-            .addCase(fetchKitchenById.fulfilled, (state, action) => {
-                state.loading = false;
-                state.error = null;
-                state.currentProject = action.payload.project;
-                state.currentKitchen = action.payload.kitchen;
-            })
-            .addCase(fetchKitchenById.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            .addCase(generateAiLayout.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(generateAiLayout.fulfilled, (state, action) => {
-                state.loading = false;
-                if (state.currentKitchen) {
-                    // Store the generated design in the current kitchen
-                    state.currentKitchen.generatedDesign = action.payload;
-                }
-            })
-            .addCase(generateAiLayout.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || 'AI_GENERATION_ERROR';
-            })
-
-            // 3. Save / Add Handlers (Robust error handling)
-            .addCase(saveKitchen.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(saveKitchen.fulfilled, (state) => {
-                state.loading = false;
-            })
-            .addCase(saveKitchen.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || 'SAVE_FAILURE';
-            })
-            .addCase(addProjectThunk.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(addProjectThunk.fulfilled, (state, action) => {
-                state.loading = false;
-                const newProject = { ...action.payload, id: action.payload._id || action.payload.id };
-                state.currentKitchen = newProject;
-                state.items.unshift(newProject);
-            })
-            .addCase(addProjectThunk.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || 'ADD_FAILURE';
-            })
-            .addCase(deleteProjectThunk.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(deleteProjectThunk.fulfilled, (state, action) => {
-                state.loading = false;
-                state.items = state.items.filter(item => (item._id || item.id) !== action.payload);
-            })
-            .addCase(deleteProjectThunk.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string || 'DELETE_FAILURE';
-            })
-            .addCase(patchProjectThunk.fulfilled, (state, action) => {
-                const updated = action.payload;
-                const index = state.items.findIndex(item => (item._id || item.id) === (updated._id || updated.id));
-                if (index !== -1) {
-                    state.items[index] = { ...state.items[index], ...updated };
-                }
-                if (state.currentProject && (state.currentProject._id || state.currentProject.id) === (updated._id || updated.id)) {
-                    state.currentProject = { ...state.currentProject, ...updated };
-                }
-            });
-    }
+    return response.json();
+  } catch (error: any) {
+    return rejectWithValue("Network error occurred");
+  }
 });
 
-export const { 
-    setSelectedObstacle, 
-    updateObstaclePosition, 
-    updateObstacleDetails, 
-    addObstacle,
-    setActiveWallIndex,
-    addWall,
-    updateWall,
-    removeWall,
-    applyDesign,
-    acceptAiLayout,
-    discardAiLayout
+export const fetchAllKitchens = createAsyncThunk<
+  IKitchen[],
+  void,
+  { rejectValue: string }
+>("kitchen/fetchAll", async (_, { rejectWithValue }) => {
+  try {
+    const response = await fetch("/api/projects");
+    if (!response.ok) {
+      const error = await response.json();
+      return rejectWithValue(error.message || "Failed to fetch kitchens");
+    }
+    return response.json();
+  } catch (error: any) {
+    return rejectWithValue("Network error occurred");
+  }
+});
+
+export const addProjectThunk = createAsyncThunk<
+  IKitchen,
+  Partial<IKitchen>,
+  { rejectValue: string }
+>("kitchen/addProject", async (kitchenData, { rejectWithValue }) => {
+  try {
+    const response = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(kitchenData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return rejectWithValue(error.message || "Failed to add project");
+    }
+
+    return response.json();
+  } catch (error: any) {
+    return rejectWithValue("Network error occurred");
+  }
+});
+
+export const updateKitchenThunk = createAsyncThunk<
+  IKitchen,
+  { id: string; data: Partial<IKitchen> },
+  { rejectValue: string }
+>("kitchen/update", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`/api/projects/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return rejectWithValue(error.message || "Failed to update kitchen");
+    }
+
+    return response.json();
+  } catch (error: any) {
+    return rejectWithValue("Network error occurred");
+  }
+});
+
+export const deleteKitchenThunk = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>("kitchen/delete", async (id, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`/api/projects/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      return rejectWithValue(error.message || "Failed to delete kitchen");
+    }
+
+    return id;
+  } catch (error: any) {
+    return rejectWithValue("Network error occurred");
+  }
+});
+
+export const generateAiLayout = createAsyncThunk<
+  GeneratedDesign,
+  string, // projectId
+  { state: RootState; rejectValue: string }
+>("kitchen/generateAiLayout", async (projectId, { getState, rejectWithValue }) => {
+  const state = getState();
+  const kitchen = state.kitchen.currentKitchen;
+
+  if (!kitchen) {
+    return rejectWithValue("No kitchen data available");
+  }
+
+  try {
+    const design = await kitchenAiService.generateLayout(kitchen);
+    return design;
+  } catch (error: any) {
+    return rejectWithValue(error.message || "Failed to generate AI layout");
+  }
+});
+
+export const acceptAiLayout = createAsyncThunk<
+  void,
+  GeneratedDesign,
+  { state: RootState; rejectValue: string }
+>(
+  "kitchen/acceptAiLayout",
+  async (generatedDesign, { getState, dispatch, rejectWithValue }) => {
+    const state = getState();
+    const kitchenId =
+      state.kitchen.currentKitchen?._id || state.kitchen.currentKitchen?.id;
+
+    if (!kitchenId) return rejectWithValue("No kitchen selected");
+
+    try {
+      const response = await fetch(`/api/projects/${kitchenId}/design`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          generatedDesign,
+          applyUnitsAsObstacles: true,
+          force: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        return rejectWithValue(error.message || "Failed to accept AI design");
+      }
+
+      dispatch(fetchKitchenById(kitchenId));
+    } catch (error: any) {
+      console.error("Error accepting AI design:", error);
+      return rejectWithValue(error.message || "Network error occurred");
+    }
+  },
+);
+
+// --- SLICE DEFINITION ---
+
+const kitchenSlice = createSlice({
+  name: "kitchen",
+  initialState: {
+    items: [] as IKitchen[],
+    currentKitchen: null as IKitchen | null,
+    currentProject: null as any | null, // Store metadata here
+    previewDesign: null as any,
+    previewObstacles: [] as IObstacle[],
+    loading: false,
+    error: null as string | null,
+    activeWallIndex: 0,
+    selectedObstacleId: null as string | null,
+  },
+  reducers: {
+    setCurrentKitchen: (state, action: PayloadAction<IKitchen | null>) => {
+      state.currentKitchen = action.payload;
+    },
+    setActiveWallIndex: (state, action: PayloadAction<number>) => {
+      state.activeWallIndex = action.payload;
+    },
+    setSelectedObstacle: (state, action: PayloadAction<string | null>) => {
+      state.selectedObstacleId = action.payload;
+    },
+    addObstacle: (state, action: PayloadAction<IObstacle>) => {
+      if (state.currentKitchen) {
+        if (!state.currentKitchen.obstacles)
+          state.currentKitchen.obstacles = [];
+        state.currentKitchen.obstacles.push(action.payload);
+      }
+    },
+    updateObstacleDetails: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        updates: Partial<IObstacle["position"]>;
+      }>,
+    ) => {
+      if (state.currentKitchen && state.currentKitchen.obstacles) {
+        const obstacle = state.currentKitchen.obstacles.find(
+          (obs) => obs.id === action.payload.id,
+        );
+        if (obstacle) Object.assign(obstacle.position, action.payload.updates);
+      }
+    },
+    updateObstaclePosition: (
+      state,
+      action: PayloadAction<{ id: string; x: number; y: number }>,
+    ) => {
+      if (state.currentKitchen && state.currentKitchen.obstacles) {
+        const obstacle = state.currentKitchen.obstacles.find(
+          (obs) => obs.id === action.payload.id,
+        );
+        if (obstacle) {
+          obstacle.position.x = action.payload.x;
+          obstacle.position.y = action.payload.y;
+        }
+      }
+    },
+    deleteObstacle: (state, action: PayloadAction<string>) => {
+      if (state.currentKitchen && state.currentKitchen.obstacles) {
+        state.currentKitchen.obstacles = state.currentKitchen.obstacles.filter(
+          (obs) => obs.id !== action.payload,
+        );
+      }
+    },
+    addWall: (state, action: PayloadAction<IWall>) => {
+      if (state.currentKitchen) {
+        if (!state.currentKitchen.walls) state.currentKitchen.walls = [];
+        state.currentKitchen.walls.push(action.payload);
+      }
+    },
+    removeWall: (state, action: PayloadAction<string>) => {
+      if (state.currentKitchen && state.currentKitchen.walls) {
+        state.currentKitchen.walls = state.currentKitchen.walls.filter(
+          (wall) => wall.id !== action.payload
+        );
+        // Reset active wall index if deleted
+        if (state.activeWallIndex >= state.currentKitchen.walls.length) {
+          state.activeWallIndex = Math.max(0, state.currentKitchen.walls.length - 1);
+        }
+      }
+    },
+    updateWall: (state, action: PayloadAction<{ id: string; updates: Partial<IWall> }>) => {
+      if (state.currentKitchen && state.currentKitchen.walls) {
+        const wall = state.currentKitchen.walls.find((w) => w.id === action.payload.id);
+        if (wall) {
+          Object.assign(wall, action.payload.updates);
+        }
+      }
+    },
+    setPreviewDesign: (state, action: PayloadAction<any>) => {
+      state.previewDesign = action.payload;
+    },
+    setPreviewObstacles: (state, action: PayloadAction<IObstacle[]>) => {
+      state.previewObstacles = action.payload;
+    },
+    clearPreview: (state) => {
+      state.previewDesign = null;
+      state.previewObstacles = [];
+    },
+    applyDesign: (
+      state,
+      action: PayloadAction<{ obstacles?: IObstacle[]; appliances?: any[] }>,
+    ) => {
+      if (state.currentKitchen && action.payload.obstacles) {
+        state.currentKitchen.obstacles = action.payload.obstacles;
+      }
+    },
+    discardAiLayout: (state) => {
+      if (state.currentKitchen) {
+        state.currentKitchen.generatedDesign = undefined;
+      }
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch Kitchen By ID (Corrected for {project, kitchen})
+      .addCase(fetchKitchenById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchKitchenById.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          // Check if API response is nested or flat
+          if (action.payload.project && action.payload.kitchen) {
+            state.currentProject = action.payload.project;
+            state.currentKitchen = action.payload.kitchen;
+          } else {
+            state.currentKitchen = action.payload;
+            state.currentProject = action.payload;
+          }
+        },
+      )
+      .addCase(fetchKitchenById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Fetch All
+      .addCase(fetchAllKitchens.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchAllKitchens.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchAllKitchens.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Add Project
+      .addCase(addProjectThunk.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+        state.currentKitchen = action.payload;
+      })
+
+      // Generate AI Layout
+      .addCase(generateAiLayout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(generateAiLayout.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.currentKitchen) {
+          // Cast to any to avoid strict type checking if interface mismatch, though I updated interface
+          (state.currentKitchen as any).generatedDesign = action.payload;
+        }
+      })
+      .addCase(generateAiLayout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Accept AI Layout
+      .addCase(acceptAiLayout.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(acceptAiLayout.fulfilled, (state) => {
+        state.loading = false;
+        if (state.currentKitchen) {
+          state.currentKitchen.generatedDesign = undefined; // Clear design after acceptance
+        }
+      })
+      .addCase(acceptAiLayout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export const {
+  setCurrentKitchen,
+  setActiveWallIndex,
+  setSelectedObstacle,
+  addObstacle,
+  updateObstacleDetails,
+  updateObstaclePosition,
+  deleteObstacle,
+  addWall,
+  removeWall,
+  updateWall,
+  setPreviewDesign,
+  setPreviewObstacles,
+  clearPreview,
+  applyDesign,
+  discardAiLayout,
 } = kitchenSlice.actions;
+
 export default kitchenSlice.reducer;

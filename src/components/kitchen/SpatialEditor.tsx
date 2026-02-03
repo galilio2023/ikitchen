@@ -10,21 +10,19 @@ import SpatialInspector from './SpatialInspector';
 import ObstacleToolbox from './ObstacleToolbox';
 import WallManager from './WallManager';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Layers, Hammer } from 'lucide-react';
+import { Layers, Hammer } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 export default function SpatialEditor() {
     const dispatch = useAppDispatch();
     const { currentKitchen, selectedObstacleId, activeWallIndex } = useAppSelector((state) => state.kitchen);
     const [draggingId, setDraggingId] = useState<string | null>(null);
-    const [neuralPreview, setNeuralPreview] = useState<string | null>(null);
     const [isRendering, setIsRendering] = useState(false);
     const [mobileTab, setMobileTab] = useState<'nodes' | 'tools' | 'none'>('none');
 
     const GRID_SIZE = 20;
     const currentWall = useMemo(() => currentKitchen?.walls[activeWallIndex] || null, [currentKitchen?.walls, activeWallIndex]);
 
-    // Same memoized logic as before...
     const renderableNodes = useMemo(() => {
         const obstacles = (currentKitchen?.obstacles ?? []).filter(obs => obs.wallIndex === activeWallIndex).map((obs, index) => ({
             ...obs, isAppliance: false, id: obs.id || obs._id?.toString() || `obs-${index}`,

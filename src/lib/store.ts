@@ -1,24 +1,24 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import{ configureStore }from '@reduxjs/toolkit';
 import kitchenReducer from './features/kitchens/kitchenSlice';
 import uiReducer from './features/ui/uiSlice';
 
-// 1. Create a root reducer first
-const rootReducer = combineReducers({
-    kitchen: kitchenReducer,
-    ui: uiReducer,
-});
-
 export const makeStore = () => {
-    return configureStore({
-        reducer: rootReducer,
-        middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware({
-                serializableCheck: false,
-            }),
-    });
+  return configureStore({
+    reducer: {
+      kitchen: kitchenReducer,
+      ui: uiReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'], // If using redux-persist
+        },
+      }),
+  });
 };
 
-// 2. Derive types from the rootReducer directly, NOT the store instance
-export type RootState = ReturnType<typeof rootReducer>;
+export const store = makeStore();
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 export type AppStore = ReturnType<typeof makeStore>;
-export type AppDispatch = AppStore['dispatch'];

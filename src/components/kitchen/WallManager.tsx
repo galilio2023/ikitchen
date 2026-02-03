@@ -10,12 +10,23 @@ import {
 } from '@/lib/features/kitchens/kitchenSlice';
 import { Plus, Trash2, Edit3, MoveRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function WallManager() {
     const dispatch = useAppDispatch();
     const { currentKitchen, activeWallIndex } = useAppSelector((state) => state.kitchen);
     
-    if (!currentKitchen) return null;
+    if (!currentKitchen || !currentKitchen.walls) return null;
+
+    const handleAddWall = () => {
+        dispatch(addWall({
+            id: uuidv4(),
+            label: `Wall ${currentKitchen.walls.length + 1}`,
+            length: 300,
+            height: 240,
+            thickness: 10
+        }));
+    };
 
     return (
         <div className="flex flex-col gap-4 mb-6">
@@ -25,7 +36,7 @@ export default function WallManager() {
                     <p className="text-[7px] lg:text-[8px] font-mono text-foreground/10 uppercase tracking-widest">Active_Nodes: {currentKitchen.walls.length}</p>
                 </div>
                 <button 
-                    onClick={() => dispatch(addWall())}
+                    onClick={handleAddWall}
                     className="p-1.5 rounded-lg bg-magic-cyan/10 border border-magic-cyan/20 text-magic-cyan hover:bg-magic-cyan/20 transition-all"
                 >
                     <Plus size={14} />
@@ -33,7 +44,7 @@ export default function WallManager() {
             </div>
 
             <div className="flex flex-col gap-2">
-                {currentKitchen.walls.map((wall, index) => (
+                {currentKitchen.walls.filter(w => !!w).map((wall, index) => (
                     <div 
                         key={wall.id || index}
                         className={cn(
@@ -64,7 +75,7 @@ export default function WallManager() {
                                 <button 
                                     onClick={() => {
                                         const newLabel = prompt("Enter new wall label:", wall.label);
-                                        if (newLabel) dispatch(updateWall({ index, updates: { label: newLabel } }));
+                                        if (newLabel) dispatch(updateWall({ id: wall.id, updates: { label: newLabel } }));
                                     }}
                                     className="p-1 text-foreground/20 hover:text-foreground transition-colors"
                                 >
@@ -72,7 +83,7 @@ export default function WallManager() {
                                 </button>
                                 {currentKitchen.walls.length > 1 && (
                                     <button 
-                                        onClick={() => dispatch(removeWall(index))}
+                                        onClick={() => dispatch(removeWall(wall.id))}
                                         className="p-1 text-foreground/20 hover:text-red-400 transition-colors"
                                     >
                                         <Trash2 size={12} />
@@ -88,7 +99,7 @@ export default function WallManager() {
                                     <input 
                                         type="number"
                                         value={wall.length}
-                                        onChange={(e) => dispatch(updateWall({ index, updates: { length: Number(e.target.value) } }))}
+                                        onChange={(e) => dispatch(updateWall({ id: wall.id, updates: { length: Number(e.target.value) } }))}
                                         className="w-full bg-transparent text-[10px] font-mono text-foreground focus:outline-none"
                                     />
                                     <span className="text-[6px] text-foreground/10">CM</span>
@@ -101,7 +112,7 @@ export default function WallManager() {
                                     <input 
                                         type="number"
                                         value={wall.height}
-                                        onChange={(e) => dispatch(updateWall({ index, updates: { height: Number(e.target.value) } }))}
+                                        onChange={(e) => dispatch(updateWall({ id: wall.id, updates: { height: Number(e.target.value) } }))}
                                         className="w-full bg-transparent text-[10px] font-mono text-foreground focus:outline-none"
                                     />
                                     <span className="text-[6px] text-foreground/10">CM</span>

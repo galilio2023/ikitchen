@@ -16,7 +16,7 @@ import {
   updateObstacleDetails,
   setSelectedObstacle,
 } from "@/lib/features/kitchens/kitchenSlice";
-import AIDesignGenerator from "./AIDesignGenerator";
+import AiDesignPanel from "./AiDesignPanel";
 
 interface InspectorFieldProps {
   label: string;
@@ -49,6 +49,7 @@ interface SpatialInspectorProps {
 
 export default function SpatialInspector({
   selectedNode,
+  currentKitchen,
   onVisualize,
   isRendering,
 }: SpatialInspectorProps) {
@@ -64,16 +65,14 @@ export default function SpatialInspector({
           </p>
         </div>
         <div className="flex-1">
-          <AIDesignGenerator />
+          {currentKitchen && <AiDesignPanel projectId={currentKitchen.projectId} />}
         </div>
       </aside>
     );
   }
 
   return (
-    /* FIXED: flex flex-col (added space) */
     <aside className="fixed inset-x-0 bottom-0 z-[60] lg:relative lg:inset-auto w-full lg:w-80 h-[70vh] lg:h-full border-t lg:border-t-0 lg:border-l border-border p-6 flex flex-col gap-6 overflow-y-auto bg-background/95 lg:bg-accent/5 backdrop-blur-2xl rounded-t-[3rem] lg:rounded-none shadow-2xl">
-      /* FIXED: border-border pb-4 (added space) */
       <div className="flex items-center justify-between lg:justify-end gap-2 border-b lg:border-0 border-border pb-4 lg:pb-0">
         <button
           onClick={() => dispatch(setSelectedObstacle(null))}
@@ -154,7 +153,7 @@ export default function SpatialInspector({
       </section>
       <button
         onClick={onVisualize}
-        className="mt-auto w-full py-4 bg-indigo-600 dark:bg-indigo-500 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg flex items-center justify-center gap-3"
+        className="mt-auto w-full py-4 bg-primary hover:bg-primary/90 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary-foreground shadow-lg flex items-center justify-center gap-3 transition-colors"
       >
         {isRendering ? (
           <Loader2 className="animate-spin" size={16} />
@@ -169,7 +168,7 @@ export default function SpatialInspector({
 
 function CoordinateBox({ label, value, onChange }: InspectorFieldProps) {
   return (
-    <div className="bg-zinc-100 dark:bg-zinc-800 p-3 rounded-xl border border-border">
+    <div className="bg-muted p-3 rounded-xl border border-border">
       <p className="text-[7px] font-mono text-foreground/40 mb-1 uppercase tracking-widest">
         {label}
       </p>
@@ -185,7 +184,7 @@ function CoordinateBox({ label, value, onChange }: InspectorFieldProps) {
 
 function DimensionRow({ label, value, onChange }: InspectorFieldProps) {
   return (
-    <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-xl border border-border flex items-center justify-between">
+    <div className="bg-muted p-4 rounded-xl border border-border flex items-center justify-between">
       <p className="text-[8px] font-mono text-foreground/40 uppercase tracking-widest">
         {label}
       </p>

@@ -1,25 +1,49 @@
-import mongoose, { Schema, model, models, Document } from 'mongoose';
+import mongoose from 'mongoose';
 
-export interface IAiRawResponse extends Document {
-    kitchenId: mongoose.Types.ObjectId;
-    userId: mongoose.Types.ObjectId;
-    modelName: string;
-    promptHash: string;
-    rawText: string;
-    tokenCostEstimate?: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
+// Schema for storing raw AI responses
+const aiRawResponseSchema = new mongoose.Schema({
+  kitchenId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Kitchen',
+    required: true,
+    index: true
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  model: {
+    type: String,
+    required: true
+  },
+  rawText: {
+    type: String,
+    required: true,
+    maxlength: 10000 // Truncate very long responses
+  },
+  promptHash: {
+    type: String,
+    required: true,
+    index: true
+  },
+  tokensEstimate: {
+    type: Number,
+    default: 0
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    index: true
+  }
+}, {
+  timestamps: true
+});
 
-const AiRawResponseSchema = new Schema<IAiRawResponse>({
-    kitchenId: { type: Schema.Types.ObjectId, ref: 'Kitchen', required: true },
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    modelName: { type: String, required: true },
-    promptHash: { type: String, required: true },
-    rawText: { type: String, required: true },
-    tokenCostEstimate: { type: Number }
-}, { timestamps: true });
+// Add indexes
+aiRawResponseSchema.index({ createdAt: 1 });
+aiRawResponseSchema.index({ kitchenId: 1 });
+aiRawResponseSchema.index({ userId: 1 });
 
-const AiRawResponse = models.AiRawResponse || model<IAiRawResponse>('AiRawResponse', AiRawResponseSchema);
-
-export default AiRawResponse;
+export default mongoose.models.AiRawResponse || 
+  mongoose.model('AiRawResponse', aiRawResponseSchema);
