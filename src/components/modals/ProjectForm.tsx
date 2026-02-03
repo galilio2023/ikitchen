@@ -47,24 +47,24 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-[0.2em] !text-white/30 ml-1">Client_Identifier</label>
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] !text-foreground/30 ml-1">Client_Identifier</label>
                     <input
                         required
                         value={formData.clientName}
                         onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
                         placeholder="ENTER_CLIENT_NAME..."
-                        className="w-full h-12 px-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-white placeholder:text-gray-400 bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+                        className="w-full h-12 px-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-all"
                     />
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-[0.2em] !text-white/30 ml-1">Communication_Uplink</label>
+                    <label className="text-[9px] font-black uppercase tracking-[0.2em] !text-foreground/30 ml-1">Communication_Uplink</label>
                     <input
                         required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="PHONE_NUMBER..."
-                        className="w-full h-12 px-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-white placeholder:text-gray-400 bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+                        className="w-full h-12 px-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-all"
                     />
                 </div>
             </div>

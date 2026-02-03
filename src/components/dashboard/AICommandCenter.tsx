@@ -45,10 +45,10 @@ export function AICommandCenter() {
     };
 
     return (
-        <div className="px-4 py-6 mt-6 bg-white/[0.02] border-t border-b border-white/10 space-y-4">
+        <div className="px-4 py-6 mt-6 bg-muted/20 border-t border-b border-border space-y-4">
             <div className="flex items-center gap-2">
-                <Sparkles size={14} className="text-magic-cyan animate-pulse" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Neural_Core_AI</h3>
+                <Sparkles size={14} className="text-primary animate-pulse" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Neural_Core_AI</h3>
             </div>
 
             <form onSubmit={handleGenerate} className="relative">
@@ -56,17 +56,17 @@ export function AICommandCenter() {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="GENERATE_SPATIAL_NODE..."
-                    className="w-full bg-black/40 border border-white/20 rounded-xl p-3 text-[10px] font-mono tracking-widest text-white focus:outline-none focus:border-magic-cyan/40 transition-all resize-none h-24 scrollbar-hide"
+                    className="w-full bg-background/40 border border-border rounded-xl p-3 text-[10px] font-mono tracking-widest text-foreground focus:outline-none focus:border-primary/40 transition-all resize-none h-24 scrollbar-hide"
                 />
                 <button 
                     disabled={loading || !prompt.trim()}
-                    className="absolute bottom-3 right-3 p-2 rounded-lg bg-magic-cyan/20 border border-magic-cyan/40 text-magic-cyan hover:bg-magic-cyan hover:text-white transition-all disabled:opacity-50"
+                    className="absolute bottom-3 right-3 p-2 rounded-lg bg-primary/20 border border-primary/40 text-primary hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-50"
                 >
                     {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 </button>
             </form>
             
-            <p className="text-[7px] font-mono text-white/20 uppercase tracking-[0.2em] leading-relaxed">
+            <p className="text-[7px] font-mono text-muted-foreground uppercase tracking-[0.2em] leading-relaxed">
                 Enter architectural parameters to initiate automated node materialization.
             </p>
         </div>

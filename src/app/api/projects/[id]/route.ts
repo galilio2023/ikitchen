@@ -51,7 +51,8 @@ export async function PUT(
                 walls: data.walls,
                 obstacles: data.obstacles,
                 appliances: data.appliances,
-                standards: data.standards
+                standards: data.standards,
+                generatedDesign: data.generatedDesign // Include generated design if present
             },
             { new: true, upsert: true }
         );
@@ -112,6 +113,7 @@ export async function PATCH(
         if (data.status) syncData.status = data.status;
         if (data.img) syncData.img = data.img;
         if (data.tags) syncData.tags = data.tags;
+        if (data.generatedDesign) syncData.generatedDesign = data.generatedDesign; // Sync AI design
 
         if (Object.keys(syncData).length > 0) {
             await Kitchen.findOneAndUpdate(

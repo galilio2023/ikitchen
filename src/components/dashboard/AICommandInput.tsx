@@ -25,7 +25,7 @@ export function AICommandInput() {
             if (res.ok) {
                 const data = await res.json();
                 if (data.units && Array.isArray(data.units)) {
-                    data.units.forEach((unit: any) => {
+data.units.forEach((unit: any) => {
                         dispatch(addObstacle({
                             type: unit.type,
                             wallIndex: 0,
@@ -37,7 +37,7 @@ export function AICommandInput() {
                 setPrompt('');
             }
         } catch (error) {
-            // Error handled by AI core
+            // Error handledby AI core
         } finally {
             setLoading(false);
         }
@@ -54,18 +54,18 @@ export function AICommandInput() {
                 <textarea 
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="INITIATE_SPATIAL_SYNC..."
+                   placeholder="INITIATE_SPATIAL_SYNC..."
                     className="w-full h-20 p-3 rounded-xl text-[10px] font-mono tracking-widest text-foreground placeholder:text-muted-foreground bg-accent/20 border border-border focus:outline-none focus:ring-2 focus:ring-magic-cyan transition-all resize-none scrollbar-hide"
                 />
                 <button 
                     disabled={loading || !prompt.trim()}
-                    className="absolute bottom-3 right-3 p-2 rounded-lg bg-magic-cyan/20 border border-magic-cyan/40 text-magic-cyan hover:bg-magic-cyan hover:text-white transition-all disabled:opacity-50 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                    className="absolute bottom-3 right-3 p-2 rounded-lg bg-magic-cyan/20 border border-magic-cyan/40 text-magic-cyan hover:bg-magic-cyan hover:text-primary-foreground transition-all disabled:opacity-50 shadow-[0_0_10px_rgba(6,182,212,0.2)]"
                 >
-                    {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                   {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 </button>
             </form>
             
-            <p className="text-[7px] font-mono text-foreground/20 uppercase tracking-[0.2em] leading-relaxed group-hover:text-primary/40 transition-colors">
+            <p className="text-[7px] font-mono text-foreground/20 uppercase tracking-[0.2em] leading-relaxedgroup-hover:text-primary/40 transition-colors">
                 Titan_Protocol: Automated node materialization via natural language uplink.
             </p>
         </div>

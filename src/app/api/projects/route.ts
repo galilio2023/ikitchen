@@ -64,7 +64,7 @@ export async function GET() {
                         clientName: seed.client,
                         phone: "555-NODE-SYNC",
                         projectId: project._id,
-                        walls: [{ label: 'Wall 1', length: 400, height: 240, thickness: 10 }],
+                        walls: [{ id: `wall-${Date.now()}`, label: 'Wall 1', length: 400, height: 240, thickness: 10 }],
                         standards: { baseCabinetDepth: 60, wallCabinetDepth: 35, countertopThickness: 4, kickplateHeight: 10 }
                     });
                 }
@@ -96,10 +96,11 @@ export async function POST(request: Request) {
         });
 
         // 2. Create Kitchen
+        // TODO: In a real application, userId should come from authenticated session
         const kitchen = await Kitchen.create({
             ...data,
             projectId: project._id,
-            walls: data.walls || [{ label: 'Wall 1', length: 300, height: 240, thickness: 10 }],
+            walls: data.walls || [{ id: `wall-${Date.now()}`, label: 'Wall 1', length: 300, height: 240, thickness: 10 }],
             standards: data.standards || { baseCabinetDepth: 60, wallCabinetDepth: 35, countertopThickness: 4, kickplateHeight: 10 }
         });
 

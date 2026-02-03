@@ -54,52 +54,106 @@
 }
 
 :root {
-    /* Light Theme - Enhanced for readability */
+    /* Light Theme - Enhanced for readability with better contrast ratios */
     --background: #fafafa;
-    --foreground: #0f172a;
+    --foreground: #0f172a; /* slate-900 equivalent with better contrast */
     --card: #ffffff;
     --card-foreground: #0f172a;
     --popover: #ffffff;
     --popover-foreground: #0f172a;
-    --primary: #7c3aed;
+    --primary: #7c3aed; /* violet-600 - vibrant purple */
     --primary-foreground: #ffffff;
-    --secondary: #f1f5f9;
+    --secondary: #f1f5f9; /* slate-100 */
     --secondary-foreground: #0f172a;
-    --muted: #f1f5f9;
-    --muted-foreground: #475569;
-    --accent: #ede9fe;
-    --accent-foreground: #5b21b6;
-    --destructive: #dc2626;
+    --muted: #f1f5f9; /* slate-100 */
+    --muted-foreground: #475569; /* slate-500 */
+    --accent: #ede9fe; /* violet-100 */
+    --accent-foreground: #5b21b6; /* violet-700 */
+    --destructive: #dc2626; /* red-600 */
     --destructive-foreground: #ffffff;
-    --border: #e2e8f0;
-    --input: #e2e8f0;
-    --ring: #7c3aed;
+    --border: #e2e8f0; /* slate-200 */
+    --input: #e2e8f0; /* slate-200 */
+    --ring: #7c3aed; /* violet-600 */
+    
+    /* Additional theme variables for better consistency */
     --radius: 0.75rem;
     --header-height: 5rem;
     --sidebar-width: 16rem;
+    
+    /* New theme variables for better control */
+    --success: #10b981; /* emerald-500 */
+    --success-foreground: #ffffff;
+    --warning: #f59e0b; /* amber-500 */
+    --warning-foreground: #000000;
+    --info: #3b82f6; /* blue-500 */
+    --info-foreground: #ffffff;
+    
+    /* Typography scale for responsive design */
+    --font-size-xs: 0.75rem;   /* 12px */
+    --font-size-sm: 0.875rem;  /* 14px */
+    --font-size-base: 1rem;    /* 16px */
+    --font-size-lg: 1.125rem;  /* 18px */
+    --font-size-xl: 1.25rem;   /* 20px */
+    --font-size-2xl: 1.5rem;   /* 24px */
+    --font-size-3xl: 1.875rem; /* 30px */
+    --font-size-4xl: 2.25rem;  /* 36px */
+    --font-size-5xl: 3rem;     /* 48px */
+    --font-size-6xl: 3.75rem;  /* 60px */
+    
+    /* Line heights for better readability */
+    --line-height-tight: 1.25;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
 }
 
 .dark {
-    /* Dark Theme - Enhanced contrast and readability */
-    --background: #0a0a0f;
-    --foreground: #f8fafc;
-    --card: #14141f;
+    /* Dark Theme - Enhanced contrast and readability with better accessibility */
+    --background: #0a0a0f; /* deeper background for better contrast */
+    --foreground: #f8fafc; /* slate-50 - excellent contrast on dark */
+    --card: #14141f; /* slightly lighter than background */
     --card-foreground: #f8fafc;
-    --popover: #1a1a2e;
+    --popover: #1a1a2e; /* deep blue-purple for depth */
     --popover-foreground: #f8fafc;
-    --primary: #8b5cf6;
-    --primary-foreground: #ffffff;
-    --secondary: #1e1e2e;
+    --primary: #a78bfa; /* violet-400 - brighter in dark mode */
+    --primary-foreground: #020814; /* near black for text on primary */
+    --secondary: #27273a; /* slate-800 equivalent */
     --secondary-foreground: #e2e8f0;
-    --muted: #1e1e2e;
-    --muted-foreground: #94a3b8;
-    --accent: #2d1f4d;
-    --accent-foreground: #c4b5fd;
-    --destructive: #ef4444;
+    --muted: #27273a; /* slate-800 */
+    --muted-foreground: #94a3b8; /* slate-400 */
+    --accent: #3a2e5e; /* darker violet for contrast */
+    --accent-foreground: #c4b5fd; /* violet-300 */
+    --destructive: #ef4444; /* red-500 */
     --destructive-foreground: #ffffff;
-    --border: #27273a;
-    --input: #1e1e2e;
-    --ring: #a78bfa;
+    --border: #334155; /* slate-700 - more visible in dark */
+    --input: #27273a; /* slate-800 */
+    --ring: #c084fc; /* violet-300 - more visible in dark mode */
+    
+    /* Dark mode specific variables */
+    --success: #34d399; /* emerald-400 */
+    --success-foreground: #000000;
+    --warning: #fbbf24; /* amber-400 */
+    --warning-foreground: #000000;
+    --info: #60a5fa; /* blue-400 */
+    --info-foreground: #000000;
+    
+    /* Typography scale for dark mode readability */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+    --font-size-6xl: 3.75rem;
+    
+    /* Line heights optimized for dark mode */
+    --line-height-tight: 1.25;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
 }
 
 @layer base {
@@ -109,6 +163,9 @@
     html {
         /* Allow natural height for hydration stability */
         scroll-behavior: smooth;
+        
+        /* Responsive font sizing */
+        font-size: 100%;
     }
 
     body {
@@ -122,6 +179,27 @@
         background-attachment: fixed;
     }
 
+    /* Responsive typography */
+    h1 { @apply text-3xl font-bold leading-tight; }
+    h2 { @apply text-2xl font-bold leading-snug; }
+    h3 { @apply text-xl font-semibold leading-normal; }
+    h4 { @apply text-lg font-semibold leading-normal; }
+    h5 { @apply text-base font-semibold leading-normal; }
+    h6 { @apply text-sm font-semibold leading-normal; }
+    
+    p { @apply leading-relaxed; }
+    
+    /* Responsive base styles */
+    @media (min-width: 640px) {
+        h1 { @apply text-4xl; }
+        h2 { @apply text-3xl; }
+    }
+    
+    @media (min-width: 1024px) {
+        h1 { @apply text-5xl; }
+        h2 { @apply text-4xl; }
+    }
+
     /* Animated Nebula Background Layer */
     body::before {
         content: "";
@@ -131,6 +209,41 @@
                 radial-gradient(circle at 85% 15%, rgba(6, 182, 212, 0.05), transparent 40%);
         filter: blur(100px);
         animation: var(--animate-nebula);
+    }
+    
+    /* Improved focus styles for better accessibility */
+    :focus-visible {
+        @apply outline-none ring-2 ring-ring ring-offset-2;
+    }
+    
+    /* Scrollbar styling for better UX */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        @apply bg-secondary;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        @apply bg-muted-foreground/30 rounded-full;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-muted-foreground/50;
+    }
+    
+    /* Print styles */
+    @media print {
+        body {
+            background: white;
+            color: black;
+        }
+        
+        .no-print {
+            display: none !important;
+        }
     }
 }
 
@@ -172,4 +285,30 @@
 
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Additional utility classes for theme consistency */
+    .text-brand-purple { @apply text-magic-purple; }
+    .text-brand-cyan { @apply text-magic-cyan; }
+    .bg-brand-purple { @apply bg-magic-purple; }
+    .bg-brand-cyan { @apply bg-magic-cyan; }
+    .border-brand-purple { @apply border-magic-purple; }
+    .border-brand-cyan { @apply border-magic-cyan; }
+    
+    /* State-based utilities */
+    .hover\:bg-accent { @apply hover:bg-accent; }
+    .hover\:bg-primary { @apply hover:bg-primary; }
+    .hover\:bg-secondary { @apply hover:bg-secondary; }
+    
+    /* Animation utilities */
+    .animate-delay-100 { animation-delay: 100ms; }
+    .animate-delay-200 { animation-delay: 200ms; }
+    .animate-delay-300 { animation-delay: 300ms; }
+    
+    /* Responsive spacing utilities */
+    .space-y-responsive > :not(:first-child) { @apply space-y-4 md:space-y-6; }
+    .space-x-responsive > :not(:first-child) { @apply space-x-4 md:space-x-6; }
+    
+    /* Accessibility utilities */
+    .high-contrast { @apply contrast-150; }
+    .reduce-motion:where(.motion-safe *) { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

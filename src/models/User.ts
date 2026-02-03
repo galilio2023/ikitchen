@@ -46,9 +46,6 @@ const UserSchema = new Schema<IUserDocument>({
     timestamps: true,
 });
 
-// Database indexes for query optimization
-UserSchema.index({ email: 1 }, { unique: true }); // Email is already unique but explicit index helps
-
 // Compare password method - using a regular function to ensure 'this' context
 UserSchema.methods.comparePassword = async function(password: string): Promise<boolean> {
     console.log(`[USER MODEL] verifyPassword starting for: ${this.email}`);
@@ -68,17 +65,15 @@ UserSchema.methods.comparePassword = async function(password: string): Promise<b
 
 // Hash password before saving
 UserSchema.pre('save', async function() {
-    const user = this;
-    
     // Only hash the password if it has been modified (or is new)
-    if (!user.isModified('password')) {
+    if (!this.isModified('password')) {
         return;
     }
 
     try {
-        console.log(`[USER MODEL] Hashing password for: ${user.email}`);
+        console.log(`[USER MODEL] Hashing password for: ${this.email}`);
         const salt = await genSalt(10);
-        user.password = await hash(user.password as string, salt);
+        this.password = await hash(this.password as string, salt);
         console.log(`[USER MODEL] Password hashed successfully`);
     } catch (err) {
         const error = err as Error;

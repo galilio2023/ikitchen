@@ -26,7 +26,7 @@ interface RenderableNode {
         z?: number;
         width: number;
         height: number;
-        depth?: number;
+        depth?:number;
     };
     isAppliance?: boolean;
     name?: string;
@@ -65,8 +65,8 @@ export default function SpatialInspector({
     }
 
     return (
-        <aside className="fixed inset-x-0 bottom-0 z-[60] lg:relative lg:inset-auto w-full lg:w-80 h-[70vh] lg:h-full border-t lg:border-t-0 lg:border-l border-border p-6 flex flex-col gap-6 overflow-y-auto bg-background/95 lg:bg-accent/5 backdrop-blur-2xl rounded-t-[3rem] lg:rounded-none shadow-2xl">
-            <div className="flex items-center justify-between lg:justify-end gap-2 border-b lg:border-0 border-border pb-4 lg:pb-0">
+        <aside className="fixed inset-x-0 bottom-0 z-[60] lg:relative lg:inset-auto w-full lg:w-80 h-[70vh] lg:h-full border-t lg:border-t-0 lg:border-l border-border p-6 flexflex-col gap-6 overflow-y-auto bg-background/95 lg:bg-accent/5 backdrop-blur-2xl rounded-t-[3rem] lg:rounded-none shadow-2xl">
+            <div className="flex items-center justify-between lg:justify-end gap-2 border-b lg:border-0 border-borderpb-4 lg:pb-0">
                 <button onClick={() => dispatch(setSelectedObstacle(null))} className="lg:hidden p-2 rounded-full bg-accent">
                     <X size={16} />
                 </button>
@@ -87,7 +87,7 @@ export default function SpatialInspector({
                     <CoordinateBox
                         label="POS_X"
                         value={selectedNode.position.x}
-                        onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { x: v } }))}
+                        onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id,updates: { x: v } }))}
                     />
                     <CoordinateBox
                         label="POS_Y"
@@ -95,7 +95,7 @@ export default function SpatialInspector({
                         onChange={(v: number) => dispatch(updateObstacleDetails({ id: selectedNode.id, updates: { y: v } }))}
                     />
                 </div>
-            </section>
+</section>
 
             {/* DIMENSIONS SECTION */}
             <section className="space-y-4">
@@ -117,18 +117,18 @@ export default function SpatialInspector({
                 </div>
             </section>
 
-            <button
+           <button
                 onClick={onVisualize}
-                className="mt-auto w-full py-4 bg-magic-purple rounded-2xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg flex items-center justify-center gap-3"
+                className="mt-auto w-full py-4 bg-magic-purple rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary-foreground shadow-lg flex items-center justify-center gap-3"
             >
-                {isRendering ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
+               {isRendering ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
                 {isRendering ? 'Materializing...' : 'Neural_Visualize'}
             </button>
         </aside>
     );
 }
 
-// Fixed: Added Prop types to avoid implicit 'any'
+// Fixed: Added Prop types to avoidimplicit 'any'
 function CoordinateBox({ label, value, onChange }: InspectorFieldProps) {
     return (
         <div className="glass-brilliant p-3 rounded-xl border border-border">

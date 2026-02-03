@@ -19,7 +19,7 @@ export default function DraggableObstacle({
     // Tailwind v4 dynamic classes
     const selectionStyles = isSelected
         ? "border-magic-purple shadow-[0_0_15px_rgba(139,92,246,0.5)] z-50 ring-2 ring-magic-purple/20"
-        : "border-white/10 hover:border-white/30 z-10";
+        : "border-border hover:border-border/30 z-10";
 
     return (
         <div
@@ -27,7 +27,7 @@ export default function DraggableObstacle({
                 e.stopPropagation();
                 onSelect();
             }}
-            className={`absolute cursor-move transition-all border-2 rounded-lg bg-black/80 backdrop-blur-md flex items-center justify-center ${selectionStyles}`}
+            className={`absolute cursor-move transition-all border-2 rounded-lg bg-background/80 backdrop-blur-md flex items-center justify-center ${selectionStyles}`}
             style={{
                 left: `${obstacle.position.x}px`,
                 top: `${obstacle.position.y}px`,
@@ -36,7 +36,7 @@ export default function DraggableObstacle({
             }}
         >
             <div className="flex flex-col items-center gap-1">
-                <span className="text-[8px] font-black text-white/40 uppercase tracking-tighter">
+                <span className="text-[8px] font-black text-foreground/40 uppercase tracking-tighter">
                     {obstacle.type.substring(0, 3)}_{globalIndex}
                 </span>
                 {isSelected && (

@@ -11,7 +11,7 @@ import ObstacleToolbox from './ObstacleToolbox';
 import WallManager from './WallManager';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Layers, Hammer } from 'lucide-react';
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export default function SpatialEditor() {
     const dispatch = useAppDispatch();
@@ -100,7 +100,7 @@ export default function SpatialEditor() {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row h-full w-full bg-transparent overflow-hidden">
+        <div className="flex flex-col lg:flex-row h-full w-full bg-background text-foreground overflow-hidden">
 
             {/* MOBILE TOP BAR (Wall Switcher) */}
             <div className="lg:hidden flex-none p-4 border-b border-border bg-background/50 backdrop-blur-md">
@@ -108,7 +108,7 @@ export default function SpatialEditor() {
             </div>
 
             {/* LEFT PANEL: Desktop Fixed / Mobile Hidden */}
-            <aside className="hidden lg:flex w-64 flex-none flex-col border-r border-border bg-accent/5 backdrop-blur-xl overflow-hidden">
+            <aside className="hidden lg:flex w-64 flex-none flex-col border-r border-border bg-background/5 backdrop-blur-xl overflow-hidden">
                 <div className="flex-none p-4 border-b border-border">
                     <WallManager />
                 </div>
@@ -138,13 +138,13 @@ export default function SpatialEditor() {
                 <div className="lg:hidden absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-40">
                     <button
                         onClick={() => setMobileTab(mobileTab === 'nodes' ? 'none' : 'nodes')}
-                        className={cn("p-4 rounded-full border shadow-2xl backdrop-blur-xl transition-all", mobileTab === 'nodes' ? "bg-magic-cyan text-black" : "bg-black/80 text-magic-cyan border-magic-cyan/20")}
+                        className={cn("p-4 rounded-full border shadow-2xl backdrop-blur-xl transition-all", mobileTab === 'nodes' ? "bg-primary text-primary-foreground" : "bg-card/80 text-primary border-primary/20")}
                     >
                         <Layers size={20} />
                     </button>
                     <button
                         onClick={() => setMobileTab(mobileTab === 'tools' ? 'none' : 'tools')}
-                        className={cn("p-4 rounded-full border shadow-2xl backdrop-blur-xl transition-all", mobileTab === 'tools' ? "bg-magic-purple text-white" : "bg-black/80 text-magic-purple border-magic-purple/20")}
+                        className={cn("p-4 rounded-full border shadow-2xl backdrop-blur-xl transition-all", mobileTab === 'tools' ? "bg-primary text-primary-foreground" : "bg-card/80 text-primary border-primary/20")}
                     >
                         <Hammer size={20} />
                     </button>
@@ -156,7 +156,7 @@ export default function SpatialEditor() {
                 {mobileTab !== 'none' && (
                     <motion.div
                         initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-                        className="lg:hidden fixed inset-x-0 bottom-0 z-50 h-[50vh] bg-background/95 backdrop-blur-2xl border-t border-border p-6 rounded-t-[3rem] shadow-2xl overflow-y-auto"
+                        className="lg:hidden fixed inset-x-0 bottom-0 z-50 h-[50vh] bg-popover/95 backdrop-blur-2xl border-t border-border p-6 rounded-t-[3rem] shadow-2xl overflow-y-auto"
                     >
                         <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6" />
                         {mobileTab === 'nodes' ? (

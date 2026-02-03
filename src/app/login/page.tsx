@@ -7,13 +7,13 @@ import { motion } from 'framer-motion';
 import { Shield, Lock, User } from 'lucide-react';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('ibrahimgalal2011@gmail.com');
+    const [email,setEmail] = useState('ibrahimgalal2011@gmail.com');
     const [password, setPassword] = useState('@Ibrahim@galal@1');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit= async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
@@ -71,7 +71,7 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-1.5">
+<div className="space-y-1.5">
                             <label className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/50 ml-1">Secure_Key</label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/40" />
@@ -84,8 +84,8 @@ export default function LoginPage() {
                                     className="w-full h-12 pl-12 pr-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground bg-accent/50 border border-border placeholder:text-muted-foreground focus:outline-none focus:border-magic-cyan/40 transition-all"
                                 />
                             </div>
-                        </div>
-                    </div>
+</div>
+</div>
 
                     {error && (
                         <p className="text-[9px] font-mono text-red-400 uppercase tracking-widest text-center animate-pulse">
@@ -96,7 +96,7 @@ export default function LoginPage() {
                     <button 
                         type="submit"
                         disabled={loading}
-                        className="w-full h-14 rounded-2xl bg-gradient-to-r from-magic-cyan to-magic-purple text-white text-[10px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full h-14 rounded-2xl bg-gradient-to-r from-magic-cyan to-magic-purple text-primary-foreground text-[10px] font-black uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'ESTABLISHING_LINK...' : 'INITIATE_SESSION'}
                     </button>

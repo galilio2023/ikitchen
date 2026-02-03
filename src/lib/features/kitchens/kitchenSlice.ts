@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { IKitchen, IObstacle, IAppliance, ObstacleType } from '@/types/kitchen';
+import { IProject } from '@/models/Project';
+import { GeneratedDesign } from '@/lib/validations';
 
 interface ApplianceWithId {
     _id?: { toString: () => string };
@@ -10,7 +12,7 @@ interface ApplianceWithId {
 interface KitchenState {
     items: IKitchen[];
     currentKitchen: IKitchen | null;
-    currentProject: any | null; // We'll use any for now or IProject if we can import it
+    currentProject: IProject | null;
     selectedObstacleId: string | null;
     activeWallIndex: number;
     loading: boolean;
@@ -40,9 +42,13 @@ export const fetchAllKitchens = createAsyncThunk(
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'REGISTRY_FETCH_FAILURE');
             }
-            return await response.json();
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
         }
     }
 );
@@ -60,8 +66,11 @@ export const fetchKitchenById = createAsyncThunk(
             if (!data.project) return rejectWithValue('NODE_NOT_FOUND');
             
             return data;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
         }
     }
 );
@@ -77,9 +86,13 @@ export const saveKitchen = createAsyncThunk(
                 body: JSON.stringify(kitchen),
             });
             if (!response.ok) throw new Error('DATABASE_SAVE_FAILURE');
-            return await response.json();
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
         }
     }
 );
@@ -95,9 +108,13 @@ export const addProjectThunk = createAsyncThunk(
                 body: JSON.stringify(kitchenData),
             });
             if (!response.ok) throw new Error('UPLINK_INITIALIZATION_FAILED');
-            return await response.json();
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
         }
     }
 );
@@ -112,8 +129,11 @@ export const deleteProjectThunk = createAsyncThunk(
             });
             if (!response.ok) throw new Error('TERMINATION_FAILED');
             return id;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
         }
     }
 );
@@ -121,7 +141,7 @@ export const deleteProjectThunk = createAsyncThunk(
 /** * THUNK: Patching Project Metadata */
 export const patchProjectThunk = createAsyncThunk(
     'kitchen/patchProject',
-    async ({ id, data }: { id: string, data: any }, { rejectWithValue }) => {
+    async ({ id, data }: { id: string, data: Partial<IProject> }, { rejectWithValue }) => {
         try {
             const response = await fetch(`/api/projects/${id}`, {
                 method: 'PATCH',
@@ -129,9 +149,35 @@ export const patchProjectThunk = createAsyncThunk(
                 body: JSON.stringify(data),
             });
             if (!response.ok) throw new Error('UPDATE_SYNC_FAILED');
-            return await response.json();
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+);
+
+/** * THUNK: Generate AI Layout */
+export const generateAiLayout = createAsyncThunk(
+    'kitchen/generateAiLayout',
+    async (projectId: string, { rejectWithValue }) => {
+        try {
+            const response = await fetch(`/api/generate/kitchen`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ projectId }),
+            });
+            if (!response.ok) throw new Error('AI_GENERATION_FAILED');
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
+            }
+            return rejectWithValue('An unknown error occurred during AI generation');
         }
     }
 );
@@ -225,6 +271,44 @@ export const kitchenSlice = createSlice({
             };
             state.currentKitchen.obstacles.push(newObstacle);
             state.selectedObstacleId = newObstacle.id;
+        },
+        // New reducers for AI design handling
+        acceptAiLayout: (state, action: PayloadAction<GeneratedDesign>) => {
+            if (!state.currentKitchen) return;
+            
+            // Apply the generated design to the current kitchen
+            const { layoutType, aiReasoning, units } = action.payload;
+            
+            // Convert units to obstacles and appliances as needed
+            const obstacles = units
+                .filter(unit => ['window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'].includes(unit.type))
+                .map(unit => ({
+                    id: unit.id,
+                    type: unit.type as ObstacleType,
+                    wallIndex: unit.wallIndex,
+                    position: unit.position
+                }));
+                
+            const appliances = units
+                .filter(unit => unit.type === 'cabinet')
+                .map(unit => ({
+                    name: unit.type,
+                    wallIndex: unit.wallIndex,
+                    position: unit.position,
+                    isFixed: true
+                }));
+            
+            // Update the current kitchen with the new design
+            state.currentKitchen.obstacles = [...state.currentKitchen.obstacles, ...obstacles];
+            state.currentKitchen.appliances = [...state.currentKitchen.appliances, ...appliances];
+            
+            // Clear the generated design by setting it to undefined
+            state.currentKitchen.generatedDesign = undefined;
+        },
+        discardAiLayout: (state) => {
+            if (!state.currentKitchen) return;
+            // Clear the generated design without applying it by setting to undefined
+            state.currentKitchen.generatedDesign = undefined;
         }
     },
     extraReducers: (builder) => {
@@ -265,6 +349,20 @@ export const kitchenSlice = createSlice({
             .addCase(fetchKitchenById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(generateAiLayout.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(generateAiLayout.fulfilled, (state, action) => {
+                state.loading = false;
+                if (state.currentKitchen) {
+                    // Store the generated design in the current kitchen
+                    state.currentKitchen.generatedDesign = action.payload;
+                }
+            })
+            .addCase(generateAiLayout.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string || 'AI_GENERATION_ERROR';
             })
 
             // 3. Save / Add Handlers (Robust error handling)
@@ -326,6 +424,8 @@ export const {
     addWall,
     updateWall,
     removeWall,
-    applyDesign
+    applyDesign,
+    acceptAiLayout,
+    discardAiLayout
 } = kitchenSlice.actions;
 export default kitchenSlice.reducer;
