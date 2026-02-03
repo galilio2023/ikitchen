@@ -12,20 +12,20 @@ export default function MeasurementsPage() {
                     <div className="p-3 bg-magic-purple/10 border border-magic-purple/20 rounded-2xl text-magic-purple">
                         <Ruler size={24} />
                     </div>
-                    <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-white italic">
-                        Unit_Specs<span className="text-white/20 not-italic">.cfg</span>
+                    <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-foreground italic">
+                        Unit_Specs<span className="text-foreground/20 not-italic">.cfg</span>
                     </h1>
                 </div>
                 {/* FIXED: Removed aggressive margin on mobile for better centering/flow */}
-                <p className="text-[10px] text-white/40 uppercase tracking-[0.4em] ml-0 md:ml-14">
+                <p className="text-[10px] text-foreground/40 uppercase tracking-[0.4em] ml-0 md:ml-14">
                     Standard_Architectural_Units
                 </p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 {/* SECTION: Base Cabinets */}
-                <section className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/20 space-y-6">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-white/80 border-b border-white/10 pb-4 flex items-center gap-2">
+                <section className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-border space-y-6">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-foreground/80 border-b border-border pb-4 flex items-center gap-2">
                         <Box size={16} className="text-magic-purple" />
                         Base_Cabinets
                     </h2>
@@ -35,17 +35,17 @@ export default function MeasurementsPage() {
                             { label: "Standard_Height", value: "720mm" },
                             { label: "Kickplate_Height", value: "100mm" },
                         ].map(spec => (
-                            <div key={spec.label} className="flex justify-between items-center py-2 border-b border-white/5">
-                                <span className="text-[10px] text-white/40 uppercase">{spec.label}</span>
-                                <span className="text-[10px] text-white font-black">{spec.value}</span>
+                            <div key={spec.label} className="flex justify-between items-center py-2 border-b border-border/50">
+                                <span className="text-[10px] text-foreground/40 uppercase">{spec.label}</span>
+                                <span className="text-[10px] text-foreground font-black">{spec.value}</span>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 {/* SECTION: Wall Cabinets */}
-                <section className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/20 space-y-6">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-white/80 border-b border-white/10 pb-4 flex items-center gap-2">
+                <section className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-border space-y-6">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-foreground/80 border-b border-border pb-4 flex items-center gap-2">
                         <Layers size={16} className="text-magic-cyan" />
                         Wall_Cabinets
                     </h2>
@@ -55,9 +55,9 @@ export default function MeasurementsPage() {
                             { label: "Standard_Height", value: "720mm" },
                             { label: "Mounting_Clearance", value: "500mm" },
                         ].map(spec => (
-                            <div key={spec.label} className="flex justify-between items-center py-2 border-b border-white/5">
-                                <span className="text-[10px] text-white/40 uppercase">{spec.label}</span>
-                                <span className="text-[10px] text-white font-black">{spec.value}</span>
+                            <div key={spec.label} className="flex justify-between items-center py-2 border-b border-border/50">
+                                <span className="text-[10px] text-foreground/40 uppercase">{spec.label}</span>
+                                <span className="text-[10px] text-foreground font-black">{spec.value}</span>
                             </div>
                         ))}
                     </div>
@@ -65,14 +65,14 @@ export default function MeasurementsPage() {
             </div>
 
             {/* Neural Note - Callout */}
-            <div className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/20 bg-magic-purple/5">
+            <div className="glass-brilliant p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] border border-border bg-primary/5">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="p-2 bg-magic-purple/20 rounded-lg text-magic-purple shrink-0">
+                    <div className="p-2 bg-primary/20 rounded-lg text-primary shrink-0">
                         <Info size={16} />
                     </div>
                     <div className="space-y-2">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-white">Neural_Note</h3>
-                        <p className="text-[9px] text-white/40 leading-relaxed uppercase tracking-wider">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-foreground">Neural_Note</h3>
+                        <p className="text-[9px] text-foreground/40 leading-relaxed uppercase tracking-wider">
                             Global standards are enforced by the Culinary_OS core. Custom overrides can be applied at the individual project level via the Spatial_Registry editor.
                         </p>
                     </div>

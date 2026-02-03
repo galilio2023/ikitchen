@@ -1,72 +1,65 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import dbConnect from '@/lib/dbConnect';
+import Kitchen from '@/models/Kitchen';
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
     try {
-        const { kitchenData } = await request.json();
+        // 1. Auth & DB Connection
+        const session = await getServerSession(authOptions);
+        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        if (!kitchenData || !kitchenData.walls) {
-            return NextResponse.json({ error: "INVALID_KITCHEN_DATA" }, { status: 400 });
-        }
+        await dbConnect();
+        const { kitchenId } = await req.json();
 
-        console.log('[IMAGE GENERATE] Processing kitchen visualization...');
+        const kitchen = await Kitchen.findById(kitchenId);
+        if (!kitchen) return NextResponse.json({ error: "Kitchen not found" }, { status: 404 });
 
         const apiKey = process.env.GEMINI_API_KEY;
-        
-        // Generate detailed kitchen description
-        const description = generateKitchenDescription(kitchenData);
-        
+
+        // 2. Generate Context for AI
+        const description = generateKitchenDescription(kitchen);
+
         if (!apiKey) {
-            console.warn('[IMAGE GENERATE] Using mock render with description');
-            return NextResponse.json({ 
-                success: true, 
-                imageUrl: selectMockImage(kitchenData),
+            return NextResponse.json({
+                success: true,
+                imageUrl: selectMockImage(kitchen),
                 description,
-                message: "Mock_Render: Kitchen_Visualization_Generated" 
+                message: "Mock_Render: No API Key found."
             });
         }
 
-        // Use Gemini to generate detailed kitchen visualization description
+        // 3. AI Visualizer Logic
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-        const prompt = `You are a professional architectural visualizer. Based on this kitchen layout, create a detailed, vivid description for a 3D rendering:
-
-${description}
-
-Generate a detailed visualization description that includes:
-- Overall aesthetic and style (modern, traditional, minimalist, etc.)
-- Color scheme and materials (cabinetry, countertops, backsplash)
-- Lighting design (natural light from windows, artificial lighting)
-- Spatial flow and layout impression
-- Key design features that stand out
-
-Make it realistic and specific to the dimensions and layout provided.`;
+        const prompt = `You are a professional architectural visualizer. Create a vivid 3D rendering description for this kitchen:
+        ${description}
+        Include style, materials (cabinets, countertops), and lighting. Keep it professional and concise.`;
 
         const result = await model.generateContent(prompt);
+        // FIXED: Access text() directly to avoid TS80007
         const aiDescription = result.response.text();
 
-        // In production, you would use this description with:
-        // - DALL-E, Midjourney, or Stable Diffusion APIs
-        // - 3D rendering services
-        // For now, select appropriate stock image based on characteristics
-        const imageUrl = selectMockImage(kitchenData);
+        // 4. In a real scenario, you'd send aiDescription to an Image Gen API here
+        const imageUrl = selectMockImage(kitchen);
 
-        return NextResponse.json({ 
-            success: true, 
+        return NextResponse.json({
+            success: true,
             imageUrl,
             description: aiDescription,
-            message: "Gemini_AI: Kitchen_Visualization_Description_Generated",
-            // In production, include: renderUrl from actual image generation API
+            message: "Visualization description generated successfully."
         });
-    } catch (error) {
-        console.error('[IMAGE GENERATE] Error:', error);
-        return NextResponse.json({ 
-            error: "RENDER_GENERATION_FAILED",
-            details: error instanceof Error ? error.message : 'Unknown error'
-        }, { status: 500 });
+
+    } catch (error: any) {
+        console.error('[IMAGE_GEN_ERROR]:', error);
+        return NextResponse.json({ error: "RENDER_FAILED", details: error.message }, { status: 500 });
     }
 }
+
+// ... Keep your generateKitchenDescription and selectMockImage helpers below ...
 
 function generateKitchenDescription(kitchenData: {
     walls: unknown[];

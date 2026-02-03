@@ -46,7 +46,7 @@ export default function EnterpriseProjectCard({ project }: EnterpriseProjectCard
 
     const getStatusColor = (status: string) => {
         const colors = {
-            draft: 'text-slate-400 bg-slate-400/10 border-slate-400/20',
+            draft: 'text-muted-foreground bg-muted/30 border-muted/30',
             measuring: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
             designing: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
             ordered: 'text-amber-400 bg-amber-400/10 border-amber-400/20',

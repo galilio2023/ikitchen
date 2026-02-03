@@ -77,7 +77,7 @@ export default function SpatialCanvas({
                 {/* Wall Boundary */}
                 {currentWall && (
                     <div
-                        className="absolute border-2 border-magic-cyan/20 bg-magic-cyan/5 pointer-events-none"
+                        className="absolute border-2 border-primary/20 bg-primary/5 pointer-events-none"
                         style={{
                             left: 0,
                             top: 0,
@@ -85,7 +85,7 @@ export default function SpatialCanvas({
                             height: '100%',
                         }}
                     >
-                        <div className="absolute -top-6 left-0 text-[8px] font-mono text-magic-cyan/40 uppercase tracking-widest">
+                        <div className="absolute -top-6 left-0 text-[8px] font-mono text-primary/40 uppercase tracking-widest">
                             {currentWall.label} :: {currentWall.length}x{currentWall.height} CM
                         </div>
                     </div>

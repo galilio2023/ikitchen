@@ -48,7 +48,7 @@ export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
         <div className="flex h-[calc(100vh-6rem)] w-full overflow-hidden bg-obsidian font-mono">
             <main className="flex-1 relative overflow-y-auto custom-scrollbar bg-[#030303] scroll-smooth">
                 {/* Header Wall Nav */}
-                <div className="sticky top-0 z-50 w-full py-4 bg-obsidian/90 backdrop-blur-xl border-b border-white/5 px-10">
+                <div className="sticky top-0 z-50 w-full py-4 bg-obsidian/90 backdrop-blur-xl border-b border-border px-10">
                     <div className="flex justify-center gap-2">
                         {kitchen.walls.map((wall, idx) => (
                             <button
@@ -59,7 +59,7 @@ export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
                                 }}
                                 className={cn(
                                     "px-6 py-1.5 rounded-full text-[9px] font-black uppercase transition-all border",
-                                    activeWallIdx === idx ? "bg-magic-purple/20 border-magic-purple text-magic-purple" : "text-white/30 border-transparent hover:border-white/10"
+                                    activeWallIdx === idx ? "bg-magic-purple/20 border-magic-purple text-magic-purple" : "text-foreground/30 border-transparent hover:border-border"
                                 )}
                             >
                                 {wall.label}
@@ -74,12 +74,12 @@ export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
                             <div className="flex items-end justify-between mb-6">
                                 <div>
                                     <span className="text-[8px] font-black text-magic-purple uppercase">Elevation_0{wallIdx + 1}</span>
-                                    <h2 className="text-xl font-bold text-white uppercase italic">{wall.label}</h2>
+                                    <h2 className="text-xl font-bold text-foreground uppercase italic">{wall.label}</h2>
                                 </div>
-                                <span className="text-[9px] text-white/20">{wall.length}cm x {wall.height}cm</span>
+                                <span className="text-[9px] text-foreground/20">{wall.length}cm x {wall.height}cm</span>
                             </div>
 
-                            <div className="relative h-[500px] bg-black rounded-[2rem] border border-white/5 overflow-hidden group-hover:border-magic-purple/20 transition-all">
+                            <div className="relative h-[500px] bg-black rounded-[2rem] border border-border overflow-hidden group-hover:border-magic-purple/20 transition-all">
                                 <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #8b5cf6 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }} />
 
                                 {obstaclesByWall[wallIdx]?.map((obs) => (
@@ -99,12 +99,12 @@ export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
                 </div>
             </main>
 
-            <aside className="w-80 border-l border-white/5 bg-black/40 flex flex-col">
+            <aside className="w-80 border-l border-border bg-background/40 flex flex-col">
                 <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
                     <ObstacleToolbox wallIndex={activeWallIdx} />
                 </div>
-                <div className="p-6 border-t border-white/5 bg-black/60">
-                    <button onClick={handleSave} className="w-full py-4 bg-magic-purple text-white font-black text-[10px] uppercase rounded-xl hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">
+                <div className="p-6 border-t border-border bg-background/60">
+                    <button onClick={handleSave} className="w-full py-4 bg-magic-purple text-primary-foreground font-black text-[10px] uppercase rounded-xl hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">
                         Sync_Workspace
                     </button>
                 </div>

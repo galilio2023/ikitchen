@@ -108,7 +108,7 @@ export default function SettingsPage() {
                 <button className="w-full sm:w-auto px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground transition-all">
                     Reset_to_Defaults
                 </button>
-                <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-magic-purple rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:scale-105 transition-all">
+                <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 bg-magic-purple rounded-xl text-[10px] font-black uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:scale-105 transition-all">
                     <Save size={14} />
                     Commit_Changes
                 </button>

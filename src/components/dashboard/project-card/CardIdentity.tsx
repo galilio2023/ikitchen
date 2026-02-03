@@ -28,9 +28,9 @@ export function CardIdentity({ clientName, img, tags }: CardIdentityProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
                 
                 {/* Image Overlay Badge */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md border border-white/5 opacity-0 group-hover/img:opacity-100 transition-opacity">
+                <div className="absolute bottom-4 left-4 flex items-center gap-2 px-2 py-1 rounded-lg bg-background/40 backdrop-blur-md border border-border opacity-0 group-hover/img:opacity-100 transition-opacity">
                     <div className="w-1 h-1 rounded-full bg-magic-cyan animate-pulse" />
-                    <span className="text-[7px] text-white/70 font-black uppercase tracking-widest">Live_Feed</span>
+                    <span className="text-[7px] text-foreground/70 font-black uppercase tracking-widest">Live_Feed</span>
                 </div>
             </div>
 

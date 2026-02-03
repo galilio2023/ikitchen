@@ -1,6 +1,7 @@
 export interface IKitchen {
     id: string;
     _id?: string;
+    userId?: string;  // Optional to fix the model
     projectId: string;
     progress: number;
     clientName: string;
@@ -21,6 +22,16 @@ export interface IKitchen {
     color?: string;
     createdAt?: string | Date;
     updatedAt?: string | Date;
+    generatedDesign?: {
+        layoutType: string;
+        aiReasoning: string;
+        units: Array<{
+            id: string;
+            wallIndex: number;
+            type: string;
+            position: ICoordinate;
+        }>;
+    }; // Proper type for AI-generated design
 }
 
 export interface ICoordinate {
@@ -33,7 +44,7 @@ export interface ICoordinate {
 }
 
 export interface IWall {
-    id:string
+    id: string;
     label: string;
     length: number;    // Width in cm
     height: number;    // Standard height (e.g., 240)
