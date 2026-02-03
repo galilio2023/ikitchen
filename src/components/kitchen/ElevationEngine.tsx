@@ -3,7 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { saveKitchen, setSelectedObstacle, updateObstaclePosition } from '@/lib/features/kitchens/kitchenSlice';
+import { updateKitchenThunk, setSelectedObstacle, updateObstaclePosition } from '@/lib/features/kitchens/kitchenSlice';
 import DraggableObstacle from "./DraggableObstacle";
 import ObstacleToolbox from "./ObstacleToolbox";
 import PropertiesPanel from "./PropertiesPanel";
@@ -19,7 +19,7 @@ export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
 
     const handleSave = () => {
         if (currentKitchen) {
-            dispatch(saveKitchen(currentKitchen));
+            dispatch(updateKitchenThunk({ id: currentKitchen.id, data: currentKitchen }));
             toast.success("WORKSPACE_SYNC_COMPLETE");
         }
     };
