@@ -1,3 +1,5 @@
+import { GeneratedDesign } from "@/lib/validations";
+
 export interface IKitchen {
     id: string;
     _id?: string;
@@ -22,16 +24,7 @@ export interface IKitchen {
     color?: string;
     createdAt?: string | Date;
     updatedAt?: string | Date;
-    generatedDesign?: {
-        layoutType: string;
-        aiReasoning: string;
-        units: Array<{
-            id: string;
-            wallIndex: number;
-            type: string;
-            position: ICoordinate;
-        }>;
-    }; // Proper type for AI-generated design
+    generatedDesign?: GeneratedDesign;
 }
 
 export interface ICoordinate {
