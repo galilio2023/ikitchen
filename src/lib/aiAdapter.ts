@@ -53,7 +53,7 @@ export async function callModelText(
             parts: [{
               text: mockDesignString
             }]
-          }],
+          },
           usageMetadata: {
             promptTokenCount: 50,
             candidatesTokenCount: 100,
