@@ -62,6 +62,8 @@ const bomItemSchema = z.object({
 
 // Main generated design schema
 export const generatedDesignSchema = z.object({
+  layoutType: z.string().min(1).describe("The overall layout type (e.g., L-Shape, U-Shape)"),
+  aiReasoning: z.string().min(1).describe("A brief explanation of the design choices made by the AI"),
   units: z.array(unitSchema).describe("Array of units to place in the kitchen"),
   bom: z.array(bomItemSchema).optional().describe("Bill of Materials"),
   instructions: z.string().optional().describe("Installation or assembly instructions"),
