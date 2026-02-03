@@ -6,6 +6,7 @@ import { ObstacleType } from "@/types/kitchen";
 // UNIFIED: Pointing to the consolidated kitchenSlice
 import { addObstacle } from "@/lib/features/kitchens/kitchenSlice";
 import { useAppDispatch } from "@/lib/hooks";
+import { v4 as uuidv4 } from 'uuid';
 
 interface ObstacleToolboxProps {
     wallIndex: number;
@@ -31,10 +32,17 @@ export default function ObstacleToolbox({ wallIndex }: ObstacleToolboxProps) {
      */
     const handleAdd = (type: ObstacleType) => {
         dispatch(addObstacle({
+            id: uuidv4(),
             type,
             wallIndex,
-            x: 50,     // Initial distance along wall (cm)
-            y: 100     // Initial elevation height (cm)
+            position: {
+                x: 50,     // Initial distance along wall (cm)
+                y: 100,    // Initial elevation height (cm)
+                z: 0,
+                width: 60, // Default width
+                height: 60, // Default height
+                depth: 20  // Default depth
+            }
         }));
     };
 
