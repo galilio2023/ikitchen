@@ -12,6 +12,7 @@ import WallManager from './WallManager';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layers, Hammer } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function SpatialEditor() {
     const dispatch = useAppDispatch();
@@ -82,10 +83,17 @@ export default function SpatialEditor() {
         if (typeString) {
             const type = typeString as ObstacleType;
             dispatch(addObstacle({
+                id: uuidv4(),
                 type,
                 wallIndex: activeWallIndex,
-                x,
-                y
+                position: {
+                    x,
+                    y,
+                    z: 0,
+                    width: 60,
+                    height: 60,
+                    depth: 20
+                }
             }));
         } else if (draggingId) {
             dispatch(updateObstaclePosition({
