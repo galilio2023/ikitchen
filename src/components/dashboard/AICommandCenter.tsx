@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Send, Sparkles, Loader2 } from 'lucide-react';
 import { useAppDispatch } from '@/lib/hooks';
 import { addObstacle } from '@/lib/features/kitchens/kitchenSlice';
+import { v4 as uuidv4 } from 'uuid';
 
 export function AICommandCenter() {
     const [prompt, setPrompt] = useState('');
@@ -28,10 +29,17 @@ export function AICommandCenter() {
                 if (data.units && Array.isArray(data.units)) {
                     data.units.forEach((unit: any) => {
                         dispatch(addObstacle({
+                            id: unit.id || uuidv4(),
                             type: unit.type,
                             wallIndex: 0,
-                            x: unit.x,
-                            y: unit.y
+                            position: {
+                                x: unit.position?.x || unit.x || 0,
+                                y: unit.position?.y || unit.y || 0,
+                                z: unit.position?.z || 0,
+                                width: unit.position?.width || 60,
+                                height: unit.position?.height || 60,
+                                depth: unit.position?.depth || 60,
+                            }
                         }));
                     });
                 }
