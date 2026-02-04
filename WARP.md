@@ -73,8 +73,8 @@ Every component is isolated to its own file to ensure zero-collision development
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
-| GET | `/api/projects` | Fetch all projects (auto-seeds if empty) |
-| POST | `/api/projects` | Create new Project + Kitchen pair |
+| GET | `/api/projects` | Fetch all projects (no auto-seed; use `scripts/seed.ts` or admin `POST /api/seed`) |
+| POST | `/api/projects` | Initialize a new Project + Kitchen node pair |
 | GET | `/api/projects/[id]` | Get project metadata |
 | PUT | `/api/projects/[id]` | Save kitchen spatial data |
 | PATCH | `/api/projects/[id]` | Update project metadata |

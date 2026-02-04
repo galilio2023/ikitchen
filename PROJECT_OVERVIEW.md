@@ -155,7 +155,7 @@ Stores spatial design data:
 
 #### GET `/api/projects`
 - Fetches all projects for the dashboard
-- Implements auto-seeding for empty databases
+- Seeding: Removed inline auto-seed; use `scripts/seed.ts` or the admin-only `POST /api/seed` to populate initial/demo data.
 - Returns project metadata
 
 #### POST `/api/projects`
