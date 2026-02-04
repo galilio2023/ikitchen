@@ -12,6 +12,18 @@ const CoordinateSchema = new Schema({
     depth: { type: Number, required: true, min: 0 }
 }, { _id: false });
 
+// Schema for items in generatedDesignHistory
+const designHistoryItemSchema = new Schema({
+  id: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  userId: { type: Schema.Types.ObjectId, ref: 'User' },
+  model: { type: String },
+  promptHash: { type: String },
+  design: { type: Schema.Types.Mixed }, // Store the full design object
+  imageUrls: [{ type: String }], // Store any generated image URLs
+  rawResponseRef: { type: Schema.Types.ObjectId, ref: 'AiRawResponse' },
+}, { _id: false });
+
 const KitchenSchema = new Schema({
     // userId is optional to allow seeding without authentication
     // but should always be populated in normal application usage
@@ -85,17 +97,13 @@ const KitchenSchema = new Schema({
     updatedAt: { type: Date },
 
     // --- AI DESIGN ADDITIONS ---
-    generatedDesign: {
-        layoutType: String,
-        aiReasoning: String,
-        units: [{
-            id: String,
-            wallIndex: Number,
-            type: String,
-            position: CoordinateSchema
-        }]
-    }
-
+    generatedDesign: { 
+      type: Schema.Types.Mixed, 
+      default: null // Initially null until AI generates a design
+    },
+    // History of all generated designs for this kitchen
+    // This enables design iteration and rollback capabilities
+    generatedDesignHistory: [designHistoryItemSchema]
 }, { timestamps: true });
 
 // Database indexes for query optimization

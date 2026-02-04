@@ -4,22 +4,31 @@ import { useState } from "react";
 import {
   Sparkles,
   Loader2,
-  ImageIcon, // Fixed: Standard import
-  CheckCircle2,
-  AlertCircle,
+  X,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { applyDesign } from "@/lib/features/kitchens/kitchenSlice";
+import {
+  applyDesign,
+  setPreviewDesign,
+  setPreviewObstacles,
+} from "@/lib/features/kitchens/kitchenSlice";
 import { toast } from "sonner";
+import { IObstacle } from "@/types/kitchen";
+
+interface PreviewObstacle extends IObstacle {
+  _preview: boolean;
+}
 
 export default function AIDesignGenerator() {
   const dispatch = useAppDispatch();
-  const { currentKitchen } = useAppSelector((state) => state.kitchen);
+  const { currentKitchen, previewDesign } = useAppSelector(
+    (state) => state.kitchen,
+  );
+
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isVisualizingImage, setIsVisualizingImage] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [imageDescription, setImageDescription] = useState<string | null>(null);
-  const [designRationale, setDesignRationale] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [conflicts, setConflicts] = useState<any[]>([]);
 
   const generateCompleteDesign = async () => {
     if (!currentKitchen) {
@@ -28,160 +37,161 @@ export default function AIDesignGenerator() {
     }
 
     setIsGenerating(true);
-    setGeneratedImage(null);
-    setImageDescription(null);
-    setDesignRationale(null);
+    // Reset state
+    setConflicts([]);
 
     try {
-      toast.info("🤖 Gemini AI: Analyzing kitchen dimensions...");
+      toast.info("🤖 AI: Analyzing kitchen dimensions...");
 
-      const designResponse = await fetch("/api/generate/design", {
+      const response = await fetch("/api/generate/kitchen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          kitchenId: currentKitchen.id || currentKitchen._id,
-        }), // Fixed: Send ID, not full object
+          kitchenId: currentKitchen._id || currentKitchen.id,
+          prompt: "Design a modern kitchen with efficient workflow",
+          options: { generateImage: false },
+        }),
       });
 
-      if (!designResponse.ok) throw new Error("Failed to generate design");
+      const data = await response.json();
 
-      const designData = await designResponse.json();
+      if (!response.ok) {
+        if (response.status === 422) {
+          toast.error(
+            "AI Output Validation Failed. Check console for details.",
+          );
+          console.error("Raw Ref:", data.rawResponseRef);
+        } else {
+          throw new Error(data.error || "Failed to generate");
+        }
+        return;
+      }
 
-      if (designData.success && designData.design) {
-        dispatch(
-          applyDesign({
-            obstacles: designData.design.obstacles || [],
-            appliances: designData.design.appliances || [],
+      if (data.success && data.design) {
+        dispatch(setPreviewDesign(data.design));
+
+        // Map units to preview obstacles with correct spatial mapping
+        const previewObstacles: PreviewObstacle[] = data.design.units.map(
+          (unit: any, index: number) => ({
+            id: `preview-${index}`,
+            type: unit.type,
+            x: unit.position.x,
+            y: unit.position.y,
+            width: unit.position.width,
+            height: unit.position.height,
+            z: unit.position.depth || 0,
+            wallIndex: unit.wallIndex,
+            _preview: true,
           }),
         );
 
-        setDesignRationale(
-          designData.design.aiReasoning || "Design optimized for ergonomics",
-        );
-        toast.success("✅ Kitchen layout generated successfully!");
-        await generateVisualization(designData.design);
+        dispatch(setPreviewObstacles(previewObstacles));
+        setConflicts(data.conflicts || []);
+
+        setShowPreview(true);
+        toast.success("✅ Layout generated!");
       }
-    } catch (error) {
-      console.error("[AI DESIGN] Error:", error);
-      toast.error("Failed to generate design. Please try again.");
+    } catch (error: any) {
+      toast.error(error.message || "Generation failed");
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const generateVisualization = async (design: any) => {
-    setIsVisualizingImage(true);
+  const handleAcceptDesign = async (forceSave = false) => {
     try {
-      toast.info("🎨 Generating kitchen visualization...");
-      const imageResponse = await fetch("/api/generate/image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          kitchenId: currentKitchen?.id || currentKitchen?._id,
-        }),
-      });
+      const response = await fetch(
+        `/api/kitchens/${currentKitchen?._id || currentKitchen?.id}/design`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            generatedDesign: previewDesign,
+            applyUnitsAsObstacles: true,
+            force: forceSave,
+          }),
+        },
+      );
 
-      if (!imageResponse.ok)
-        throw new Error("Failed to generate visualization");
+      const result = await response.json();
 
-      const imageData = await imageResponse.json();
-      if (imageData.success) {
-        setGeneratedImage(imageData.imageUrl);
-        setImageDescription(imageData.description);
-        toast.success("✅ Kitchen visualization ready!");
+      if (response.status === 409) {
+        setConflicts(result.conflicts);
+        toast.warning(
+          'Spatial conflicts detected. Click "Force Accept" to ignore.',
+        );
+        return;
+      }
+
+      if (result.success) {
+        dispatch(
+          applyDesign({
+            obstacles: result.obstacles,
+            appliances: result.appliances,
+          }),
+        );
+        setShowPreview(false);
+        toast.success("Design permanently saved!");
       }
     } catch (error) {
-      console.error("[AI VISUALIZATION] Error:", error);
-    } finally {
-      setIsVisualizingImage(false);
+      toast.error("Acceptance failed");
     }
   };
 
-  if (!currentKitchen) return null;
-
   return (
     <div className="space-y-4">
+      {/* Generate Button */}
       <button
         onClick={generateCompleteDesign}
-        disabled={isGenerating || isVisualizingImage}
-        className="w-full py-4 px-6 bg-linear-to-r from-indigo-600 to-cyan-500 rounded-2xl text-white font-black uppercase tracking-widest text-sm shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
+        disabled={isGenerating}
+        className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-cyan-500 rounded-2xl text-white font-bold flex items-center justify-center gap-3 transition-all hover:brightness-110 disabled:opacity-50"
       >
-        {isGenerating || isVisualizingImage ? (
-          <>
-            <Loader2 className="animate-spin" size={20} />
-            {isGenerating
-              ? "Generating Design..."
-              : "Creating Visualization..."}
-          </>
-        ) : (
-          <>
-            <Sparkles
-              size={20}
-              className="group-hover:scale-110 transition-transform"
-            />
-            Generate Complete Design
-          </>
-        )}
+        {isGenerating ? <Loader2 className="animate-spin" /> : <Sparkles />}
+        {isGenerating ? "Designing..." : "Generate AI Design"}
       </button>
 
-      {designRationale && (
-        <div className="glass-brilliant p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-2 animate-in fade-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-2 text-emerald-500">
-            <CheckCircle2 size={16} />
-            <h4 className="text-xs font-black uppercase tracking-wider">
-              AI Design Rationale
+      {/* Preview Panel */}
+      {showPreview && (
+        <div className="glass-brilliant p-4 rounded-xl border border-border space-y-4 animate-in fade-in zoom-in-95">
+          <div className="flex justify-between items-center">
+            <h4 className="text-xs font-black uppercase tracking-widest">
+              Preview Design
             </h4>
+            <button onClick={() => setShowPreview(false)}>
+              <X size={16} />
+            </button>
           </div>
-          {/* FIXED SPACE BELOW */}
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed italic">
-            {designRationale}
-          </p>
-        </div>
-      )}
 
-      {generatedImage && (
-        <div className="glass-brilliant p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-3 animate-in fade-in slide-in-from-bottom-4">
-          <div className="flex items-center gap-2 text-cyan-500">
-            <ImageIcon size={16} />
-            <h4 className="text-xs font-black uppercase tracking-wider">
-              Kitchen Visualization
-            </h4>
-          </div>
-          {/* FIXED SPACE BELOW IN className */}
-          <div className="relative aspect-video rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
-            <img
-              src={generatedImage}
-              alt="Design Preview"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-          </div>
-          {imageDescription && (
-            <div className="space-y-2">
-              <h5 className="text-[10px] font-black uppercase tracking-wider text-zinc-400">
-                Description
-              </h5>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                {imageDescription}
+          {/* Logic to show Conflicts */}
+          {conflicts.length > 0 && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <p className="text-[10px] text-red-400 font-bold mb-1">
+                CONFLICTS DETECTED
               </p>
+              {conflicts.map((c, i) => (
+                <p key={i} className="text-[10px] text-red-300">
+                  • {c.message}
+                </p>
+              ))}
             </div>
           )}
-        </div>
-      )}
 
-      {!isGenerating && !generatedImage && (
-        <div className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 space-y-2 bg-zinc-50/50 dark:bg-zinc-900/50">
-          <div className="flex items-center gap-2 text-indigo-500">
-            <AlertCircle size={14} />
-            <h4 className="text-[10px] font-black uppercase tracking-wider">
-              AI-Powered Design
-            </h4>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleAcceptDesign(false)}
+              className="flex-1 py-2 bg-primary text-primary-foreground rounded-lg text-xs font-bold"
+            >
+              Accept Design
+            </button>
+            {conflicts.length > 0 && (
+              <button
+                onClick={() => handleAcceptDesign(true)}
+                className="flex-1 py-2 bg-amber-600 text-white rounded-lg text-xs font-bold"
+              >
+                Force Accept
+              </button>
+            )}
           </div>
-          {/* FIXED SPACE BELOW */}
-          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            Gemini AI will analyze your kitchen dimensions and obstacles to
-            generate an ergonomic layout and a 3D visual preview.
-          </p>
         </div>
       )}
     </div>
