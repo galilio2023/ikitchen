@@ -1,4 +1,5 @@
 import { calculateWallPoints } from './geometry';
+import { IWall } from '@/types/kitchen';
 
 /**
  * Conflict JSON contract:
@@ -39,17 +40,18 @@ export type Conflict = {
  * @param xCm - Distance in cm along the wall from the starting point
  * @returns Global coordinates {x, y}
  */
-export function convertWallRelativeToGlobal(walls: any[], wallIndex: number, xCm: number) {
+export function convertWallRelativeToGlobal(walls: IWall[], wallIndex: number, xCm: number) {
   if (wallIndex < 0 || wallIndex >= walls.length) {
     throw new Error(`Invalid wallIndex: ${wallIndex}`);
   }
 
-  const wall = walls[wallIndex];
-  
-  // Calculate the global position based on the wall's starting point
-  // This assumes the wall starts at a known global position
-  // Using calculateWallPoints to get the starting point of the wall
-  const wallPoints = calculateWallPoints(wall);
+  // Calculate the layout for all walls to get their global start/end points
+  const wallTracks = calculateWallPoints(walls);
+  const wallPoint = wallTracks[wallIndex];
+
+  if (!wallPoint) {
+      throw new Error(`Could not calculate points for wall at index: ${wallIndex}`);
+  }
   
   // Assuming xCm is measured from the start of the wall
   // This calculation depends on the wall's orientation (horizontal vs vertical)
@@ -57,8 +59,8 @@ export function convertWallRelativeToGlobal(walls: any[], wallIndex: number, xCm
   // For a vertical wall, we add to the y-coordinate
   // For simplicity, assuming horizontal wall where x increases along the wall
   return {
-    x: wallPoints.startX + xCm,
-    y: wallPoints.startY // Assuming y remains constant along the wall
+    x: wallPoint.start.x + xCm,
+    y: wallPoint.start.y // Assuming y remains constant along the wall
   };
 }
 
@@ -69,14 +71,14 @@ export function convertWallRelativeToGlobal(walls: any[], wallIndex: number, xCm
  * @returns Work triangle check results
  */
 export function checkWorkTriangle(
-  nodes: Array<{ id: string, wallIndex: number, position: { x: number, y: number, width: number, height: number } }>,
+  nodes: Array<{ id: string; type: string; wallIndex: number; position: { x: number; y: number; width: number; height: number; }; }>,
   standards: any
 ): { ok: boolean, legs: Array<{ name: string, lengthCm: number, ok: boolean }>, perimeterCm: number, details: any } {
   // Identify the three main work centers: sink, refrigerator, range
   const workCenters = nodes.filter(node => 
     ['sink', 'refrigerator', 'range'].some(center => 
       node.id.toLowerCase().includes(center) || 
-      node.position.type?.toLowerCase().includes(center)
+      node.type?.toLowerCase().includes(center)
     )
   );
 
@@ -138,7 +140,7 @@ export function checkWorkTriangle(
 export function detectOverlaps(
   units: Array<any>,
   existingObstacles: Array<any>,
-  walls: Array<any>
+  walls: IWall[]
 ): { conflicts: Conflict[] } {
   const conflicts: Conflict[] = [];
 
