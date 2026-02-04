@@ -96,7 +96,7 @@ The project utilizes a dual-model system to separate metadata from technical spa
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/projects` | Fetches all nodes. Performs intelligent **Auto-Seeding** if the cluster is empty. |
+| `GET` | `/api/projects` | Fetches all nodes. No auto-seed; use `scripts/seed.ts` or the admin-only `POST /api/seed` to populate initial data. |
 | `POST` | `/api/projects` | Initializes a new Project + Kitchen node pair. |
 | `GET` | `/api/projects/[id]` | Retrieves metadata for a specific project node. |
 | `GET` | `/api/kitchens/[id]` | Retrieves full spatial data. Uses `.populate('projectId')` to bridge metadata. |
