@@ -16,69 +16,62 @@ Kitchen Voyager is a modern, web-based tool designed to streamline the kitchen d
 
 This project has undergone a complete architectural overhaul to align with the latest industry best practices, moving from a complex client-side architecture to a lean, performant, and maintainable server-centric model using Next.js Server Actions.
 
-## Key Features
-
-- **AI-Powered Layout Generation:** Automatically generates functional and efficient kitchen layouts based on user-defined constraints.
-- **Interactive 2D Spatial Canvas:** A drag-and-drop interface for designing wall structures and placing fixed obstacles.
-- **Real-time Validation Engine:** Provides immediate feedback to the user, preventing common design errors like overlapping items.
-- **Modern, Server-Centric Architecture:** Built with Next.js 14+ App Router, Server Components, and Server Actions for optimal performance and a simplified developer experience.
-- **Themable UI:** Includes a clean, professional, and accessible design system with full support for both light and dark modes.
-- **Project Management:** A complete workflow for creating, viewing, and deleting design projects.
-
 ## Tech Stack
 
-This project is built with a modern, robust, and scalable technology stack:
-
-- **Framework:** [Next.js](https://nextjs.org/) (v14+ App Router)
+- **Framework:** [Next.js](https://nextjs.org/) (App Router)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) (v4)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Database:** [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
-- **Client State Management:** [Zustand](https://github.com/pmndrs/zustand) (for localized client state)
+- **Client State Management:** [Zustand](https://github.com/pmndrs/zustand)
 - **AI:** [Google Gemini](https://ai.google.dev/)
+- **Authentication:** [NextAuth.js](https://next-auth.js.org/) (Passwordless)
 
 ## Getting Started
 
-To get a local copy up and running, follow these simple steps.
-
 ### Prerequisites
 
-- Node.js (v18 or later)
+- Node.js (v18+)
 - npm or yarn
-- A MongoDB database instance (local or cloud-based)
+- A MongoDB database
 - A Google Gemini API Key
+- An SMTP server for sending magic links (e.g., SendGrid, Postmark, or a simple Gmail account for development)
 
 ### Installation
 
-1.  **Clone the repository:**
-    ```sh
-    git clone <your-repository-url>
-    ```
-2.  **Install NPM packages:**
+1.  **Clone the repository**
+2.  **Install dependencies:**
     ```sh
     npm install
     ```
 3.  **Set up environment variables:**
-    Create a file named `.env.local` in the root of the project and add the following variables:
+    Create a `.env.local` file in the root of the project and add the following:
     ```env
     # Your MongoDB connection string
-    MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<database>
-
+    MONGODB_URI="mongodb+srv://<user>:<password>@<cluster>/<database>"
+    
     # Your Google Gemini API Key
     GEMINI_API_KEY=AIzaSy...
+    
+    # NextAuth.js secret (generate a random string)
+    NEXTAUTH_SECRET=your_super_secret_key_here
+    NEXTAUTH_URL=http://localhost:3000
+    
+    # Email Provider (for passwordless login)
+    EMAIL_SERVER_HOST=smtp.example.com
+    EMAIL_SERVER_PORT=587
+    EMAIL_SERVER_USER=user@example.com
+    EMAIL_SERVER_PASSWORD=password
+    EMAIL_FROM=noreply@yourdomain.com
     ```
-4.  **Run the development server:**
+4.  **Seed the database (Optional):**
+    To populate your database with initial demo data, run:
+    ```sh
+    npx tsx scripts/seed.ts
+    ```
+5.  **Run the development server:**
     ```sh
     npm run dev
     ```
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Architectural Overview
-
-The application's architecture has been intentionally refactored to be server-centric, leveraging the latest features of Next.js to maximize performance and simplify the codebase.
-
-- **Data Fetching:** Pages and layouts are rendered as **Server Components**, fetching data directly from the database on the server before sending any HTML to the client. This eliminates the need for client-side loading spinners for primary data.
-- **Data Mutations:** All data creation, updates, and deletions are handled by **Server Actions**. This removes the need for traditional API routes and client-side state management libraries like Redux, resulting in a significantly simpler and more secure data flow.
-- **Client State:** For purely client-side UI state (e.g., managing the state of the interactive kitchen editor), we use a lightweight **Zustand** store. This state is initialized with data fetched on the server, providing the best of both worlds.
 
 ---
 
@@ -89,7 +82,4 @@ The application's architecture has been intentionally refactored to be server-ce
   <p style="font-family: sans-serif; font-size: 18px; font-weight: bold; margin-top: 0.5rem; background: linear-gradient(to right, #FFF, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
     Tablawy
   </p>
-  <a href="https://vercel.com/?utm_source=kitchen-voyager&utm_campaign=oss" target="_blank" rel="noopener noreferrer">
-    <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by Vercel" style="margin-top: 1rem;" />
-  </a>
 </div>

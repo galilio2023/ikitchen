@@ -1,58 +1,47 @@
-import React, { useTransition, useState } from 'react';
+'use client';
+
+import React, { useTransition } from 'react';
 import { useKitchenStore } from '@/providers/KitchenStoreProvider';
-import { AlertCircle, ShieldCheck } from 'lucide-react';
-import { applyAiLayout } from '@/actions/projectActions';
-import { GeneratedDesign } from '@/lib/validations';
+import { AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
+import { applyAiLayout, generateAiLayout } from '@/actions/aiActions';
 
 const AiDesignPanel: React.FC = () => {
-  const { currentKitchen, validationErrors, updateKitchen } = useKitchenStore(state => state);
-  const [isPending, startTransition] = useTransition();
-  const [isGenerating, setIsGenerating] = React.useState(false);
+  const { currentKitchen, setKitchen, validationErrors } = useKitchenStore(state => state);
+  const [isGenerating, startGenerateTransition] = useTransition();
+  const [isApplying, startApplyTransition] = useTransition();
 
-  const handleGenerateClick = async () => {
-    if (!currentKitchen || hasValidationErrors) return;
-    
-    setIsGenerating(true);
-    
-    try {
-      const response = await fetch('/api/generate/kitchen', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          kitchenId: currentKitchen.id,
-          kitchen: currentKitchen,
-        }),
+  const handleGenerateClick = () => {
+    if (currentKitchen && validationErrors.length === 0) {
+      startGenerateTransition(async () => {
+        const result = await generateAiLayout(currentKitchen.id);
+        if (result.success && result.design) {
+          setKitchen({ ...currentKitchen, generatedDesign: result.design });
+        } else {
+          // Handle error display
+          console.error(result.error);
+        }
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate layout');
-      }
-      
-      const result = await response.json();
-      
-      // Update the kitchen with the generated design
-      if (result.success && result.design) {
-        const updatedKitchen = {
-          ...currentKitchen,
-          generatedDesign: result.design,
-        };
-        
-        // Update the store with the new kitchen state
-        updateKitchen(updatedKitchen);
-      }
-    } catch (error) {
-      console.error('Error generating layout:', error);
-    } finally {
-      setIsGenerating(false);
     }
   };
 
   const handleAcceptClick = () => {
-    if (currentKitchen?.id && currentKitchen.generatedDesign) {
-      const design = currentKitchen.generatedDesign as GeneratedDesign;
-      startTransition(() => {
-        applyAiLayout(currentKitchen.id, design);
+    if (currentKitchen && currentKitchen.generatedDesign) {
+      startApplyTransition(async () => {
+        const result = await applyAiLayout(currentKitchen.id, currentKitchen.generatedDesign);
+        if (result.success) {
+          // The revalidation should handle the UI update.
+          // Optionally, clear the local preview design.
+          setKitchen({ ...currentKitchen, generatedDesign: undefined, appliances: result.appliances });
+        } else {
+          console.error(result.error);
+        }
       });
+    }
+  };
+
+  const handleDiscardClick = () => {
+    if(currentKitchen) {
+      setKitchen({ ...currentKitchen, generatedDesign: undefined });
     }
   };
 
@@ -79,7 +68,7 @@ const AiDesignPanel: React.FC = () => {
           disabled={hasValidationErrors || isGenerating}
           className="btn btn-primary w-full h-12 text-sm"
         >
-          {isGenerating ? "Generating..." : "Generate Layout"}
+          {isGenerating ? <Loader2 className="animate-spin" /> : 'Generate Layout'}
         </button>
         {hasValidationErrors && (
             <p className="text-xs text-destructive text-center mt-2">Please fix layout errors before generating.</p>
@@ -93,10 +82,10 @@ const AiDesignPanel: React.FC = () => {
             {currentKitchen.generatedDesign.aiReasoning}
           </blockquote>
           <div className="flex space-x-3">
-            <button onClick={handleAcceptClick} disabled={isPending} className="btn btn-primary flex-1">
-              {isPending ? "Applying..." : "Apply Layout"}
+            <button onClick={handleAcceptClick} disabled={isApplying} className="btn btn-primary flex-1">
+              {isApplying ? "Applying..." : "Apply Layout"}
             </button>
-            <button disabled={isPending} className="btn btn-secondary flex-1">
+            <button onClick={handleDiscardClick} disabled={isApplying} className="btn btn-secondary flex-1">
               Discard
             </button>
           </div>

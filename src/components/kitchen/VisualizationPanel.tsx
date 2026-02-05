@@ -1,51 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { Sparkles, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
-import { useKitchenStore } from '@/providers/KitchenStoreProvider'; // CORRECTED IMPORT PATH
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
+import { generateAiImage } from '@/actions/aiActions';
 
 export default function VisualizationPanel() {
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const { currentKitchen } = useKitchenStore(state => state);
 
-    const handleVisualize = async () => {
+    const handleVisualize = () => {
         if (!currentKitchen) {
             setError("No kitchen data available to visualize.");
             return;
         }
 
-        setLoading(true);
         setError(null);
         setImageUrl(null);
 
-        try {
+        startTransition(async () => {
             const prompt = `A photorealistic image of a modern kitchen. 
                 Layout: ${currentKitchen.appliances.length > 2 ? 'Complex' : 'Simple'}. 
                 Walls: ${currentKitchen.walls.map(w => `${w.length}x${w.height}cm`).join(', ')}. 
                 Features: ${currentKitchen.appliances.map(a => a.type).join(', ')}.`;
+            
+            const result = await generateAiImage(prompt, currentKitchen);
 
-            // This will be replaced with a Server Action
-            const response = await fetch('/api/generate/image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ kitchenData: currentKitchen, prompt }),
-            });
-
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error || "Failed to generate image.");
+            if (result.success && result.imageUrl) {
+                setImageUrl(result.imageUrl);
+            } else {
+                setError(result.error || "An unknown error occurred.");
             }
-
-            const data = await response.json();
-            setImageUrl(data.imageUrl);
-
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+        });
     };
 
     return (
@@ -58,10 +46,10 @@ export default function VisualizationPanel() {
             <div className="mb-6">
                 <button
                     onClick={handleVisualize}
-                    disabled={loading}
+                    disabled={isPending}
                     className="btn btn-primary w-full h-12 text-sm"
                 >
-                    {loading ? (
+                    {isPending ? (
                         <div className="flex items-center justify-center">
                             <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
                             Rendering Image...
@@ -78,13 +66,10 @@ export default function VisualizationPanel() {
                 </p>
             </div>
 
-            {error && !loading && (
-                <div className="bg-destructive/10 border border-destructive/30 text-destructive-foreground p-4 rounded-lg mb-4 flex items-start gap-3">
-                    <AlertCircle size={20} className="flex-shrink-0" />
-                    <div>
-                        <h3 className="font-bold">Visualization Failed</h3>
-                        <p className="text-sm">{error}</p>
-                    </div>
+            {error && !isPending && (
+                <div className="bg-destructive/10 border border-destructive/30 text-destructive-foreground p-4 rounded-lg mb-4">
+                    <h3 className="font-bold">Visualization Failed</h3>
+                    <p className="text-sm">{error}</p>
                 </div>
             )}
 
