@@ -68,7 +68,7 @@ export async function callModelText(
 
   // TODO: Implement real provider call here
   // Below is a template for how to implement the real call:
-  /*
+  
   const url = `${process.env.GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta'}`
     `/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
   
@@ -133,14 +133,7 @@ export async function callModelText(
   }
 
   throw lastError;
-  */
   
-  // For now, return mock response
-  return {
-    raw: {},
-    text: '{}',
-    tokensEstimate: 0
-  };
 }
 
 /**
@@ -171,7 +164,7 @@ export async function callImageModel(
 
   // TODO: Implement real image provider call here
   // Below is a template for how to implement the real call:
-  /*
+  
   const url = `${process.env.IMAGE_API_URL || 'https://generativelanguage.googleapis.com/v1beta'}/models/image-generation-001:generateImage?key=${process.env.GEMINI_API_KEY}`;
   
   const requestBody = {
@@ -202,11 +195,5 @@ export async function callImageModel(
     imageData: data.candidates?.[0]?.image?.bytes, // Format depends on provider
     providerResponse: data
   };
-  */
   
-  // For now, return mock response
-  return {
-    imageData: undefined,
-    providerResponse: {}
-  };
 }

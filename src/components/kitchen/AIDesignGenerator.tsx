@@ -1,17 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Sparkles,
-  Loader2,
-  X,
-} from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import {
-  applyDesign,
-  setPreviewDesign,
-  setPreviewObstacles,
-} from "@/lib/features/kitchens/kitchenSlice";
+import { Sparkles, Loader2, X } from "lucide-react";
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
+
 import { toast } from "sonner";
 import { IObstacle } from "@/types/kitchen";
 
@@ -20,10 +12,11 @@ interface PreviewObstacle extends IObstacle {
 }
 
 export default function AIDesignGenerator() {
-  const dispatch = useAppDispatch();
-  const { currentKitchen, previewDesign } = useAppSelector(
-    (state) => state.kitchen,
-  );
+  const currentKitchen = useKitchenStore(state => state.currentKitchen);
+  const previewDesign = useKitchenStore(state => state.previewDesign); // Note: previewDesign may need to be added to the store
+  const setPreviewDesign = useKitchenStore(state => state.setPreviewDesign); // This function may need to be added to the store
+  const setPreviewObstacles = useKitchenStore(state => state.setPreviewObstacles); // This function may need to be added to the store
+  const applyDesign = useKitchenStore(state => state.applyDesign); // This function may need to be added to the store
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -68,7 +61,7 @@ export default function AIDesignGenerator() {
       }
 
       if (data.success && data.design) {
-        dispatch(setPreviewDesign(data.design));
+        setPreviewDesign(data.design);
 
         // Map units to preview obstacles with correct spatial mapping
         const previewObstacles: PreviewObstacle[] = data.design.units.map(
@@ -85,7 +78,7 @@ export default function AIDesignGenerator() {
           }),
         );
 
-        dispatch(setPreviewObstacles(previewObstacles));
+        setPreviewObstacles(previewObstacles);
         setConflicts(data.conflicts || []);
 
         setShowPreview(true);
@@ -124,12 +117,10 @@ export default function AIDesignGenerator() {
       }
 
       if (result.success) {
-        dispatch(
-          applyDesign({
-            obstacles: result.obstacles,
-            appliances: result.appliances,
-          }),
-        );
+        applyDesign({
+          obstacles: result.obstacles,
+          appliances: result.appliances,
+        });
         setShowPreview(false);
         toast.success("Design permanently saved!");
       }

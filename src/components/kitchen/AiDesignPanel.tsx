@@ -1,101 +1,113 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/store';
-import {
-  generateAiLayout,
-  acceptAiLayout,
-  discardAiLayout
-} from '@/lib/features/kitchens/kitchenSlice';
+import React, { useTransition, useState } from 'react';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
+import { AlertCircle, ShieldCheck } from 'lucide-react';
+import { applyAiLayout } from '@/actions/projectActions';
 import { GeneratedDesign } from '@/lib/validations';
 
-interface AiDesignPanelProps {
-  projectId: string;
-}
+const AiDesignPanel: React.FC = () => {
+  const { currentKitchen, validationErrors, updateKitchen } = useKitchenStore(state => state);
+  const [isPending, startTransition] = useTransition();
+  const [isGenerating, setIsGenerating] = React.useState(false);
 
-const AiDesignPanel: React.FC<AiDesignPanelProps> = ({ projectId }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { currentKitchen, loading } = useSelector((state: RootState) => state.kitchen);
-  const generatedDesign = currentKitchen?.generatedDesign as GeneratedDesign | null;
-
-  const handleGenerateClick = () => {
-    dispatch(generateAiLayout(projectId));
-  };
-
-  const handleAcceptClick = () => {
-    if (generatedDesign) {
-      dispatch(acceptAiLayout(generatedDesign));
+  const handleGenerateClick = async () => {
+    if (!currentKitchen || hasValidationErrors) return;
+    
+    setIsGenerating(true);
+    
+    try {
+      const response = await fetch('/api/generate/kitchen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kitchenId: currentKitchen.id,
+          kitchen: currentKitchen,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate layout');
+      }
+      
+      const result = await response.json();
+      
+      // Update the kitchen with the generated design
+      if (result.success && result.design) {
+        const updatedKitchen = {
+          ...currentKitchen,
+          generatedDesign: result.design,
+        };
+        
+        // Update the store with the new kitchen state
+        updateKitchen(updatedKitchen);
+      }
+    } catch (error) {
+      console.error('Error generating layout:', error);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  const handleDiscardClick = () => {
-    dispatch(discardAiLayout());
+  const handleAcceptClick = () => {
+    if (currentKitchen?.id && currentKitchen.generatedDesign) {
+      const design = currentKitchen.generatedDesign as GeneratedDesign;
+      startTransition(() => {
+        applyAiLayout(currentKitchen.id, design);
+      });
+    }
   };
 
+  const hasValidationErrors = validationErrors.length > 0;
+
   return (
-    <div className="bg-card text-card-foreground rounded-lg shadow-lg p-6 w-full max-w-md border border-border">
-      <h2 className="text-xl font-bold mb-4">AI Design Assistant</h2>
+    <div className="card p-6">
+      <h2 className="text-xl font-bold mb-4">AI Layout Assistant</h2>
+
+      {hasValidationErrors && (
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive-foreground p-4 rounded-lg mb-4">
+          <h3 className="font-bold">Layout Errors</h3>
+          <ul className="text-sm list-disc pl-5 mt-2">
+            {validationErrors.map((err, i) => (
+              <li key={i}>{err.message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="mb-6">
         <button
           onClick={handleGenerateClick}
-          disabled={loading}
-          className={`w-full py-3 px-4 rounded-lg font-semibold text-primary-foreground transition-all duration-300 ${
-            loading
-              ? 'bg-muted text-muted-foreground cursor-not-allowed'
-              : 'bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl'
-          }`}
+          disabled={hasValidationErrors || isGenerating}
+          className="btn btn-primary w-full h-12 text-sm"
         >
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Consulting AI...
-            </div>
-          ) : (
-            'Generate Design'
-          )}
+          {isGenerating ? "Generating..." : "Generate Layout"}
         </button>
+        {hasValidationErrors && (
+            <p className="text-xs text-destructive text-center mt-2">Please fix layout errors before generating.</p>
+        )}
       </div>
 
-      {generatedDesign && (
-        <div className="bg-muted/50 border border-border rounded-xl p-4 mb-4 transition-all duration-300">
-          <div className="flex justify-between items-start mb-3">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent text-accent-foreground">
-              {generatedDesign.layoutType}
-            </span>
-          </div>
-
-          <blockquote className="text-muted-foreground italic border-l-4 border-primary pl-4 mb-3">
-            {'"' + generatedDesign.aiReasoning + '"'}
+      {currentKitchen?.generatedDesign && (
+        <div className="bg-muted/50 border rounded-xl p-4 mb-4">
+          <h3 className="font-bold text-sm mb-2">AI Suggestion:</h3>
+          <blockquote className="text-sm italic border-l-2 pl-4 mb-4">
+            {currentKitchen.generatedDesign.aiReasoning}
           </blockquote>
-
-          <div className="text-sm text-muted-foreground mb-4">
-            {generatedDesign.units.length} units suggested
-          </div>
-
           <div className="flex space-x-3">
-            <button
-              onClick={handleAcceptClick}
-              className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-700 text-primary-foreground font-medium rounded-lg transition-colors duration-200"
-            >
-              Apply Design
+            <button onClick={handleAcceptClick} disabled={isPending} className="btn btn-primary flex-1">
+              {isPending ? "Applying..." : "Apply Layout"}
             </button>
-            <button
-              onClick={handleDiscardClick}
-              className="flex-1 py-2 px-4 bg-secondary text-secondary-foreground hover:bg-secondary/80 font-medium rounded-lg transition-colors duration-200"
-            >
+            <button disabled={isPending} className="btn btn-secondary flex-1">
               Discard
             </button>
           </div>
         </div>
       )}
 
-      {!generatedDesign && !loading && (
-        <div className="text-center py-8 text-muted-foreground">
-          <p>No AI design suggestions yet.</p>
-          <p className="text-sm mt-2">Generate a design to get started.</p>
+      {!currentKitchen?.generatedDesign && !hasValidationErrors && (
+        <div className="text-center py-8 text-muted-foreground flex flex-col items-center gap-3">
+            <ShieldCheck size={32} className="text-green-500" />
+            <p className="font-bold">Layout is valid.</p>
+            <p className="text-sm mt-1">Ready to generate an AI layout.</p>
         </div>
       )}
     </div>

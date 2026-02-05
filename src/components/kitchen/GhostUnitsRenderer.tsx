@@ -1,6 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/store';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { ICoordinate } from '@/types/kitchen';
 import { GeneratedDesign } from '@/lib/validations';
 
@@ -9,7 +8,7 @@ interface GhostUnitsRendererProps {
 }
 
 const GhostUnitsRenderer: React.FC<GhostUnitsRendererProps> = ({ wallIndex }) => {
-  const { currentKitchen } = useSelector((state: RootState) => state.kitchen);
+  const currentKitchen = useKitchenStore(state => state.currentKitchen);
   const generatedDesign = currentKitchen?.generatedDesign as GeneratedDesign | null;
 
   if (!generatedDesign) {

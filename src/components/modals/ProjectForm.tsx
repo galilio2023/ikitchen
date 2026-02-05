@@ -1,75 +1,67 @@
 'use client';
 
-import { useState } from 'react';
-import { useAppDispatch } from "@/lib/hooks";
-import { addProjectThunk } from "@/lib/features/kitchens/kitchenSlice";
-import { useRouter } from 'next/navigation';
-
-import FormButton from './FormButton';
+import { useFormState, useFormStatus } from 'react-dom';
+import { createProject } from '@/actions/projectActions';
+import { AlertCircle } from 'lucide-react';
 
 interface ProjectFormProps {
     onSuccess: () => void;
 }
 
-export default function ProjectForm({ onSuccess }: ProjectFormProps) {
-    const dispatch = useAppDispatch();
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        clientName: '',
-        phone: '',
-        status: 'draft' as const,
-        tags: [] as string[],
-    });
+const initialState = {
+  error: null,
+};
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const res = await dispatch(addProjectThunk({
-                ...formData,
-                progress: 0,
-                walls: [{ id: 'wall-1', label: 'Wall 1', length: 300, height: 240, thickness: 10 }]
-            })).unwrap();
-            
-            if (res && (res._id || res.id)) {
-                onSuccess();
-                router.push(`/projects/${res._id || res.id}`);
-            }
-        } catch (err) {
-            // Error is handled by Redux slice, but we can catch it here for local UI
-        } finally {
-            setLoading(false);
-        }
-    };
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <button type="submit" disabled={pending} className="btn btn-primary w-full h-12 text-sm">
+            {pending ? "Creating..." : "Create Project"}
+        </button>
+    );
+}
+
+export default function ProjectForm({ onSuccess }: ProjectFormProps) {
+    const [state, formAction] = useFormState(createProject, initialState);
+
+    // The Server Action now handles redirection, so we can call onSuccess directly.
+    // We might not even need onSuccess anymore if the modal closes on navigation.
+    // For now, we'll keep it simple.
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form action={formAction} className="space-y-6">
+            {state?.error && (
+                <div className="bg-destructive/10 border border-destructive/30 text-destructive-foreground p-4 rounded-lg flex items-start gap-3">
+                    <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+                    <div>
+                        <h3 className="font-bold">Creation Failed</h3>
+                        <p className="text-sm">{state.error}</p>
+                    </div>
+                </div>
+            )}
             <div className="space-y-4">
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-[0.2em] !text-foreground/30 ml-1">Client_Identifier</label>
+                    <label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Project Name</label>
                     <input
+                        id="name"
+                        name="name"
                         required
-                        value={formData.clientName}
-                        onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
-                        placeholder="ENTER_CLIENT_NAME..."
-                        className="w-full h-12 px-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                        placeholder="Enter Project Name..."
+                        className="input h-12 text-sm"
                     />
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-[0.2em] !text-foreground/30 ml-1">Communication_Uplink</label>
+                    <label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Client Phone</label>
                     <input
-                        required
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="PHONE_NUMBER..."
-                        className="w-full h-12 px-4 rounded-2xl text-[10px] font-mono tracking-widest uppercase text-foreground placeholder:text-muted-foreground bg-background border border-input focus:outline-none focus:ring-2 focus:ring-ring transition-all"
+                        id="phone"
+                        name="phone"
+                        placeholder="Phone Number (Optional)..."
+                        className="input h-12 text-sm"
                     />
                 </div>
             </div>
-
-            <FormButton loading={loading} label="Initialize_New_Node" />
+            <SubmitButton />
         </form>
     );
 }

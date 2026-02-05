@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import { Binary, Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAppDispatch } from "@/lib/hooks";
-import { deleteProjectThunk } from "@/lib/features/kitchens/kitchenSlice";
+import { deleteProject } from '@/actions/projectActions';
 
 interface CardHeaderProps {
     id: string;
@@ -14,7 +13,6 @@ interface CardHeaderProps {
 }
 
 export function CardHeader({ id, status, isCompleted, date }: CardHeaderProps) {
-    const dispatch = useAppDispatch();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
@@ -35,7 +33,7 @@ export function CardHeader({ id, status, isCompleted, date }: CardHeaderProps) {
 
         setIsDeleting(true);
         try {
-            await dispatch(deleteProjectThunk(id)).unwrap();
+            await deleteProject(id);
         } catch (error) {
             console.error("Failed to delete project:", error);
             setIsDeleting(false);

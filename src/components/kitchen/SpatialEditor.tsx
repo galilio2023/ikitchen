@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addObstacle, setSelectedObstacle, updateObstaclePosition } from '@/lib/features/kitchens/kitchenSlice';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { ObstacleType } from "@/types/kitchen";
 import SpatialCanvas from './SpatialCanvas';
 import SpatialRegistry from './SpatialRegistry';
@@ -15,8 +14,12 @@ import { cn } from "@/lib/utils";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function SpatialEditor() {
-    const dispatch = useAppDispatch();
-    const { currentKitchen, selectedObstacleId, activeWallIndex } = useAppSelector((state) => state.kitchen);
+    const currentKitchen = useKitchenStore(state => state.currentKitchen);
+    const selectedObstacleId = useKitchenStore(state => state.selectedObstacleId);
+    const activeWallIndex = useKitchenStore(state => state.activeWallIndex);
+    const addObstacle = useKitchenStore(state => state.addObstacle);
+    const setSelectedObstacle = useKitchenStore(state => state.setSelectedObstacle);
+    const updateObstaclePosition = useKitchenStore(state => state.updateObstaclePosition);
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [isRendering, setIsRendering] = useState(false);
     const [mobileTab, setMobileTab] = useState<'nodes' | 'tools' | 'none'>('none');
@@ -82,7 +85,7 @@ export default function SpatialEditor() {
 
         if (typeString) {
             const type = typeString as ObstacleType;
-            dispatch(addObstacle({
+            addObstacle({
                 id: uuidv4(),
                 type,
                 wallIndex: activeWallIndex,
@@ -94,13 +97,13 @@ export default function SpatialEditor() {
                     height: 60,
                     depth: 20
                 }
-            }));
+            });
         } else if (draggingId) {
-            dispatch(updateObstaclePosition({
-                id: draggingId,
+            updateObstaclePosition(
+                draggingId,
                 x,
                 y
-            }));
+            );
             setDraggingId(null);
         }
     };
@@ -119,7 +122,7 @@ export default function SpatialEditor() {
                     <WallManager />
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                    <SpatialRegistry nodes={renderableNodes} selectedId={selectedObstacleId} onSelect={(id) => dispatch(setSelectedObstacle(id))} />
+                    <SpatialRegistry nodes={renderableNodes} selectedId={selectedObstacleId} onSelect={(id) => setSelectedObstacle(id)} />
                 </div>
                 <div className="flex-1 border-t border-border overflow-y-auto p-4 custom-scrollbar">
                     <ObstacleToolbox wallIndex={activeWallIndex} />
@@ -135,8 +138,8 @@ export default function SpatialEditor() {
                     selectedObstacleId={selectedObstacleId}
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
-                    onCanvasClick={() => { dispatch(setSelectedObstacle(null)); setMobileTab('none'); }}
-                    onNodeClick={(id) => dispatch(setSelectedObstacle(id))}
+                    onCanvasClick={() => { setSelectedObstacle(null); setMobileTab('none'); }}
+                    onNodeClick={(id) => setSelectedObstacle(id)}
                     onNodeDragStart={(id) => setDraggingId(id)}
                 />
 
@@ -166,7 +169,7 @@ export default function SpatialEditor() {
                     >
                         <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-6" />
                         {mobileTab === 'nodes' ? (
-                            <SpatialRegistry nodes={renderableNodes} selectedId={selectedObstacleId} onSelect={(id) => { dispatch(setSelectedObstacle(id)); setMobileTab('none'); }} />
+                            <SpatialRegistry nodes={renderableNodes} selectedId={selectedObstacleId} onSelect={(id) => { setSelectedObstacle(id); setMobileTab('none'); }} />
                         ) : (
                             <ObstacleToolbox wallIndex={activeWallIndex} />
                         )}

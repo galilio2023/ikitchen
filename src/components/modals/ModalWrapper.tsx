@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
 import { X } from 'lucide-react';
 
 interface ModalWrapperProps {
@@ -12,43 +13,49 @@ interface ModalWrapperProps {
 
 export default function ModalWrapper({ isOpen, onClose, title, children }: ModalWrapperProps) {
     return (
-        <AnimatePresence>
-            {isOpen && (
-                <div className="fixed inset-0 z-[50] flex items-center justify-center p-6">
-                    {/* Backdrop */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={onClose}
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                    />
+        <Transition.Root show={isOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-50" onClose={onClose}>
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+                </Transition.Child>
 
-                    {/* Modal Content */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-lg glass-brilliant rounded-[2.5rem] overflow-hidden shadow-2xl border border-border"
-                    >
-                        {/* Header */}
-                        <div className="p-8 border-b border-border flex items-center justify-between bg-background/10">
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] !text-foreground/80">{title}</h2>
-                            <button 
-                                onClick={onClose}
-                                className="p-2 rounded-xl hover:bg-accent/30 text-foreground/20 hover:text-foreground transition-all"
-                            >
-                                <X size={16} />
-                            </button>
-                        </div>
-
-                        {/* Body */}
-                        <div className="p-8">
-                            {children}
-                        </div>
-                    </motion.div>
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-card p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-foreground">
+                                    {title}
+                                </Dialog.Title>
+                                <button
+                                    onClick={onClose}
+                                    className="absolute top-4 right-4 btn btn-ghost"
+                                >
+                                    <X size={20} />
+                                </button>
+                                <div className="mt-4">
+                                    {children}
+                                </div>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
                 </div>
-            )}
-        </AnimatePresence>
+            </Dialog>
+        </Transition.Root>
     );
 }

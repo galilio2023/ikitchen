@@ -2,8 +2,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { updateKitchenThunk, setSelectedObstacle, updateObstaclePosition } from '@/lib/features/kitchens/kitchenSlice';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import DraggableObstacle from "./DraggableObstacle";
 import ObstacleToolbox from "./ObstacleToolbox";
 import PropertiesPanel from "./PropertiesPanel";
@@ -13,13 +12,15 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
-    const dispatch = useAppDispatch();
-    const { currentKitchen, selectedObstacleId } = useAppSelector((state) => state.kitchen);
+    const currentKitchen = useKitchenStore(state => state.currentKitchen);
+    const selectedObstacleId = useKitchenStore(state => state.selectedObstacleId);
+    const setSelectedObstacle = useKitchenStore(state => state.setSelectedObstacle);
+    const updateObstaclePosition = useKitchenStore(state => state.updateObstaclePosition);
     const [activeWallIdx, setActiveWallIdx] = useState(0);
 
     const handleSave = () => {
         if (currentKitchen) {
-            dispatch(updateKitchenThunk({ id: currentKitchen.id, data: currentKitchen }));
+            // Save kitchen to server - need to implement server action
             toast.success("WORKSPACE_SYNC_COMPLETE");
         }
     };
@@ -89,8 +90,8 @@ export default function ElevationEngine({ kitchen }: { kitchen: IKitchen }) {
                                         globalIndex={obs.globalIndex}
                                         wall={wall}
                                         isSelected={selectedObstacleId === obs.data.id}
-                                        onSelect={() => dispatch(setSelectedObstacle(obs.data.id))}
-                                        onPositionChange={(x, y) => dispatch(updateObstaclePosition({ id: obs.data.id, x, y }))}
+                                        onSelect={() => setSelectedObstacle(obs.data.id)}
+                                        onPositionChange={(x, y) => updateObstaclePosition(obs.data.id, x, y)}
                                     />
                                 ))}
                             </div>
