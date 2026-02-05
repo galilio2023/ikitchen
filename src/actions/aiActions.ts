@@ -4,6 +4,7 @@ import { kitchenAiService } from '@/services/aiService';
 import { revalidatePath } from 'next/cache';
 import Kitchen from '@/models/Kitchen';
 import dbConnect from '@/lib/dbConnect';
+import { generatedDesignSchema, GeneratedDesign } from '@/lib/validations';
 
 export async function generateAiLayout(kitchenId: string) {
     try {
@@ -27,10 +28,45 @@ export async function generateAiLayout(kitchenId: string) {
     }
 }
 
+export async function applyAiLayout(kitchenId: string, design: GeneratedDesign) {
+    try {
+        await dbConnect();
+
+        const validation = generatedDesignSchema.safeParse(design);
+        if (!validation.success) {
+            throw new Error("Invalid AI design format.");
+        }
+        const validatedDesign = validation.data;
+
+        const kitchen = await Kitchen.findById(kitchenId);
+        if (!kitchen) {
+            throw new Error("Kitchen not found.");
+        }
+
+        const newAppliances = validatedDesign.units.map(unit => ({
+            ...unit,
+            id: unit.id || `appliance-${Date.now()}`,
+            name: unit.type,
+            isFixed: false,
+        }));
+
+        kitchen.appliances = newAppliances;
+        kitchen.generatedDesign = undefined;
+
+        await kitchen.save();
+
+        revalidatePath(`/projects/${kitchen.projectId}`);
+
+        return { success: true, appliances: kitchen.appliances };
+
+    } catch (error: any) {
+        console.error("Server Action Error: applyAiLayout", error);
+        return { error: "Failed to apply AI layout. Please try again." };
+    }
+}
+
 export async function generateAiImage(prompt: string, kitchenData: any) {
     try {
-        // In a real app, you would call your image generation service here.
-        // For now, we'll return a placeholder.
         console.log("Generating image for prompt:", prompt);
         const placeholderUrl = "https://via.placeholder.com/1024x768.png?text=AI+Visualization";
         return { success: true, imageUrl: placeholderUrl };
