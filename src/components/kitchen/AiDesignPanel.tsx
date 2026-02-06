@@ -4,6 +4,7 @@ import React, { useTransition } from 'react';
 import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 import { applyAiLayout, generateAiLayout } from '@/actions/aiActions';
+import { toast } from 'sonner';
 
 const AiDesignPanel: React.FC = () => {
   const { currentKitchen, setKitchen, validationErrors } = useKitchenStore(state => state);
@@ -16,24 +17,25 @@ const AiDesignPanel: React.FC = () => {
         const result = await generateAiLayout(currentKitchen.id);
         if (result.success && result.design) {
           setKitchen({ ...currentKitchen, generatedDesign: result.design });
+          toast.success("AI layout suggestion is ready!");
         } else {
-          // Handle error display
-          console.error(result.error);
+          toast.error(result.error || "Failed to generate layout.");
         }
       });
     }
   };
 
   const handleAcceptClick = () => {
+    // Definitive Type Guard: Ensure the design exists before calling the action.
     if (currentKitchen && currentKitchen.generatedDesign) {
+      const designToApply = currentKitchen.generatedDesign;
       startApplyTransition(async () => {
-        const result = await applyAiLayout(currentKitchen.id, currentKitchen.generatedDesign);
-        if (result.success) {
-          // The revalidation should handle the UI update.
-          // Optionally, clear the local preview design.
+        const result = await applyAiLayout(currentKitchen.id, designToApply);
+        if (result.success && result.appliances) {
           setKitchen({ ...currentKitchen, generatedDesign: undefined, appliances: result.appliances });
+          toast.success("AI design has been applied.");
         } else {
-          console.error(result.error);
+          toast.error(result.error || "Failed to apply design.");
         }
       });
     }
@@ -42,6 +44,7 @@ const AiDesignPanel: React.FC = () => {
   const handleDiscardClick = () => {
     if(currentKitchen) {
       setKitchen({ ...currentKitchen, generatedDesign: undefined });
+      toast.info("AI suggestion discarded.");
     }
   };
 
