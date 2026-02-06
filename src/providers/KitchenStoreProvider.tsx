@@ -13,7 +13,7 @@ export interface KitchenStoreProviderProps {
 }
 
 export const KitchenStoreProvider = ({ children, initialState }: KitchenStoreProviderProps) => {
-  const storeRef = useRef<StoreApi<KitchenState>>();
+  const storeRef = useRef<StoreApi<KitchenState>>(null);
   if (!storeRef.current) {
     storeRef.current = createKitchenStore(initialState);
   }

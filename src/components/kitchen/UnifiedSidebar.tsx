@@ -11,7 +11,6 @@ import ObstacleToolbox from './ObstacleToolbox';
 import AiDesignPanel from './AiDesignPanel';
 import VisualizationPanel from './VisualizationPanel';
 import SpatialInspector from './SpatialInspector';
-import ProjectHero from '../project-details/ProjectHero';
 import ProjectInfo from '../project-details/ProjectInfo';
 
 type Tab = 'scene' | 'add' | 'inspect' | 'info';
@@ -92,7 +91,6 @@ export default function UnifiedSidebar() {
                 )}
                 {activeTab === 'info' && currentProject && (
                     <div className="space-y-6">
-                        <ProjectHero project={currentProject} />
                         <ProjectInfo project={currentProject} kitchen={currentKitchen} />
                     </div>
                 )}
