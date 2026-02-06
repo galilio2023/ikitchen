@@ -20,8 +20,6 @@
 <br>
 
 <p align="center">
-  <img src="https://i.imgur.com/gY2zD9m.png" alt="iKitchen Application Screenshot">
-  <br>
   <em>The iKitchen dashboard, showcasing a clean, professional, and data-driven interface.</em>
 </p>
 
