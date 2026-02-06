@@ -34,19 +34,19 @@ export default function EmptyDashboard({ error }: EmptyDashboardProps) {
   };
 
   return (
-    <div className="h-64 flex flex-col items-center justify-center text-center space-y-6">
+    <div className="h-64 flex flex-col items-center justify-center text-center space-y-6 bg-card/30 rounded-xl border border-border/30">
       <div className="space-y-4 flex flex-col items-center">
-        <div className="p-4 rounded-full bg-accent/20 border border-border text-foreground/10">
+        <div className="p-4 rounded-full bg-accent/20 border border-border text-foreground/30">
           <Database size={32} />
         </div>
         <div className="space-y-1">
-          <h3 className="text-foreground font-black uppercase tracking-tighter">
-            No Active Nodes Found
+          <h3 className="text-foreground font-bold">
+            No Active Projects Found
           </h3>
-          <p className="text-[10px] font-mono text-foreground/20 uppercase tracking-widest">
+          <p className="text-sm text-foreground/60">
             {error
-              ? `SYSTEM_SYNC_ERROR: ${error}`
-              : "No nodes established in cluster."}
+              ? `Error: ${error}`
+              : "No projects established in dashboard."}
           </p>
         </div>
       </div>
@@ -54,9 +54,9 @@ export default function EmptyDashboard({ error }: EmptyDashboardProps) {
       <button
         onClick={handleSeed}
         disabled={loading}
-        className="px-8 py-3 rounded-2xl bg-magic-cyan/10 border border-magic-cyan/20 text-magic-cyan text-[10px] font-black uppercase tracking-widest hover:bg-magic-cyan/20 transition-all shadow-[0_0_20px_rgba(6,182,212,0.1)]"
+        className="px-8 py-3 rounded-lg bg-primary/10 border border-primary/20 text-primary text-sm font-semibold hover:bg-primary/20 transition-all"
       >
-        {loading ? "Seeding..." : "Seed_Database"}
+        {loading ? "Seeding..." : "Create Sample Projects"}
       </button>
     </div>
   );

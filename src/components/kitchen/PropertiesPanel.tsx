@@ -1,13 +1,14 @@
 // src/components/kitchen/PropertiesPanel.tsx
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { updateObstacleDetails, setSelectedObstacle } from '@/lib/features/kitchens/kitchenSlice';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { X, Ruler, MoveHorizontal, MoveVertical, Maximize } from 'lucide-react';
 
 export default function PropertiesPanel() {
-    const dispatch = useAppDispatch();
-    const { currentKitchen, selectedObstacleId } = useAppSelector((state) => state.kitchen);
+    const currentKitchen = useKitchenStore(state => state.currentKitchen);
+    const selectedObstacleId = useKitchenStore(state => state.selectedObstacleId);
+    const updateObstacleDetails = useKitchenStore(state => state.updateObstacleDetails);
+    const setSelectedObstacle = useKitchenStore(state => state.setSelectedObstacle);
 
     const obsIndex = currentKitchen?.obstacles.findIndex(o => o.id === selectedObstacleId);
     if (obsIndex === undefined || obsIndex === -1 || !currentKitchen) return null;
@@ -16,17 +17,17 @@ export default function PropertiesPanel() {
     const { x, y, width, height } = obstacle.position;
 
     const updateValue = (key: string, val: string) => {
-        dispatch(updateObstacleDetails({
-            id: selectedObstacleId!,
-            updates: { [key]: parseFloat(val) || 0 }
-        }));
+        updateObstacleDetails(
+            selectedObstacleId!,
+            { [key]: parseFloat(val) || 0 }
+        );
     };
 
     return (
         <div className="fixed right-84 top-1/2 -translate-y-1/2 w-64 bg-background/80 backdrop-blur-2xl rounded-[2rem] border border-border p-6 z-[100] shadow-3xl animate-in fade-in slide-in-from-right-4">
             <div className="flex justify-between items-center mb-6">
                 <span className="text-[9px] font-black text-magic-purple uppercase tracking-widest">Properties</span>
-                <button onClick={() => dispatch(setSelectedObstacle(null))}>
+                <button onClick={() => setSelectedObstacle(null)}>
                     <X size={14} className="text-foreground/20 hover:text-foreground" />
                 </button>
             </div>

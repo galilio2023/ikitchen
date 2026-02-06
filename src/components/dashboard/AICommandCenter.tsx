@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import { Send, Sparkles, Loader2 } from 'lucide-react';
-import { useAppDispatch } from '@/lib/hooks';
-import { addObstacle } from '@/lib/features/kitchens/kitchenSlice';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { v4 as uuidv4 } from 'uuid';
 
 export function AICommandCenter() {
     const [prompt, setPrompt] = useState('');
     const [loading, setLoading] = useState(false);
-    const dispatch = useAppDispatch();
+    const addObstacle = useKitchenStore(state => state.addObstacle);
 
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +27,7 @@ export function AICommandCenter() {
                 // If the AI returns units, we dispatch them to the store
                 if (data.units && Array.isArray(data.units)) {
                     data.units.forEach((unit: any) => {
-                        dispatch(addObstacle({
+                        addObstacle({
                             id: unit.id || uuidv4(),
                             type: unit.type,
                             wallIndex: 0,
@@ -40,7 +39,7 @@ export function AICommandCenter() {
                                 height: unit.position?.height || 60,
                                 depth: unit.position?.depth || 60,
                             }
-                        }));
+                        });
                     });
                 }
                 setPrompt('');

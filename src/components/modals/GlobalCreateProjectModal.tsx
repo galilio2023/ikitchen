@@ -1,21 +1,19 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { closeModal } from "@/lib/features/ui/uiSlice";
+import { useUIStore } from "@/lib/store/uiStore";
 import ModalWrapper from "./ModalWrapper";
 import ProjectForm from "./ProjectForm";
 
 export default function GlobalCreateProjectModal() {
-    const dispatch = useAppDispatch();
-    const isOpen = useAppSelector((state) => state.ui.isModalOpen);
+    const { isModalOpen, closeModal } = useUIStore();
 
     return (
         <ModalWrapper 
-            isOpen={isOpen} 
-            onClose={() => dispatch(closeModal())} 
-            title="Initialize_New_Project_Node"
+            isOpen={isModalOpen} 
+            onClose={closeModal} 
+            title="Create New Project"
         >
-            <ProjectForm onSuccess={() => dispatch(closeModal())} />
+            <ProjectForm onSuccess={closeModal} />
         </ModalWrapper>
     );
 }

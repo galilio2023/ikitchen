@@ -1,19 +1,18 @@
 'use client';
 
 import { Plus } from "lucide-react";
-import { useAppDispatch } from "@/lib/hooks";
-import { openModal } from "@/lib/features/ui/uiSlice";
+import { useUIStore } from "@/lib/store/uiStore";
 
 export default function CreateProjectModal() {
-    const dispatch = useAppDispatch();
+    const { openModal } = useUIStore();
 
     return (
         <button 
-            onClick={() => dispatch(openModal())}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--color-magic-purple)] text-primary-foreground text-[10px] font-black uppercase tracking-widest hover:bg-[var(--color-magic-purple)]/80 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+            onClick={openModal}
+            className="btn btn-primary gap-2 px-6 py-3 text-xs tracking-widest"
         >
             <Plus size={14} />
-            Initialize_Node
+            New Project
         </button>
     );
 }

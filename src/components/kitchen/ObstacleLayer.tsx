@@ -1,11 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import {
-    setSelectedObstacle,
-    updateObstaclePosition
-} from '@/lib/features/kitchens/kitchenSlice';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import DraggableObstacle from './DraggableObstacle';
 
 interface ObstacleLayerProps {
@@ -13,11 +9,10 @@ interface ObstacleLayerProps {
 }
 
 export default function ObstacleLayer({ wallIndex }: ObstacleLayerProps) {
-    const dispatch = useAppDispatch();
-
-    // Select only the data we need from the consolidated slice
-    const currentKitchen = useAppSelector((state) => state.kitchen.currentKitchen);
-    const selectedObstacleId = useAppSelector((state) => state.kitchen.selectedObstacleId);
+    const currentKitchen = useKitchenStore(state => state.currentKitchen);
+    const selectedObstacleId = useKitchenStore(state => state.selectedObstacleId);
+    const setSelectedObstacle = useKitchenStore(state => state.setSelectedObstacle);
+    const updateObstaclePosition = useKitchenStore(state => state.updateObstaclePosition);
 
     if (!currentKitchen) return null;
 
@@ -27,11 +22,11 @@ export default function ObstacleLayer({ wallIndex }: ObstacleLayerProps) {
     );
 
     const handleSelect = (id: string) => {
-        dispatch(setSelectedObstacle(id));
+        setSelectedObstacle(id);
     };
 
     const handleDrag = (id: string, x: number, y: number) => {
-        dispatch(updateObstaclePosition({ id, x, y }));
+        updateObstaclePosition(id, x, y);
     };
 
     return (

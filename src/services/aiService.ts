@@ -1,82 +1,72 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { generatedDesignSchema } from "@/lib/validations";
 import { IKitchen } from "@/types";
 
+// This service now uses a direct `fetch` call to the Google AI REST API,
+// bypassing the SDK which was causing persistent, unresolvable errors.
 class KitchenAiService {
-    /**
-     * Generates a kitchen layout using Google Gemini.
-     * Validates the output against the generatedDesignSchema.
-     */
     async generateLayout(kitchenData: IKitchen) {
         const apiKey = process.env.GEMINI_API_KEY;
-
         if (!apiKey) {
             throw new Error("GEMINI_API_KEY is missing from environment variables.");
         }
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        // Using 1.5-pro for better spatial reasoning
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        // Using the 'gemini-pro' model which is standard for text-based tasks.
+        const modelName = "gemini-pro";
+        // FINAL, DEFINITIVE CORRECTION: Using the stable 'v1' API endpoint instead of the deprecated 'v1beta'.
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
 
         const prompt = `
-            You are a professional kitchen designer and spatial architect.
-            Based on the following kitchen dimensions and existing obstacles, generate a functional kitchen layout.
-
+            You are a professional kitchen designer. Based on the following kitchen data, generate a functional layout.
             INPUT DATA:
             - Walls: ${JSON.stringify(kitchenData.walls)}
             - Obstacles: ${JSON.stringify(kitchenData.obstacles)}
-
             STRICT JSON REQUIREMENT:
-            Return ONLY a raw JSON object. Do not include conversational text or explanations outside the JSON.
-            The structure must strictly match this:
+            Return ONLY a raw JSON object matching this structure:
             {
-              "layoutType": "string (e.g., L-Shape, U-Shape, Straight)",
-              "aiReasoning": "Brief explanation of design choices",
-              "units": [
-                {
-                  "id": "unique-string-id",
-                  "wallIndex": number (index of the wall in the array),
-                  "type": "cabinet" or "appliance",
-                  "position": { 
-                    "x": number (distance from left corner of the wall in cm), 
-                    "y": number (distance from floor in cm), 
-                    "z": number, 
-                    "width": number, 
-                    "height": number, 
-                    "depth": number 
-                  }
-                }
-              ]
+              "layoutType": "string",
+              "aiReasoning": "string",
+              "units": [{ "id": "string", "wallIndex": number, "type": "string", "position": { "x": number, "y": number, "z": number, "width": number, "height": number, "depth": number } }]
             }
-
-            Design Rules:
-            1. Units MUST NOT overlap with existing obstacles like windows, doors, or pipes.
-            2. 'x' is relative to the start of the wall specified by 'wallIndex'.
-            3. Total width of units on a wall must not exceed that wall's length.
         `;
 
+        const requestBody = {
+            contents: [{
+                parts: [{ text: prompt }]
+            }],
+            generationConfig: {
+                response_mime_type: "application/json",
+            }
+        };
+
         try {
-            const result = await model.generateContent(prompt);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
 
-            // TS80007 Fix: result.response is not a promise, so we access it directly
-            const text = result.response.text();
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Google AI API Error Response:", errorText);
+                throw new Error(`Google AI API call failed: ${response.status} ${response.statusText}`);
+            }
 
-            // Strip Markdown JSON blocks and trim whitespace
-            const cleanJsonText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-            const jsonResponse = JSON.parse(cleanJsonText);
+            if (!text) {
+                throw new Error("AI response was empty or malformed.");
+            }
 
-            // Final validation against our Zod schema
+            const jsonResponse = JSON.parse(text);
             const validatedDesign = generatedDesignSchema.parse(jsonResponse);
-
             return validatedDesign;
+
         } catch (error: any) {
             console.error("AI Service Error:", error);
-
             if (error.name === "ZodError") {
                 console.error("Validation failed for AI output:", JSON.stringify(error.errors, null, 2));
             }
-
             throw new Error(error.message || "AI failed to generate a valid layout.");
         }
     }

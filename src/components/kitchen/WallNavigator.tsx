@@ -1,35 +1,33 @@
-'use client';
+"use client";
 
-import { IWall } from '@/types/kitchen';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { setActiveWallIndex } from '@/lib/features/kitchens/kitchenSlice';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { cn } from "@/lib/utils";
 
 export default function WallNavigator() {
-    const dispatch = useAppDispatch();
-    const { currentKitchen, activeWallIndex } = useAppSelector((state) => state.kitchen);
+  const { currentKitchen, activeWallIndex, setActiveWallIndex } = useKitchenStore(state => state);
 
-    if (!currentKitchen || currentKitchen.walls.length <= 1) return null;
+  if (!currentKitchen || !currentKitchen.walls || currentKitchen.walls.length <= 1) {
+    return null;
+  }
 
-    return (
-        /* Adjusted positioning: stays at top for mobile, floating for desktop */
-        <div className="absolute top-20 lg:top-8 left-1/2 -translate-x-1/2 z-[35] w-max max-w-[90vw] overflow-x-auto no-scrollbar pointer-events-none">
-            <div className="pointer-events-auto flex items-center gap-1 p-1 bg-background/60 backdrop-blur-xl border border-border rounded-full shadow-2xl">
-                {currentKitchen.walls.map((wall, index) => (
-                    <button
-                        key={wall.id || index}
-                        onClick={() => dispatch(setActiveWallIndex(index))}
-                        className={cn(
-                            "px-4 lg:px-6 py-1.5 lg:py-2 rounded-full text-[8px] lg:text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
-                            activeWallIndex === index
-                                ? "bg-magic-cyan text-foreground shadow-[0_0_15px_rgba(6,182,212,0.5)]"
-                                : "text-foreground/40 hover:text-foreground hover:bg-accent/30"
-                        )}
-                    >
-                        {wall.label}
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <div className="absolute top-20 lg:top-8 left-1/2 -translate-x-1/2 z-30">
+      <div className="flex items-center gap-1 p-1 bg-card/80 backdrop-blur-md border rounded-full shadow-lg">
+        {currentKitchen.walls.map((wall, index) => (
+          <button
+            key={wall.id || index}
+            onClick={() => setActiveWallIndex(index)}
+            className={cn(
+              "px-6 py-2 rounded-full text-xs font-bold uppercase transition-colors",
+              activeWallIndex === index
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent",
+            )}
+          >
+            {wall.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }

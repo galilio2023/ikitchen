@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Send, Sparkles, Loader2 } from "lucide-react";
-import { useAppDispatch } from "@/lib/hooks";
-import { addObstacle } from "@/lib/features/kitchens/kitchenSlice";
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 
 export function AICommandInput() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const dispatch = useAppDispatch();
+  const addObstacle = useKitchenStore(state => state.addObstacle);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,23 +25,21 @@ export function AICommandInput() {
         const data = await res.json();
         if (data.units && Array.isArray(data.units)) {
           data.units.forEach((unit: any) => {
-            dispatch(
-              addObstacle({
-                // Generates a fallback ID to prevent substring errors in UI
-                id:
-                  unit.id || `ai_${Math.random().toString(36).substring(2, 7)}`,
-                type: unit.type || "UNIT",
-                wallIndex: 0,
-                position: {
-                  x: unit.x ?? 0,
-                  y: unit.y ?? 0,
-                  z: 0, // Added to satisfy ICoordinate
-                  width: unit.width ?? 60,
-                  height: unit.height ?? 90,
-                  depth: unit.depth ?? 60, // Added to satisfy ICoordinate
-                },
-              }),
-            );
+            addObstacle({
+              // Generates a fallback ID to prevent substring errors in UI
+              id:
+                unit.id || `ai_${Math.random().toString(36).substring(2, 7)}`,
+              type: unit.type || "UNIT",
+              wallIndex: 0,
+              position: {
+                x: unit.x ?? 0,
+                y: unit.y ?? 0,
+                z: 0, // Added to satisfy ICoordinate
+                width: unit.width ?? 60,
+                height: unit.height ?? 90,
+                depth: unit.depth ?? 60, // Added to satisfy ICoordinate
+              },
+            });
           });
         }
         setPrompt("");
