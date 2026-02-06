@@ -18,9 +18,12 @@ export default function KitchenEditor() {
     const [draggingId, setDraggingId] = useState<string | null>(null);
 
     const handleSave = () => {
-        if (store.currentKitchen) {
+        // Definitive Type Guard: Create a constant to hold the non-null kitchen object.
+        const kitchenToSave = store.currentKitchen;
+        if (kitchenToSave) {
             startSaveTransition(async () => {
-                const result = await updateKitchen(store.currentKitchen.id, store.currentKitchen);
+                // Use the guaranteed non-null constant inside the async callback.
+                const result = await updateKitchen(kitchenToSave.id, kitchenToSave);
                 if (result.success) {
                     toast.success("Project Saved!");
                 } else {
@@ -48,7 +51,6 @@ export default function KitchenEditor() {
 
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
-        // CORRECTED: Cast to the specific ObstacleType, not 'any'
         const typeString = e.dataTransfer.getData("obstacleType") as ObstacleType;
         const container = e.currentTarget as HTMLDivElement;
 
