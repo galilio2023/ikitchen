@@ -8,21 +8,16 @@ export interface KitchenState {
     validationErrors: ValidationError[];
     activeWallIndex: number;
     selectedObstacleId: string | null;
-    previewDesign?: any;
-    previewObstacles?: any[];
     
     // Actions
     setInitialState: (project: any, kitchen: IKitchen) => void;
+    setKitchen: (kitchen: IKitchen) => void; // Added the missing action
     addObstacle: (obstacle: IObstacle) => void;
     updateObstaclePosition: (id: string, x: number, y: number) => void;
     updateObstacleDetails: (id: string, updates: Partial<IObstacle['position']>) => void;
     deleteObstacle: (id: string) => void;
     setSelectedObstacle: (id: string | null) => void;
     setActiveWallIndex: (index: number) => void;
-    setPreviewDesign: (design: any) => void;
-    setPreviewObstacles: (obstacles: any[]) => void;
-    applyDesign: (designData: { obstacles: any[], appliances: any[] }) => void;
-    updateKitchen: (kitchen: IKitchen) => void;
 }
 
 export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => {
@@ -37,6 +32,13 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
     setInitialState: (project, kitchen) => {
         set({ 
             currentProject: project, 
+            currentKitchen: kitchen,
+            validationErrors: validateKitchenLayout(kitchen),
+        });
+    },
+
+    setKitchen: (kitchen) => {
+        set({
             currentKitchen: kitchen,
             validationErrors: validateKitchenLayout(kitchen),
         });
@@ -98,23 +100,5 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
 
     setSelectedObstacle: (id) => set({ selectedObstacleId: id }),
     setActiveWallIndex: (index) => set({ activeWallIndex: index }),
-    setPreviewDesign: (design) => set({ previewDesign: design }),
-    setPreviewObstacles: (obstacles) => set({ previewObstacles: obstacles }),
-    applyDesign: (designData) => set(state => {
-      if (!state.currentKitchen) return {};
-      const newKitchen = {
-        ...state.currentKitchen,
-        obstacles: designData.obstacles,
-        appliances: designData.appliances,
-      };
-      return {
-        currentKitchen: newKitchen,
-        validationErrors: validateKitchenLayout(newKitchen),
-      };
-    }),
-    updateKitchen: (kitchen) => set({
-      currentKitchen: kitchen,
-      validationErrors: validateKitchenLayout(kitchen),
-    }),
   }));
 }
