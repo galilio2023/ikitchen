@@ -28,10 +28,11 @@ export default function UnifiedSidebar() {
     const [activeTab, setActiveTab] = useState<Tab>('inspect');
 
     const renderableNodes = React.useMemo(() => {
-        const obstacles = (currentKitchen?.obstacles ?? []).map((obs, index) => ({
+        if (!currentKitchen) return [];
+        const obstacles = (currentKitchen.obstacles ?? []).map((obs, index) => ({
             ...obs, isAppliance: false, id: obs.id || (obs as any)._id?.toString() || `obs-${index}`
         }));
-        const appliances = (currentKitchen?.appliances ?? []).map((app, index) => ({
+        const appliances = (currentKitchen.appliances ?? []).map((app, index) => ({
             ...app, type: 'appliance' as const, isAppliance: true, id: (app as any)._id?.toString() || (app as any).id || `app-${index}`
         }));
         return [...obstacles, ...appliances];
