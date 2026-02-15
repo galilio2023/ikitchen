@@ -253,3 +253,39 @@ The project is growing in complexity, involving advanced features like AI layout
 *   **`src/components/kitchen/SpatialNode.tsx`**: Switched to `motion.div` and added spring animations for entry/exit.
 *   **`src/components/kitchen/VisualizationPanel.tsx`**: Added `Environment` and `ContactShadows` from `@react-three/drei`.
 *   **`src/components/kitchen/AiDesignPanel.tsx`**: Implemented a `useEffect` loop to cycle through loading messages.
+
+---
+
+## [2025-02-23] - Transition to "Draw & Edit" Interaction Model
+
+### 1. What was done?
+*   **Replaced Drag & Drop:** Removed the drag-and-drop functionality from `KitchenEditor` and `SpatialCanvas`.
+*   **Implemented Drawing:** Added "Click & Drag" drawing logic to `SpatialCanvas` to allow users to draw rectangles directly on the wall.
+*   **Tool Selector:** Refactored `ObstacleToolbox` to act as a tool selector (Window, Door, Clear Zone) instead of a drag source.
+*   **Hybrid Approach:** Introduced a "Clear Zone" tool to allow users to define generic constraints alongside semantic architectural elements.
+
+### 2. Why was it done?
+*   **Precision:** Drawing allows users to define the exact size and position of an item in one go, which is more natural for architectural planning than dragging a fixed-size icon.
+*   **Stability:** The previous drag-and-drop implementation had issues with scaling and coordinate transformation. The new drawing logic is simpler and more robust.
+*   **AI Context:** By allowing users to draw "Clear Zones", we can provide better constraints to the AI (e.g., "don't put cabinets here") without confusing it with generic "obstacles".
+
+### 3. How was it implemented?
+*   **`src/components/kitchen/SpatialCanvas.tsx`**: Implemented `onMouseDown`, `onMouseMove`, and `onMouseUp` handlers to track drawing state and render a visual preview.
+*   **`src/lib/store/kitchenStore.ts`**: Added `activeTool` state to track which tool is currently selected.
+*   **`src/components/kitchen/ObstacleToolbox.tsx`**: Updated to toggle the `activeTool` in the store.
+
+---
+
+## [2025-02-23] - Database Schema Stabilization & Fixes
+
+### 1. What was done?
+*   **Schema Hardening:** Updated `Project` and `Kitchen` schemas to enforce critical relationships (e.g., `Kitchen` must have a `projectId`).
+*   **Dev Flexibility:** Made `owner` optional in `Project` schema to allow for easier seeding and development without full auth.
+*   **HMR Fix:** Added logic to delete Mongoose models from the cache before recompiling to prevent `OverwriteModelError` and ensure schema updates are applied immediately in development.
+
+### 2. Why was it done?
+*   **Data Integrity:** Ensuring that every kitchen is linked to a project prevents orphaned data.
+*   **Developer Experience:** The previous strict auth requirements made it hard to test the editor in isolation. The HMR fix prevents the server from crashing when saving schema files.
+
+### 3. How was it implemented?
+*   **`src/models/Project.ts` & `src/models/Kitchen.ts`**: Added `if (mongoose.models.ModelName) delete mongoose.models.ModelName;` before the `model()` call.
