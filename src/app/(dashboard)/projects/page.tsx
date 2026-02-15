@@ -10,9 +10,9 @@ async function getProjects() {
   await dbConnect();
   const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
   // Ensure the data is serialized correctly for the client components
-  return projects.map(p => ({ 
+  return projects.map((p: any) => ({ 
       id: p._id.toString(),
-      clientName: p.clientName,
+      clientName: p.client, // Corrected property name from clientName to client
       status: p.status,
       progress: p.progress,
   }));

@@ -6,6 +6,7 @@ import { AlertCircle, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
 import { applyAiLayout, generateAiLayout } from '@/actions/aiActions';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { IAppliance } from '@/types/kitchen';
 
 const LOADING_STEPS = [
     "Analyzing floor plan dimensions...",
@@ -53,7 +54,11 @@ const AiDesignPanel: React.FC = () => {
       startApplyTransition(async () => {
         const result = await applyAiLayout(currentKitchen.id, designToApply);
         if (result.success && result.appliances) {
-          setKitchen({ ...currentKitchen, generatedDesign: undefined, appliances: result.appliances });
+          setKitchen({ 
+            ...currentKitchen, 
+            generatedDesign: undefined, 
+            appliances: result.appliances as IAppliance[] 
+          });
           toast.success("AI design has been applied.");
         } else {
           toast.error(result.error || "Failed to apply design.");

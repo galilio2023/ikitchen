@@ -23,7 +23,8 @@ export default function UnifiedSidebar() {
         currentProject, 
         selectedObstacleId, 
         activeWallIndex,
-        setSelectedObstacle 
+        setSelectedObstacle,
+        activeTool
     } = useKitchenStore(state => state);
     
     const renderableNodes = useKitchenStore(selectRenderableNodes);
@@ -37,6 +38,13 @@ export default function UnifiedSidebar() {
             setActiveTab('inspect');
         }
     }, [selectedObstacleId]);
+
+    // Automatically switch to 'add' tab if a tool is selected
+    useEffect(() => {
+        if (activeTool) {
+            setActiveTab('add');
+        }
+    }, [activeTool]);
 
     const TabButton = ({ tab, icon, label }: { tab: Tab, icon: React.ReactNode, label: string }) => (
         <button

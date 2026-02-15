@@ -38,8 +38,8 @@ export default function SpatialNode({ id, type, x, y, width = 64, height = 64, i
             onClick={onClick}
             
             style={{
-                x, // Framer Motion handles the transform directly
-                y,
+                left: `${x}px`, 
+                top: `${y}px`,
                 position: 'absolute',
                 width: `${width}px`,
                 height: `${height}px`,

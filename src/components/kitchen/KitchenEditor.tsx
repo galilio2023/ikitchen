@@ -23,7 +23,7 @@ export default function KitchenEditor() {
     const kitchenToSave = store.currentKitchen;
     if (kitchenToSave) {
       startSaveTransition(async () => {
-        const result = await updateKitchen(kitchenToSave.id, kitchenToSave);
+        const result = await updateKitchen(kitchenToSave.projectId, kitchenToSave.id, kitchenToSave);
         if (result.success) {
           toast.success("Project Saved!");
         } else {
@@ -37,44 +37,6 @@ export default function KitchenEditor() {
     if (!store.currentKitchen || !store.currentKitchen.walls) return null;
     return store.currentKitchen.walls[store.activeWallIndex] || null;
   }, [store.currentKitchen, store.activeWallIndex]);
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const obstacleType = e.dataTransfer.getData("obstacleType") as ObstacleType;
-
-    if (!obstacleType) return;
-
-    const canvasRect = e.currentTarget.getBoundingClientRect();
-
-    // Calculate scale factor (same logic as in SpatialCanvas)
-    const padding = 40;
-    const availableWidth = canvasRect.width - padding * 2;
-    const wallWidth = currentWall?.length || 300;
-    const scale = Math.min(availableWidth / wallWidth, 1.5);
-
-    // Adjust coordinates based on scale and centering
-    // This is a simplified calculation; a robust solution would share the coordinate transform logic
-    const x = (e.clientX - canvasRect.left) / scale;
-    const y = (e.clientY - canvasRect.top) / scale;
-
-    const dimensions = DEFAULT_OBSTACLE_DIMENSIONS[obstacleType] || {
-      width: 60,
-      height: 60,
-      depth: 30,
-    };
-
-    store.addObstacle({
-      id: uuidv4(),
-      type: obstacleType,
-      wallIndex: store.activeWallIndex,
-      position: {
-        x: x - dimensions.width / 2, // Center on cursor
-        y: y - dimensions.height / 2,
-        z: 0,
-        ...dimensions,
-      },
-    });
-  };
 
   if (!store.currentKitchen) {
     return (
@@ -117,11 +79,12 @@ export default function KitchenEditor() {
           currentWall={currentWall}
           renderableObstacles={renderableNodes}
           selectedObstacleId={store.selectedObstacleId}
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
+          activeTool={store.activeTool}
           onCanvasClick={() => store.setSelectedObstacle(null)}
           onNodeClick={(id) => store.setSelectedObstacle(id)}
           onNodeDragStart={(id) => setDraggingId(id)}
+          onAddObstacle={store.addObstacle}
+          onToolUsed={() => store.setActiveTool(null)}
         />
       </main>
       <UnifiedSidebar />

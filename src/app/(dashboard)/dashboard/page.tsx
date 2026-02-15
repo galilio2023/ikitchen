@@ -10,9 +10,9 @@ async function getProjects() {
   const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
 
   // Manually map to a plain object to satisfy Server Component rules.
-  return projects.map((p) => ({
+  return projects.map((p: any) => ({
     id: p._id.toString(),
-    clientName: p.clientName,
+    clientName: p.client, // Corrected property name from clientName to client
     status: p.status,
     progress: p.progress,
   }));

@@ -6,6 +6,7 @@ import Kitchen from '@/models/Kitchen';
 import dbConnect from '@/lib/dbConnect';
 import { generatedDesignSchema, GeneratedDesign } from '@/lib/validations';
 import { v4 as uuidv4 } from 'uuid';
+import { IKitchen } from '@/types/kitchen';
 
 export async function generateAiLayout(kitchenId: string) {
     try {
@@ -15,7 +16,11 @@ export async function generateAiLayout(kitchenId: string) {
             throw new Error("Kitchen not found.");
         }
 
-        const design = await kitchenAiService.generateLayout(kitchen);
+        // Convert Mongoose document to plain object and cast to IKitchen
+        // This resolves the type mismatch for userId (ObjectId vs string)
+        const kitchenData = kitchen.toObject() as unknown as IKitchen;
+
+        const design = await kitchenAiService.generateLayout(kitchenData);
         
         kitchen.generatedDesign = design;
         await kitchen.save();
@@ -52,14 +57,23 @@ export async function applyAiLayout(kitchenId: string, design: GeneratedDesign) 
             isFixed: false,
         }));
 
-        kitchen.appliances = newAppliances;
+        // Mongoose handles the casting internally, but for TS we can assert or let it be
+        // We cast to any here because Mongoose's DocumentArray type is strict about methods like push/pop
+        // but assigning a plain array is valid for setting the value.
+        kitchen.appliances = newAppliances as any;
         kitchen.generatedDesign = undefined;
 
         await kitchen.save();
 
         revalidatePath(`/projects/${kitchen.projectId}`);
 
-        return { success: true, appliances: kitchen.appliances };
+        // Return the plain object version of appliances to satisfy client-side types
+        const plainAppliances = kitchen.appliances.map((app: any) => ({
+            ...app.toObject(),
+            id: app._id ? app._id.toString() : app.id
+        }));
+
+        return { success: true, appliances: plainAppliances };
 
     } catch (error: any) {
         console.error("Server Action Error: applyAiLayout", error);

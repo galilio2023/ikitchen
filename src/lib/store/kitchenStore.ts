@@ -1,5 +1,5 @@
 import { createStore } from 'zustand';
-import { IKitchen, IObstacle, IWall } from '@/types/kitchen';
+import { IKitchen, IObstacle, IWall, ObstacleType } from '@/types/kitchen';
 import { validateKitchenLayout, ValidationError } from '@/services/validationService';
 import { temporal } from 'zundo';
 
@@ -9,6 +9,7 @@ export interface KitchenState {
     validationErrors: ValidationError[];
     activeWallIndex: number;
     selectedObstacleId: string | null;
+    activeTool: ObstacleType | null; // New state for the active drawing tool
     
     // Actions
     setInitialState: (project: any, kitchen: IKitchen) => void;
@@ -19,6 +20,7 @@ export interface KitchenState {
     deleteObstacle: (id: string) => void;
     setSelectedObstacle: (id: string | null) => void;
     setActiveWallIndex: (index: number) => void;
+    setActiveTool: (tool: ObstacleType | null) => void; // Action to set the active tool
     
     // Wall Actions
     addWall: (wall: IWall) => void;
@@ -35,6 +37,7 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
         validationErrors: [],
         activeWallIndex: 0,
         selectedObstacleId: null,
+        activeTool: null,
         ...initialState,
 
         setInitialState: (project, kitchen) => {
@@ -108,6 +111,7 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
 
         setSelectedObstacle: (id) => set({ selectedObstacleId: id }),
         setActiveWallIndex: (index) => set({ activeWallIndex: index }),
+        setActiveTool: (tool) => set({ activeTool: tool }),
 
         // Wall Actions Implementation
         addWall: (wall) => {

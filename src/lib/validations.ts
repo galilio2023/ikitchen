@@ -104,6 +104,7 @@ const positionSchema = z
   .object({
     x: z.number().min(0).describe("X coordinate in cm (left edge along wall)"),
     y: z.number().min(0).describe("Y coordinate in cm (height from floor)"),
+    z: z.number().optional().default(0).describe("Z coordinate in cm (depth from wall)"),
     width: z.number().positive().describe("Width in cm"),
     height: z.number().positive().describe("Height in cm"),
     depth: z.number().min(0).describe("Depth in cm"),
@@ -113,6 +114,7 @@ const positionSchema = z
     return {
       x: Number(val.x.toFixed(1)),
       y: Number(val.y.toFixed(1)),
+      z: Number((val.z || 0).toFixed(1)),
       width: Number(val.width.toFixed(1)),
       height: Number(val.height.toFixed(1)),
       depth: Number(val.depth.toFixed(1)),
@@ -179,6 +181,7 @@ export const generatedDesignSchema = z
         position: {
           x: Number(unit.position.x.toFixed(1)),
           y: Number(unit.position.y.toFixed(1)),
+          z: Number((unit.position.z || 0).toFixed(1)),
           width: Number(unit.position.width.toFixed(1)),
           height: Number(unit.position.height.toFixed(1)),
           depth: Number(unit.position.depth.toFixed(1)),

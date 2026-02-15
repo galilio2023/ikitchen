@@ -34,7 +34,8 @@ const KitchenSchema = new Schema({
     },
     projectId: { 
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        required: true // Enforce relationship: A kitchen must belong to a project
     },
     progress: {
         type: Number,
@@ -108,8 +109,10 @@ const KitchenSchema = new Schema({
     timestamps: true,
     toJSON: {
         virtuals: true,
-        transform: function(doc, ret) {
-            ret.id = ret._id.toHexString();
+        transform: function(doc, ret: any) {
+            if (ret._id) {
+                ret.id = ret._id.toString();
+            }
             delete ret._id;
             delete ret.__v;
             return ret;
@@ -117,8 +120,10 @@ const KitchenSchema = new Schema({
     },
     toObject: {
         virtuals: true,
-        transform: function(doc, ret) {
-            ret.id = ret._id.toHexString();
+        transform: function(doc, ret: any) {
+            if (ret._id) {
+                ret.id = ret._id.toString();
+            }
             delete ret._id;
             delete ret.__v;
             return ret;
@@ -134,5 +139,10 @@ KitchenSchema.index({ progress: 1 });
 KitchenSchema.index({ createdAt: -1 });
 KitchenSchema.index({ clientName: 'text' });
 
-const Kitchen = models.Kitchen || model('Kitchen', KitchenSchema);
+// Check if the model is already compiled to prevent OverwriteModelError
+if (mongoose.models.Kitchen) {
+  delete mongoose.models.Kitchen;
+}
+
+const Kitchen = mongoose.model('Kitchen', KitchenSchema);
 export default Kitchen;
