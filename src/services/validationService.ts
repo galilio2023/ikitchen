@@ -26,49 +26,78 @@ export function validateKitchenLayout(kitchen: IKitchen | null): ValidationError
     if (!kitchen) return [];
 
     const errors: ValidationError[] = [];
-    const allItems = [...(kitchen.obstacles || []), ...(kitchen.appliances || [])];
+    
+    // Combine obstacles and appliances into a single list of items to check
+    const allItems = [
+        ...(kitchen.obstacles || []).map(o => ({ ...o, isAppliance: false })),
+        ...(kitchen.appliances || []).map(a => ({ ...a, isAppliance: true }))
+    ];
 
-    // --- Rule 1: Collision Detection ---
-    // Create a map of bounding boxes for each wall
-    const wallItems = new Map<number, BoundingBox[]>();
+    // Group items by wall index to only check collisions on the same wall
+    const itemsByWall = new Map<number, typeof allItems>();
 
     for (const item of allItems) {
-        if (!item.id) continue; // Skip items without an ID
-
-        const box: BoundingBox = {
-            id: item.id,
-            x1: item.position.x,
-            y1: item.position.y,
-            x2: item.position.x + item.position.width,
-            y2: item.position.y + item.position.height,
-        };
-
-        if (!wallItems.has(item.wallIndex)) {
-            wallItems.set(item.wallIndex, []);
+        if (!itemsByWall.has(item.wallIndex)) {
+            itemsByWall.set(item.wallIndex, []);
         }
-        wallItems.get(item.wallIndex)!.push(box);
+        itemsByWall.get(item.wallIndex)!.push(item);
     }
 
-    // Check for collisions on each wall
-    for (const boxes of wallItems.values()) {
-        for (let i = 0; i < boxes.length; i++) {
-            for (let j = i + 1; j < boxes.length; j++) {
-                const boxA = boxes[i];
-                const boxB = boxes[j];
+    // Iterate through each wall
+    for (const [wallIndex, items] of itemsByWall.entries()) {
+        const wall = kitchen.walls[wallIndex];
+        if (!wall) continue;
 
-                // Check for overlap
-                if (boxA.x1 < boxB.x2 && boxA.x2 > boxB.x1 && boxA.y1 < boxB.y2 && boxA.y2 > boxB.y1) {
+        // 1. Check for Out of Bounds
+        for (const item of items) {
+            const { x, y, width, height } = item.position;
+            
+            // Check horizontal bounds (0 to wall length)
+            if (x < 0 || (x + width) > wall.length) {
+                errors.push({
+                    type: 'OutOfBounds',
+                    message: `Item extends beyond the wall length.`,
+                    itemIds: [item.id],
+                });
+            }
+
+            // Check vertical bounds (0 to wall height)
+            if (y < 0 || (y + height) > wall.height) {
+                errors.push({
+                    type: 'OutOfBounds',
+                    message: `Item extends beyond the wall height.`,
+                    itemIds: [item.id],
+                });
+            }
+        }
+
+        // 2. Check for Collisions between items
+        for (let i = 0; i < items.length; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+                const itemA = items[i];
+                const itemB = items[j];
+
+                // Simple AABB (Axis-Aligned Bounding Box) collision detection
+                const a = itemA.position;
+                const b = itemB.position;
+
+                const isOverlapping = (
+                    a.x < b.x + b.width &&
+                    a.x + a.width > b.x &&
+                    a.y < b.y + b.height &&
+                    a.y + a.height > b.y
+                );
+
+                if (isOverlapping) {
                     errors.push({
                         type: 'Collision',
                         message: `Items are overlapping.`,
-                        itemIds: [boxA.id, boxB.id],
+                        itemIds: [itemA.id, itemB.id],
                     });
                 }
             }
         }
     }
-
-    // --- Future Rules (e.g., Boundary Checks) can be added here ---
 
     return errors;
 }

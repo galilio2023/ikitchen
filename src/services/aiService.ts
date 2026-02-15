@@ -27,6 +27,10 @@ class KitchenAiService {
               "aiReasoning": "string",
               "units": [{ "id": "string", "wallIndex": number, "type": "string", "position": { "x": number, "y": number, "z": number, "width": number, "height": number, "depth": number } }]
             }
+            Ensure that 'type' in 'units' is one of: "socket", "vent", "window", "door", "appliance", "pipe", "pillar", "radiator", "clearance", "cabinet".
+            Ensure that the generated layout is physically possible and does not overlap with obstacles.
+            The 'position' coordinates must be relative to the wall's top-left corner (0,0).
+            'x' is the horizontal distance along the wall. 'y' is the vertical distance from the floor.
         `;
 
         const requestBody = {

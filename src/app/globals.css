@@ -49,11 +49,11 @@
     This is a new, robust, and accessible enterprise-grade color palette.
   */
   :root {
-    --background: 0 0% 100%; /* White */
+    --background: 0 0% 98%; /* Slightly off-white for better contrast */
     --foreground: 220 13% 13%; /* Dark Gray */
-    --card: 0 0% 100%; /* White */
+    --card: 0 0% 100%; /* Pure White */
     --card-foreground: 220 13% 13%; /* Dark Gray */
-    --popover: 0 0% 100%; /* White */
+    --popover: 0 0% 100%; /* Pure White */
     --popover-foreground: 220 13% 13%; /* Dark Gray */
     --primary: 210 90% 45%; /* Vibrant Blue */
     --primary-foreground: 0 0% 100%; /* White */
@@ -72,7 +72,7 @@
   }
 
   .dark {
-    --background: 220 13% 13%; /* Dark Gray */
+    --background: 220 13% 10%; /* Darker background for depth */
     --foreground: 210 20% 96%; /* Light Gray */
     --card: 220 13% 18%; /* Slightly Lighter Dark Gray */
     --card-foreground: 210 20% 96%; /* Light Gray */
@@ -102,5 +102,14 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom Grid Pattern for Blueprint Look */
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   }
 }

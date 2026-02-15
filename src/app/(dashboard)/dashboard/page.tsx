@@ -8,58 +8,65 @@ import Project from "@/models/Project";
 async function getProjects() {
   await dbConnect();
   const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
-  
+
   // Manually map to a plain object to satisfy Server Component rules.
-  return projects.map(p => ({ 
-      id: p._id.toString(),
-      clientName: p.clientName,
-      status: p.status,
-      progress: p.progress,
+  return projects.map((p: any) => ({
+    id: p._id.toString(),
+    clientName: p.client, // Corrected property name from clientName to client
+    status: p.status,
+    progress: p.progress,
   }));
 }
 
 export default async function DashboardPage() {
-    const projects = await getProjects();
+  const projects = await getProjects();
 
-    const stats = {
-        total: projects.length,
-        completed: projects.filter(p => p.progress === 100).length,
-        averageProgress: projects.length > 0
-            ? Math.round(projects.reduce((acc, p) => acc + (p.progress || 0), 0) / projects.length)
-            : 0,
-    };
+  const stats = {
+    total: projects.length,
+    completed: projects.filter((p) => p.progress === 100).length,
+    averageProgress:
+      projects.length > 0
+        ? Math.round(
+            projects.reduce((acc, p) => acc + (p.progress || 0), 0) /
+              projects.length,
+          )
+        : 0,
+  };
 
-    return (
-        <div className="space-y-6 md:space-y-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <MagicStatsCard
-                    title="Total Projects"
-                    value={stats.total.toString()}
-                    iconName="database" // Pass icon name as a string
-                    color="blue"
-                />
-                <MagicStatsCard
-                    title="Completed"
-                    value={stats.completed.toString()}
-                    iconName="zap" // Pass icon name as a string
-                    color="green"
-                />
-                <MagicStatsCard
-                    title="Average Progress"
-                    value={`${stats.averageProgress}%`}
-                    iconName="cpu" // Pass icon name as a string
-                    color="purple"
-                />
-            </div>
+  return (
+    <div className="space-y-8 md:space-y-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <MagicStatsCard
+          title="Total Projects"
+          value={stats.total.toString()}
+          iconName="database"
+          color="blue"
+        />
+        <MagicStatsCard
+          title="Completed"
+          value={stats.completed.toString()}
+          iconName="zap"
+          color="green"
+        />
+        <MagicStatsCard
+          title="Average Progress"
+          value={`${stats.averageProgress}`}
+          unit="%"
+          iconName="cpu"
+          color="purple"
+        />
+      </div>
 
-            <div className="card bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-border/50">
-                    <h2 className="text-lg font-semibold text-foreground">Projects</h2>
-                </div>
-                <div className="p-6">
-                    <ProjectGrid projects={projects} />
-                </div>
-            </div>
+      <div className="bg-card/50 backdrop-blur-lg rounded-2xl shadow-lg border border-border/20">
+        <div className="p-6">
+          <h2 className="text-xl font-semibold text-foreground">
+            Your Projects
+          </h2>
         </div>
-    );
+        <div className="p-6 !pt-0">
+          <ProjectGrid projects={projects} />
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache';
 import Kitchen from '@/models/Kitchen';
 import dbConnect from '@/lib/dbConnect';
 import { generatedDesignSchema, GeneratedDesign } from '@/lib/validations';
+import { v4 as uuidv4 } from 'uuid';
+import { IKitchen } from '@/types/kitchen';
 
 export async function generateAiLayout(kitchenId: string) {
     try {
@@ -14,7 +16,11 @@ export async function generateAiLayout(kitchenId: string) {
             throw new Error("Kitchen not found.");
         }
 
-        const design = await kitchenAiService.generateLayout(kitchen);
+        // Convert Mongoose document to plain object and cast to IKitchen
+        // This resolves the type mismatch for userId (ObjectId vs string)
+        const kitchenData = kitchen.toObject() as unknown as IKitchen;
+
+        const design = await kitchenAiService.generateLayout(kitchenData);
         
         kitchen.generatedDesign = design;
         await kitchen.save();
@@ -45,19 +51,29 @@ export async function applyAiLayout(kitchenId: string, design: GeneratedDesign) 
 
         const newAppliances = validatedDesign.units.map(unit => ({
             ...unit,
-            id: unit.id || `appliance-${Date.now()}`,
+            id: unit.id || uuidv4(),
             name: unit.type,
+            type: 'appliance', // Explicitly set type to 'appliance'
             isFixed: false,
         }));
 
-        kitchen.appliances = newAppliances;
+        // Mongoose handles the casting internally, but for TS we can assert or let it be
+        // We cast to any here because Mongoose's DocumentArray type is strict about methods like push/pop
+        // but assigning a plain array is valid for setting the value.
+        kitchen.appliances = newAppliances as any;
         kitchen.generatedDesign = undefined;
 
         await kitchen.save();
 
         revalidatePath(`/projects/${kitchen.projectId}`);
 
-        return { success: true, appliances: kitchen.appliances };
+        // Return the plain object version of appliances to satisfy client-side types
+        const plainAppliances = kitchen.appliances.map((app: any) => ({
+            ...app.toObject(),
+            id: app._id ? app._id.toString() : app.id
+        }));
+
+        return { success: true, appliances: plainAppliances };
 
     } catch (error: any) {
         console.error("Server Action Error: applyAiLayout", error);
@@ -68,7 +84,10 @@ export async function applyAiLayout(kitchenId: string, design: GeneratedDesign) 
 export async function generateAiImage(prompt: string, kitchenData: any) {
     try {
         console.log("Generating image for prompt:", prompt);
-        const placeholderUrl = "https://via.placeholder.com/1024x768.png?text=AI+Visualization";
+        // In a real production app, this would call DALL-E 3 or Stable Diffusion via an API.
+        // For now, we return a high-quality placeholder that represents a "success" state.
+        // We can use a service like Unsplash Source or a specific placeholder service for architecture.
+        const placeholderUrl = "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80";
         return { success: true, imageUrl: placeholderUrl };
     } catch (error: any) {
         console.error("Server Action Error: generateAiImage", error);

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Maximize2, Move, Box, Trash2 } from "lucide-react";
-import { useKitchenStore } from '@/providers/KitchenStoreProvider'; // CORRECTED IMPORT PATH
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 
 interface RenderableNode {
   id: string;
