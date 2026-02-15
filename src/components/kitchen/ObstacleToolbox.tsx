@@ -3,7 +3,7 @@
 import React from 'react';
 import { Wind, DoorOpen, Zap, Box } from 'lucide-react';
 import { ObstacleType } from "@/types/kitchen";
-import { useKitchenStore } from '@/providers/KitchenStoreProvider'; // CORRECTED IMPORT PATH
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { v4 as uuidv4 } from 'uuid';
 
 const obstacleTypes: { type: ObstacleType; label: string; icon: React.ReactNode }[] = [

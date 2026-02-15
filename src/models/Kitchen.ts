@@ -66,7 +66,6 @@ const KitchenSchema = new Schema({
 
     obstacles: [{
         id: { type: String, required: true }, // Matches your IObstacle interface
-        _id: { type: String },
         type: {
             type: String,
             enum: ['window', 'door', 'socket', 'vent', 'pipe', 'pillar', 'radiator', 'clearance'],
@@ -77,6 +76,7 @@ const KitchenSchema = new Schema({
     }],
 
     appliances: [{
+        id: { type: String, required: true },
         name: { type: String, required: true },
         wallIndex: { type: Number, required: true },
         position: CoordinateSchema,
@@ -104,7 +104,27 @@ const KitchenSchema = new Schema({
     // History of all generated designs for this kitchen
     // This enables design iteration and rollback capabilities
     generatedDesignHistory: [designHistoryItemSchema]
-}, { timestamps: true });
+}, { 
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: function(doc, ret) {
+            ret.id = ret._id.toHexString();
+            delete ret._id;
+            delete ret.__v;
+            return ret;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: function(doc, ret) {
+            ret.id = ret._id.toHexString();
+            delete ret._id;
+            delete ret.__v;
+            return ret;
+        }
+    }
+});
 
 // Database indexes for query optimization
 KitchenSchema.index({ userId: 1, projectId: 1 }); // Combined index for user's projects

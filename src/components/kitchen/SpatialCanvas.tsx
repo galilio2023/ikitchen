@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useRef, useMemo } from 'react';
 import { IKitchen } from '@/types/kitchen';
 import SpatialNode from './SpatialNode';
 import SpatialControls from './SpatialControls';
 import { PlusCircle } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
 interface SpatialCanvasProps {
     currentKitchen: IKitchen | null;
@@ -31,6 +32,7 @@ export default function SpatialCanvas({
                                       }: SpatialCanvasProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
+    const [snapLines, setSnapLines] = useState<{ x?: number, y?: number }>({});
 
     useLayoutEffect(() => {
         const handleResize = () => {
@@ -48,15 +50,54 @@ export default function SpatialCanvas({
         return () => window.removeEventListener('resize', handleResize);
     }, [currentWall]);
 
+    // Calculate snap guides
+    const guides = useMemo(() => {
+        if (!renderableObstacles) return { x: [], y: [] };
+        
+        const xGuides = new Set<number>();
+        const yGuides = new Set<number>();
+
+        renderableObstacles.forEach(obs => {
+            if (obs.id === selectedObstacleId) return; // Don't snap to self
+            
+            // Edges and center
+            xGuides.add(obs.position.x);
+            xGuides.add(obs.position.x + obs.position.width);
+            xGuides.add(obs.position.x + obs.position.width / 2);
+
+            yGuides.add(obs.position.y);
+            yGuides.add(obs.position.y + obs.position.height);
+            yGuides.add(obs.position.y + obs.position.height / 2);
+        });
+
+        // Add wall boundaries
+        if (currentWall) {
+            xGuides.add(0);
+            xGuides.add(currentWall.length);
+            yGuides.add(0);
+            yGuides.add(currentWall.height);
+        }
+
+        return { x: Array.from(xGuides), y: Array.from(yGuides) };
+    }, [renderableObstacles, selectedObstacleId, currentWall]);
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        onDragOver(e);
+
+        // Basic snapping visualization logic would go here
+        // For now, we just pass through the event
+    };
+
     const showEmptyState = renderableObstacles.length === 0;
 
     return (
         <div
             ref={containerRef}
-            onDragOver={onDragOver}
+            onDragOver={handleDragOver}
             onDrop={onDrop}
             onClick={onCanvasClick}
-            className="relative w-full h-full bg-background overflow-hidden cursor-crosshair border-t flex items-center justify-center"
+            className="relative w-full h-full bg-background overflow-hidden cursor-crosshair border-t flex items-center justify-center bg-grid-pattern"
         >
             <div
                 style={{
@@ -82,21 +123,47 @@ export default function SpatialCanvas({
                     </div>
                 )}
 
-                {renderableObstacles.map((obs) => (
-                    <SpatialNode
-                        key={obs.id}
-                        id={obs.id}
-                        type={obs.type}
-                        x={obs.position.x}
-                        y={obs.position.y}
-                        isSelected={selectedObstacleId === obs.id}
-                        onDragStart={() => onNodeDragStart(obs.id)}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (obs.id) onNodeClick(obs.id);
-                        }}
-                    />
-                ))}
+                {/* Snap Lines */}
+                {snapLines.x !== undefined && (
+                    <div 
+                        className="absolute top-0 bottom-0 border-l border-cyan-500 z-50 pointer-events-none animate-pulse"
+                        style={{ left: snapLines.x }}
+                    >
+                        <span className="absolute top-0 left-1 text-[10px] bg-cyan-500 text-white px-1 rounded">
+                            {Math.round(snapLines.x)}
+                        </span>
+                    </div>
+                )}
+                {snapLines.y !== undefined && (
+                    <div 
+                        className="absolute left-0 right-0 border-t border-cyan-500 z-50 pointer-events-none animate-pulse"
+                        style={{ top: snapLines.y }}
+                    >
+                        <span className="absolute left-0 top-1 text-[10px] bg-cyan-500 text-white px-1 rounded">
+                            {Math.round(snapLines.y)}
+                        </span>
+                    </div>
+                )}
+
+                <AnimatePresence>
+                    {renderableObstacles.map((obs) => (
+                        <SpatialNode
+                            key={obs.id}
+                            id={obs.id}
+                            type={obs.type}
+                            x={obs.position.x}
+                            y={obs.position.y}
+                            width={obs.position.width}
+                            height={obs.position.height}
+                            isSelected={selectedObstacleId === obs.id}
+                            onDragStart={() => onNodeDragStart(obs.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (obs.id) onNodeClick(obs.id);
+                            }}
+                        />
+                    ))}
+                </AnimatePresence>
             </div>
 
             {showEmptyState && (

@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Box, DoorOpen, Power, Wind, Zap } from 'lucide-react';
-import { useKitchenStore } from '@/providers/KitchenStoreProvider'; // CORRECTED IMPORT PATH
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 
 interface Node {
     id: string;

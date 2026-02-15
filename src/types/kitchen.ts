@@ -2,7 +2,6 @@ import { GeneratedDesign } from "@/lib/validations";
 
 export interface IKitchen {
     id: string;
-    _id?: string;
     userId?: string;
     projectId: string;
     progress: number;
@@ -58,16 +57,14 @@ export type Obstacle = IObstacle;
 
 export interface IObstacle {
     id: string;
-    _id?: string;
     type: ObstacleType;
     wallIndex: number;
     position: ICoordinate;
 }
 
 export interface IAppliance {
-    id: string; // Added for consistency and rendering keys
-    _id?: string;
-    type: 'appliance'; // Added to distinguish from obstacles
+    id: string;
+    type: 'appliance';
     name: string;
     wallIndex: number;
     position: ICoordinate;

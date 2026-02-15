@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import Kitchen from '@/models/Kitchen';
 import dbConnect from '@/lib/dbConnect';
 import { generatedDesignSchema, GeneratedDesign } from '@/lib/validations';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function generateAiLayout(kitchenId: string) {
     try {
@@ -45,8 +46,9 @@ export async function applyAiLayout(kitchenId: string, design: GeneratedDesign) 
 
         const newAppliances = validatedDesign.units.map(unit => ({
             ...unit,
-            id: unit.id || `appliance-${Date.now()}`,
+            id: unit.id || uuidv4(),
             name: unit.type,
+            type: 'appliance', // Explicitly set type to 'appliance'
             isFixed: false,
         }));
 
@@ -68,7 +70,10 @@ export async function applyAiLayout(kitchenId: string, design: GeneratedDesign) 
 export async function generateAiImage(prompt: string, kitchenData: any) {
     try {
         console.log("Generating image for prompt:", prompt);
-        const placeholderUrl = "https://via.placeholder.com/1024x768.png?text=AI+Visualization";
+        // In a real production app, this would call DALL-E 3 or Stable Diffusion via an API.
+        // For now, we return a high-quality placeholder that represents a "success" state.
+        // We can use a service like Unsplash Source or a specific placeholder service for architecture.
+        const placeholderUrl = "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80";
         return { success: true, imageUrl: placeholderUrl };
     } catch (error: any) {
         console.error("Server Action Error: generateAiImage", error);
