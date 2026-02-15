@@ -22,7 +22,7 @@ We have successfully established the foundational architecture for a modern, AI-
     - `kitchenAiService` is implemented using the Google Gemini REST API (bypassing unstable SDKs).
     - Server Actions (`generateAiLayout`, `generateAiImage`) are ready to handle requests.
 - [x] **Visualization:** `SpatialCanvas` correctly renders walls and obstacles based on the data model.
-- [x] **Drag & Drop:** Users can now drag obstacles from the sidebar and drop them onto the canvas.
+- [x] **Draw & Edit:** Replaced drag-and-drop with a more precise "Click & Drag" drawing interaction for defining constraints.
 - [x] **Code Refactoring:** `renderableNodes` logic is centralized in a Zustand selector, eliminating duplication.
 - [x] **Type Consistency:** Standardized `id` usage across backend and frontend, removing fragile `_id` checks.
 - [x] **AI Design Application:** Verified and fixed the "Generate -> Apply" flow, ensuring robust data mapping.
@@ -42,9 +42,9 @@ We have successfully established the foundational architecture for a modern, AI-
 These are high-priority technical debts and incomplete implementations that prevent the application from being fully functional.
 
 ### A. Drag & Drop Implementation (Critical)
-*   **Status:** ✅ Fixed
+*   **Status:** ✅ Fixed (Replaced)
 *   **Issue:** The `KitchenEditor.tsx` component had an empty `handleDrop` function.
-*   **Resolution:** Implemented `handleDrop` to calculate coordinates and dispatch `addObstacle`.
+*   **Resolution:** Replaced the problematic drag-and-drop system with a robust "Draw & Edit" system. Users now select a tool and draw directly on the canvas.
 
 ### B. Code Duplication: `renderableNodes`
 *   **Status:** ✅ Fixed
@@ -61,6 +61,11 @@ These are high-priority technical debts and incomplete implementations that prev
 *   **Issue:** `AiDesignPanel` generated designs needed rigorous testing and mapping.
 *   **Resolution:** Updated `kitchenAiService` prompt for strict types and `applyAiLayout` action to correctly map AI response to `IAppliance` schema with UUIDs.
 
+### E. Database Stability
+*   **Status:** ✅ Fixed
+*   **Issue:** Schema conflicts during development and loose relationships between Project and Kitchen.
+*   **Resolution:** Enforced `projectId` requirement, made `owner` optional for dev flexibility, and added model deletion before recompilation to support HMR.
+
 ---
 
 ## 3. Missing Features & Roadmap (🚀 What We Miss)
@@ -71,14 +76,17 @@ These features are required for a Minimum Viable Product (MVP) but are currently
 - [x] **Wall Editor:** Implemented basic add/edit/delete functionality in `WallManager`.
 - [x] **Snapping & Alignment:** Implemented visual snap guides and scale-aware drop logic.
 - [x] **Collision Detection:** Implemented robust AABB collision and out-of-bounds validation.
+- [ ] **Inspect Panel Polish:** Allow precise resizing of drawn items via the inspector panel (typing dimensions).
 
 ### Phase 2: User Experience
 - [x] **Undo/Redo History:** Implemented temporal state tracking with `zundo` and keyboard shortcuts.
 - [x] **Loading States:** Implemented visual feedback for loading, saving, and AI generation.
+- [ ] **Context-Aware AI:** Pass "Clear Zone" constraints to the AI prompt to ensure it respects user-defined walkways.
 
 ### Phase 3: Advanced
 - [x] **3D Preview:** Implemented interactive 3D visualization using React Three Fiber.
 - [x] **Bill of Materials (BOM):** Implemented item aggregation, cost estimation, and CSV export.
+- [ ] **Real Image Generation:** Connect `generateAiImage` to a real API (DALL-E 3 or Gemini Vision).
 
 ---
 

@@ -1,84 +1,59 @@
-# Gemini AI Integration Guide
+# Project Status & Roadmap
 
-This document details the integration of Google's Gemini AI into the Kitchen SaaS application. It covers setup, usage patterns, and troubleshooting.
+This document tracks the current state of the Kitchen SaaS application, including completed features, known issues, and the future roadmap.
 
-## 1. Overview
+## 1. Current Status: "Draw & Edit" Transition
 
-**Purpose:** Provide AI-powered kitchen layout generation and visualization.
-**Model:** `gemini-pro` (via Google Generative AI REST API).
-**Key Features:**
-*   **Layout Generation:** Suggests optimal placement of appliances based on kitchen dimensions and constraints.
-*   **Visualization:** Generates photorealistic images of the proposed design.
+We have successfully transitioned the kitchen editor from a drag-and-drop model to a more precise "Draw & Edit" interaction model. This allows users to define constraints (windows, doors, clear zones) by drawing directly on the wall canvas, which provides better input for the AI layout generator.
 
-## 2. Configuration
+### Completed Features
+*   **Database Stability:**
+    *   Refined `Project` and `Kitchen` schemas for robustness.
+    *   Enforced `projectId` requirement in `Kitchen` to prevent orphaned data.
+    *   Made `owner` optional in `Project` to support unauthenticated seeding/dev.
+    *   Implemented transactional logic for project creation and deletion.
+*   **Kitchen Editor Overhaul:**
+    *   **Toolbox:** Refactored to be a tool selector (Window, Door, Socket, Pillar, Clear Zone).
+    *   **Canvas:** Implemented "Click & Drag" drawing functionality.
+    *   **Visuals:** Added visual preview for the item being drawn.
+    *   **Hybrid Approach:** Added "Clear Zone" tool for generic constraints alongside semantic architectural elements.
+*   **AI Integration:**
+    *   Integrated Google Gemini Pro for layout generation.
+    *   Implemented strict JSON validation with Zod.
+    *   Added "Apply Layout" functionality to convert AI suggestions into real appliances.
+*   **Dashboard:**
+    *   Implemented database seeding for quick testing.
+    *   Fixed "Empty Dashboard" state and error handling.
 
-### Environment Variables
-Ensure the following are set in your `.env.local` file:
-```env
-GEMINI_API_KEY=your_api_key_here
-```
+### Fixed Issues
+*   **TypeScript Errors:** Resolved strict type mismatches in `aiActions.ts`, `AiDesignPanel.tsx`, and page components.
+*   **Mongoose Schema Conflicts:** Fixed `OverwriteModelError` by ensuring models are deleted before recompilation in development.
+*   **Data Integrity:** Fixed "Project validation failed: owner is required" by updating schema definition and recompiling.
+*   **Drag & Drop Bugs:** Replaced the problematic drag-and-drop system with the more stable drawing system.
 
-### Service Implementation
-The core logic resides in `src/services/aiService.ts`.
-*   **Method:** `generateLayout(kitchenData: IKitchen)`
-*   **Endpoint:** `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent`
-*   **Authentication:** API Key passed as a query parameter.
+## 2. Known Issues / Technical Debt
 
-## 3. Usage Patterns
+*   **Image Generation:** The `generateAiImage` function currently returns a static placeholder. Needs integration with a real image generation API (DALL-E 3 or Gemini Vision).
+*   **Undo/Redo:** The history stack (`zundo`) is implemented but needs thorough testing with the new drawing actions to ensure state consistency.
+*   **Wall Navigation:** Currently focuses on a single wall. Multi-wall navigation needs to be verified with the new drawing tools.
 
-### A. Layout Generation Flow
-1.  **Trigger:** User clicks "Generate Layout" in `AiDesignPanel`.
-2.  **Action:** `generateAiLayout` (Server Action) is called with `kitchenId`.
-3.  **Service:** `kitchenAiService.generateLayout` constructs a prompt with kitchen data (walls, obstacles).
-4.  **AI Response:** Returns a JSON object matching `generatedDesignSchema`.
-5.  **Validation:** Zod schema validates the response structure.
-6.  **State Update:** The design is saved to `kitchen.generatedDesign` in MongoDB.
-7.  **UI Update:** The frontend displays the suggestion for user review.
+## 3. Roadmap
 
-### B. Applying a Design
-1.  **Trigger:** User clicks "Apply Layout".
-2.  **Action:** `applyAiLayout` (Server Action) is called with the design object.
-3.  **Transformation:** The design's `units` are converted into `IAppliance` objects.
-4.  **Persistence:** The new appliances replace the old ones in the database.
-5.  **Feedback:** Success toast notification.
+### Phase 1: Refinement (Current)
+- [x] Switch to "Draw & Edit" model.
+- [x] Stabilize Database Schemas.
+- [x] Fix critical TypeScript errors.
+- [ ] **Next:** Polish the "Inspect" panel to allow precise resizing of drawn items (e.g., typing "120cm" instead of dragging).
 
-### C. Image Visualization
-1.  **Trigger:** User clicks "Visualize Kitchen" in `VisualizationPanel`.
-2.  **Action:** `generateAiImage` (Server Action) is called with a descriptive prompt.
-3.  **Service:** Currently returns a placeholder. *Future: Integrate with an image generation model (e.g., Gemini Pro Vision or DALL-E).*
+### Phase 2: AI Enhancement
+- [ ] **Context-Aware Design:** Pass the new "Clear Zone" constraints to the AI prompt to ensure it respects user-defined walkways.
+- [ ] **Real Image Generation:** Connect `generateAiImage` to an actual API.
+- [ ] **Style Selection:** Allow users to pick a style (Modern, Rustic, Industrial) before generating.
 
-## 4. Prompt Engineering
-
-### Layout Prompt Template
-```text
-You are a professional kitchen designer. Based on the following kitchen data, generate a functional layout.
-INPUT DATA:
-- Walls: ${JSON.stringify(kitchenData.walls)}
-- Obstacles: ${JSON.stringify(kitchenData.obstacles)}
-STRICT JSON REQUIREMENT:
-Return ONLY a raw JSON object matching this structure:
-{
-  "layoutType": "string",
-  "aiReasoning": "string",
-  "units": [{ "id": "string", "wallIndex": number, "type": "string", "position": { ... } }]
-}
-```
-
-### Best Practices
-*   **Context:** Explicitly state the role ("professional kitchen designer").
-*   **Constraints:** Clearly define input data (walls, obstacles).
-*   **Output Format:** Enforce strict JSON structure to ensure parseability.
-
-## 5. Troubleshooting
-
-### Common Errors
-*   **"AI response was empty or malformed":** The model failed to generate valid JSON. Check the prompt structure or retry.
-*   **"Validation failed for AI output":** The JSON structure did not match the Zod schema. Review `generatedDesignSchema` in `src/lib/validations.ts`.
-*   **API Key Errors:** Ensure `GEMINI_API_KEY` is valid and has quota.
-
-### Debugging
-*   Check server logs for "Server Action Error" or "AI Service Error".
-*   Inspect the raw AI response in the console if validation fails.
+### Phase 3: Production Readiness
+- [ ] **Authentication:** Re-enable strict `owner` requirements in schemas once Auth is fully integrated.
+- [ ] **Performance:** Optimize the 3D/2D rendering of the canvas for complex layouts.
+- [ ] **BOM Export:** Finalize the Bill of Materials generation based on the applied AI layout.
 
 ---
-*Update this document as the AI integration evolves.*
+*Last Updated: 2024-05-22*
