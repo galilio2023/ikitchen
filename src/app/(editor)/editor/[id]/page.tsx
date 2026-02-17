@@ -13,10 +13,8 @@ export default async function EditorPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  console.log(`[EditorPage] Loading project: ${id}`);
 
   if (!id) {
-    console.error("[EditorPage] No ID provided");
     return <SignalLost error="Project ID not found in URL." />;
   }
 
@@ -24,11 +22,8 @@ export default async function EditorPage({
     const data = await getProjectWithKitchen(id);
     
     if (!data) {
-      console.error(`[EditorPage] Project ${id} not found in DB`);
       return <SignalLost error={`Project with ID "${id}" could not be found.`} />;
     }
-
-    console.log(`[EditorPage] Loaded project: ${data.project.client}`);
 
     return (
       <div className="h-full flex flex-col overflow-hidden bg-background">
@@ -65,7 +60,6 @@ export default async function EditorPage({
       </div>
     );
   } catch (error) {
-    console.error("[EditorPage] Error loading project:", error);
     return <SignalLost error="An unexpected error occurred while loading the project." />;
   }
 }

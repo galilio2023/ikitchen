@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import { IKitchen, IObstacle, ObstacleType } from '@/types/kitchen';
 import SpatialNode from './SpatialNode';
 import SpatialControls from './SpatialControls';
@@ -8,6 +8,7 @@ import ContextualToolbar from './ContextualToolbar';
 import { PlusCircle } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { v4 as uuidv4 } from 'uuid';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 
 interface SpatialCanvasProps {
     currentKitchen: IKitchen | null;
@@ -35,10 +36,11 @@ export default function SpatialCanvas({
                                           onToolUsed
                                       }: SpatialCanvasProps) {
     const containerRef = useRef<HTMLDivElement>(null);
+    const { setActiveTool } = useKitchenStore(state => state);
     
     // Viewport State
-    const [scale, setScale] = useState(1); // Base scale to fit wall in container
-    const [zoom, setZoom] = useState(1);   // User zoom level (1 = 100%)
+    const [scale, setScale] = useState(1);
+    const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isPanning, setIsPanning] = useState(false);
     const [lastPanPoint, setLastPanPoint] = useState<{ x: number, y: number } | null>(null);
@@ -47,6 +49,28 @@ export default function SpatialCanvas({
     const [isDrawing, setIsDrawing] = useState(false);
     const [startPoint, setStartPoint] = useState<{ x: number, y: number } | null>(null);
     const [currentPoint, setCurrentPoint] = useState<{ x: number, y: number } | null>(null);
+
+    // Keyboard Shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if typing in an input
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+            switch (e.key.toLowerCase()) {
+                case 'w': setActiveTool('window'); break;
+                case 'd': setActiveTool('door'); break;
+                case 's': setActiveTool('socket'); break;
+                case 'v': setActiveTool('vent'); break;
+                case 'escape': 
+                    setActiveTool(null); 
+                    onCanvasClick(); // Deselect
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [setActiveTool, onCanvasClick]);
 
     // Calculate base scale on resize
     useLayoutEffect(() => {
@@ -72,23 +96,18 @@ export default function SpatialCanvas({
         const rect = containerRef.current.getBoundingClientRect();
         const totalScale = scale * zoom;
         
-        // Calculate the center of the container
         const containerCenterX = rect.width / 2;
         const containerCenterY = rect.height / 2;
 
-        // Calculate the dimensions of the scaled wall
         const scaledWallWidth = currentWall.length * totalScale;
         const scaledWallHeight = currentWall.height * totalScale;
 
-        // Calculate the top-left corner of the wall in the container's coordinate space, including pan
         const wallLeft = containerCenterX - (scaledWallWidth / 2) + pan.x;
         const wallTop = containerCenterY - (scaledWallHeight / 2) + pan.y;
 
-        // Calculate the mouse position relative to the wall's top-left corner
         const mouseXRelative = e.clientX - rect.left - wallLeft;
         const mouseYRelative = e.clientY - rect.top - wallTop;
 
-        // Convert back to unscaled wall coordinates
         return {
             x: mouseXRelative / totalScale,
             y: mouseYRelative / totalScale
@@ -96,7 +115,6 @@ export default function SpatialCanvas({
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        // Middle mouse button or Space key (simulated) for panning
         if (e.button === 1 || (e.button === 0 && e.altKey)) {
             e.preventDefault();
             setIsPanning(true);
@@ -168,7 +186,6 @@ export default function SpatialCanvas({
             const delta = e.deltaY > 0 ? -0.1 : 0.1;
             setZoom(prev => Math.min(Math.max(0.5, prev + delta), 3));
         } else {
-            // Pan with wheel
             setPan(prev => ({ x: prev.x - e.deltaX, y: prev.y - e.deltaY }));
         }
     };
@@ -199,7 +216,6 @@ export default function SpatialCanvas({
             className={`relative w-full h-full bg-background overflow-hidden border-t flex items-center justify-center bg-grid-pattern 
                 ${isPanning ? 'cursor-grabbing' : activeTool ? 'cursor-crosshair' : 'cursor-default'}`}
         >
-            {/* Contextual Toolbar */}
             {selectedObstacleId && (
                 <ContextualToolbar 
                     selectedId={selectedObstacleId} 
@@ -228,7 +244,6 @@ export default function SpatialCanvas({
                     </div>
                 )}
 
-                {/* Drawing Preview */}
                 {drawingDims && (
                     <>
                         <div
@@ -245,7 +260,7 @@ export default function SpatialCanvas({
                             style={{
                                 left: drawingDims.x + drawingDims.width / 2,
                                 top: drawingDims.y - 30,
-                                transform: 'translateX(-50%) scale(1)' // Counter-scale tooltip if needed, but keeping simple for now
+                                transform: 'translateX(-50%) scale(1)'
                             }}
                         >
                             {drawingDims.width}cm × {drawingDims.height}cm
@@ -279,7 +294,7 @@ export default function SpatialCanvas({
                     <PlusCircle size={48} className="mb-4" />
                     <p className="text-sm font-bold">Your canvas is ready!</p>
                     <p className="text-xs mt-2">Select a tool from the sidebar and draw on the wall.</p>
-                    <p className="text-[10px] mt-4 opacity-50">Middle-click or Alt+Drag to pan • Ctrl+Scroll to zoom</p>
+                    <p className="text-[10px] mt-4 opacity-50">Shortcuts: W (Window), D (Door), S (Socket), Esc (Cancel)</p>
                 </div>
             )}
 

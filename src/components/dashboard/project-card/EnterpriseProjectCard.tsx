@@ -14,6 +14,7 @@ interface Project {
   status?: string;
   progress?: number;
   updatedAt?: Date;
+  createdAt?: Date;
 }
 
 interface EnterpriseProjectCardProps {
@@ -54,6 +55,9 @@ export default function EnterpriseProjectCard({
       default: return <AlertCircle size={14} />;
     }
   };
+
+  // Fallback to createdAt if updatedAt is missing, or current date as last resort
+  const displayDate = project.updatedAt || project.createdAt || new Date();
 
   return (
     <>
@@ -104,7 +108,7 @@ export default function EnterpriseProjectCard({
               {project.status || "Draft"}
             </span>
             <span className="text-xs text-muted-foreground">
-              Updated {new Date(project.updatedAt || new Date()).toLocaleDateString()}
+              Updated {new Date(displayDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
             </span>
           </div>
 
