@@ -1,93 +1,89 @@
 "use client";
 
 import React from "react";
-import { Database, Package, Truck, ShieldCheck, Zap } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { CyberButton } from "@/components/settings/CyberButton";
+import { Database, Package, Truck, ShieldCheck, Zap, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function InventoryPage() {
   return (
-    /* FIXED: Responsive padding p-4 md:p-10 and tighter spacing on mobile */
-    <div className="space-y-6 md:space-y-10 p-4 md:p-10 max-w-7xl mx-auto font-mono">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
+    <div className="space-y-8">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b">
+        <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400">
+            <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500">
               <Database size={24} />
             </div>
-            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-foreground italic">
-              Material_DB
-              <span className="text-foreground/20 not-italic">.bin</span>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Material Inventory
             </h1>
           </div>
-          <p className="text-[10px] text-foreground/40 uppercase tracking-[0.4em] ml-0 md:ml-14 text-center md:text-left">
-            Resource_Allocation_Index
+          <p className="text-sm text-muted-foreground ml-11">
+            Track stock levels, suppliers, and resource allocation.
           </p>
         </div>
       </header>
 
-      {/* FIXED: Grid starts as 1 col, moves to 2, then 4 on desktop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
-            label: "Surface_Finish",
+            label: "Total Items",
             count: 42,
             icon: Package,
-            color: "text-magic-purple",
+            color: "text-blue-500 bg-blue-500/10",
           },
           {
-            label: "Hardware_Nodes",
-            count: 128,
-            icon: Zap,
-            color: "text-magic-cyan",
+            label: "Low Stock",
+            count: 3,
+            icon: AlertTriangle,
+            color: "text-amber-500 bg-amber-500/10",
           },
           {
-            label: "Logistics_Link",
+            label: "Active Suppliers",
             count: 12,
             icon: Truck,
-            color: "text-emerald-400",
+            color: "text-emerald-500 bg-emerald-500/10",
           },
           {
-            label: "Quality_Shield",
-            count: "100%",
+            label: "Quality Score",
+            count: "98%",
             icon: ShieldCheck,
-            color: "text-foreground",
+            color: "text-purple-500 bg-purple-500/10",
           },
         ].map((stat) => (
           <div
             key={stat.label}
-            className="glass-brilliant p-5 md:p-6 rounded-3xl border border-border space-y-4"
+            className="p-6 rounded-xl border bg-card shadow-sm hover:shadow-md transition-all"
           >
-            <div
-              className={`p-2 w-fit rounded-lg bg-background/30 border border-border ${stat.color}`}
-            >
-              <stat.icon size={16} />
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-2 rounded-lg ${stat.color}`}>
+                <stat.icon size={18} />
+              </div>
             </div>
             <div className="space-y-1">
-              <p className="text-[8px] text-foreground/30 uppercase tracking-[0.2em]">
+              <p className="text-2xl font-bold">{stat.count}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 {stat.label}
-              </p>
-              <p className="text-xl font-black text-foreground italic">
-                {stat.count}
               </p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* FIXED: Reduced huge internal padding from p-20 to responsive p-8/p-20 */}
-      <div className="glass-brilliant rounded-[1.5rem] md:rounded-[2.5rem] border border-border overflow-hidden">
-        <div className="p-6 md:p-8 border-b border-border bg-muted/20">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-foreground/80">
-            Stock_Registry
-          </h2>
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="p-6 border-b bg-muted/30">
+          <h2 className="font-semibold">Stock Registry</h2>
         </div>
-        <div className="py-12 px-6 md:p-20 text-center">
-          <Package size={48} className="mx-auto text-foreground/5 mb-6" />
-          <p className="text-[10px] text-foreground/20 uppercase tracking-[0.5em] leading-loose">
-            Inventory_Sync_Required
+        <div className="py-20 px-6 text-center">
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package size={32} className="text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium mb-2">Inventory Sync Required</h3>
+          <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
+            Connect your ERP system or upload a CSV to populate the inventory database.
           </p>
-          <CyberButton variant="outline">Establish_Supply_Link</CyberButton>
+          <Button variant="outline">
+            Establish Supply Link
+          </Button>
         </div>
       </div>
     </div>
