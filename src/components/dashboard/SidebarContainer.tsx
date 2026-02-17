@@ -74,25 +74,29 @@ export const SidebarContainer = React.memo(({ children }: { children: React.Reac
             </aside>
 
             <div className="flex-1 flex flex-col h-full min-w-0 bg-muted/10">
-                <header className="h-16 flex-none flex items-center justify-between px-6 border-b bg-background/80 backdrop-blur-md sticky top-0 z-20">
-                    <div className="flex items-center gap-4">
+                <header className="h-16 flex-none flex items-center justify-between px-4 md:px-6 border-b bg-background/80 backdrop-blur-md sticky top-0 z-20">
+                    <div className="flex items-center gap-2 md:gap-4 min-w-0">
                         <button
-                            className="md:hidden p-2 -ml-2 hover:bg-accent rounded-md text-muted-foreground"
+                            className="md:hidden p-2 -ml-2 hover:bg-accent rounded-md text-muted-foreground shrink-0"
                             onClick={() => setIsMobileMenuOpen(true)}
                         >
                             <Menu size={20} />
                         </button>
                         <h1 
-                            className="text-lg font-semibold text-foreground capitalize"
+                            className="text-sm md:text-lg font-semibold text-foreground capitalize truncate"
                             suppressHydrationWarning
                         >
                             {pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <CreateProjectButton size="sm" />
-                        <div className="h-6 w-px bg-border/50 mx-1" />
+                    <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                        <CreateProjectButton 
+                            size="sm" 
+                            className="h-8 md:h-9 px-2 md:px-4"
+                            hideLabelOnMobile={true}
+                        />
+                        <div className="h-6 w-px bg-border/50 mx-0.5 md:mx-1" />
                         <ThemeToggle />
                     </div>
                 </header>

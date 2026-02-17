@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 interface CreateProjectButtonProps extends ButtonProps {
     label?: string;
     showIcon?: boolean;
+    hideLabelOnMobile?: boolean; // Added prop
 }
 
 export default function CreateProjectButton({ 
@@ -17,6 +18,7 @@ export default function CreateProjectButton({
     size = "default",
     label = "New Project",
     showIcon = true,
+    hideLabelOnMobile = false,
     ...props 
 }: CreateProjectButtonProps) {
     const { openModal } = useUIStore();
@@ -30,7 +32,11 @@ export default function CreateProjectButton({
             {...props}
         >
             {showIcon && <Plus size={16} />}
-            {label && <span>{label}</span>}
+            {label && (
+                <span className={cn(hideLabelOnMobile && "hidden md:inline")}>
+                    {label}
+                </span>
+            )}
         </Button>
     );
 }
