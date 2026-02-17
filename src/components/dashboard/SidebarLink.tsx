@@ -17,13 +17,18 @@ export function SidebarLink({ href, icon, label, active, onClick }: SidebarLinkP
             href={href}
             onClick={onClick}
             className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-lg text-sm font-semibold transition-colors text-foreground",
+                "group flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
                 active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
             )}
         >
-            {icon}
+            <span className={cn(
+                "transition-colors",
+                active ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+            )}>
+                {icon}
+            </span>
             <span>{label}</span>
         </Link>
     );
