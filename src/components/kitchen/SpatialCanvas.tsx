@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useLayoutEffect, useRef, useMemo } from 'react';
+import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import { IKitchen, IObstacle, ObstacleType } from '@/types/kitchen';
 import SpatialNode from './SpatialNode';
 import SpatialControls from './SpatialControls';
+import ContextualToolbar from './ContextualToolbar';
 import { PlusCircle } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { v4 as uuidv4 } from 'uuid';
+import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 
 interface SpatialCanvasProps {
     currentKitchen: IKitchen | null;
@@ -34,14 +36,43 @@ export default function SpatialCanvas({
                                           onToolUsed
                                       }: SpatialCanvasProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [scale, setScale] = useState(1);
-    const [snapLines, setSnapLines] = useState<{ x?: number, y?: number }>({});
+    const { setActiveTool } = useKitchenStore(state => state);
     
+    // Viewport State
+    const [scale, setScale] = useState(1);
+    const [zoom, setZoom] = useState(1);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [isPanning, setIsPanning] = useState(false);
+    const [lastPanPoint, setLastPanPoint] = useState<{ x: number, y: number } | null>(null);
+
     // Drawing state
     const [isDrawing, setIsDrawing] = useState(false);
     const [startPoint, setStartPoint] = useState<{ x: number, y: number } | null>(null);
     const [currentPoint, setCurrentPoint] = useState<{ x: number, y: number } | null>(null);
 
+    // Keyboard Shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if typing in an input
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+            switch (e.key.toLowerCase()) {
+                case 'w': setActiveTool('window'); break;
+                case 'd': setActiveTool('door'); break;
+                case 's': setActiveTool('socket'); break;
+                case 'v': setActiveTool('vent'); break;
+                case 'escape': 
+                    setActiveTool(null); 
+                    onCanvasClick(); // Deselect
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [setActiveTool, onCanvasClick]);
+
+    // Calculate base scale on resize
     useLayoutEffect(() => {
         const handleResize = () => {
             if (containerRef.current && currentWall) {
@@ -63,36 +94,37 @@ export default function SpatialCanvas({
         if (!containerRef.current || !currentWall) return { x: 0, y: 0 };
 
         const rect = containerRef.current.getBoundingClientRect();
+        const totalScale = scale * zoom;
         
-        // Calculate the center of the container
         const containerCenterX = rect.width / 2;
         const containerCenterY = rect.height / 2;
 
-        // Calculate the dimensions of the scaled wall
-        const scaledWallWidth = currentWall.length * scale;
-        const scaledWallHeight = currentWall.height * scale;
+        const scaledWallWidth = currentWall.length * totalScale;
+        const scaledWallHeight = currentWall.height * totalScale;
 
-        // Calculate the top-left corner of the wall in the container's coordinate space
-        const wallLeft = containerCenterX - (scaledWallWidth / 2);
-        const wallTop = containerCenterY - (scaledWallHeight / 2);
+        const wallLeft = containerCenterX - (scaledWallWidth / 2) + pan.x;
+        const wallTop = containerCenterY - (scaledWallHeight / 2) + pan.y;
 
-        // Calculate the mouse position relative to the wall's top-left corner
         const mouseXRelative = e.clientX - rect.left - wallLeft;
         const mouseYRelative = e.clientY - rect.top - wallTop;
 
-        // Convert back to unscaled wall coordinates
         return {
-            x: mouseXRelative / scale,
-            y: mouseYRelative / scale
+            x: mouseXRelative / totalScale,
+            y: mouseYRelative / totalScale
         };
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
+        if (e.button === 1 || (e.button === 0 && e.altKey)) {
+            e.preventDefault();
+            setIsPanning(true);
+            setLastPanPoint({ x: e.clientX, y: e.clientY });
+            return;
+        }
+
         if (!activeTool || !currentWall) return;
         
-        // Prevent default to stop text selection
         e.preventDefault();
-        
         const coords = getWallCoordinates(e);
         setIsDrawing(true);
         setStartPoint(coords);
@@ -100,6 +132,14 @@ export default function SpatialCanvas({
     };
 
     const handleMouseMove = (e: React.MouseEvent) => {
+        if (isPanning && lastPanPoint) {
+            const dx = e.clientX - lastPanPoint.x;
+            const dy = e.clientY - lastPanPoint.y;
+            setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+            setLastPanPoint({ x: e.clientX, y: e.clientY });
+            return;
+        }
+
         if (!isDrawing || !startPoint) return;
         
         const coords = getWallCoordinates(e);
@@ -107,6 +147,12 @@ export default function SpatialCanvas({
     };
 
     const handleMouseUp = (e: React.MouseEvent) => {
+        if (isPanning) {
+            setIsPanning(false);
+            setLastPanPoint(null);
+            return;
+        }
+
         if (!isDrawing || !startPoint || !currentPoint || !activeTool || !currentWall) {
             setIsDrawing(false);
             setStartPoint(null);
@@ -114,26 +160,17 @@ export default function SpatialCanvas({
             return;
         }
 
-        // Calculate final dimensions
         const width = Math.abs(currentPoint.x - startPoint.x);
         const height = Math.abs(currentPoint.y - startPoint.y);
         const x = Math.min(startPoint.x, currentPoint.x);
         const y = Math.min(startPoint.y, currentPoint.y);
 
-        // Only add if it has some size (prevent accidental clicks)
         if (width > 5 && height > 5) {
             onAddObstacle({
                 id: uuidv4(),
                 type: activeTool,
-                wallIndex: 0, // Assuming active wall index is handled by parent or store
-                position: {
-                    x,
-                    y,
-                    z: 0,
-                    width,
-                    height,
-                    depth: 20 // Default depth
-                }
+                wallIndex: 0,
+                position: { x, y, z: 0, width, height, depth: 20 }
             });
             onToolUsed();
         }
@@ -143,7 +180,24 @@ export default function SpatialCanvas({
         setCurrentPoint(null);
     };
 
+    const handleWheel = (e: React.WheelEvent) => {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            setZoom(prev => Math.min(Math.max(0.5, prev + delta), 3));
+        } else {
+            setPan(prev => ({ x: prev.x - e.deltaX, y: prev.y - e.deltaY }));
+        }
+    };
+
     const showEmptyState = renderableObstacles.length === 0 && !isDrawing;
+
+    const drawingDims = isDrawing && startPoint && currentPoint ? {
+        width: Math.round(Math.abs(currentPoint.x - startPoint.x)),
+        height: Math.round(Math.abs(currentPoint.y - startPoint.y)),
+        x: Math.min(startPoint.x, currentPoint.x),
+        y: Math.min(startPoint.y, currentPoint.y)
+    } : null;
 
     return (
         <div
@@ -153,32 +207,36 @@ export default function SpatialCanvas({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={() => {
-                if (isDrawing) {
-                    setIsDrawing(false);
-                    setStartPoint(null);
-                    setCurrentPoint(null);
-                }
+                setIsDrawing(false);
+                setIsPanning(false);
+                setStartPoint(null);
+                setCurrentPoint(null);
             }}
-            className={`relative w-full h-full bg-background overflow-hidden border-t flex items-center justify-center bg-grid-pattern ${activeTool ? 'cursor-crosshair' : 'cursor-default'}`}
+            onWheel={handleWheel}
+            className={`relative w-full h-full bg-background overflow-hidden border-t flex items-center justify-center bg-grid-pattern 
+                ${isPanning ? 'cursor-grabbing' : activeTool ? 'cursor-crosshair' : 'cursor-default'}`}
         >
+            {selectedObstacleId && (
+                <ContextualToolbar 
+                    selectedId={selectedObstacleId} 
+                    onClose={onCanvasClick} 
+                />
+            )}
+
             <div
                 style={{
-                    transform: `scale(${scale})`,
+                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale * zoom})`,
                     width: currentWall?.length || '100%',
                     height: currentWall?.height || '100%',
                     position: 'relative',
-                    transformOrigin: 'center center'
+                    transformOrigin: 'center center',
+                    transition: isPanning ? 'none' : 'transform 0.1s ease-out'
                 }}
             >
                 {currentWall && (
                     <div
                         className="absolute border-2 border-dashed border-border bg-muted/20 pointer-events-none"
-                        style={{
-                            left: 0,
-                            top: 0,
-                            width: '100%',
-                            height: '100%',
-                        }}
+                        style={{ left: 0, top: 0, width: '100%', height: '100%' }}
                     >
                         <div className="absolute -top-6 left-0 text-xs font-mono text-muted-foreground uppercase">
                             {currentWall.label} ({currentWall.length} x {currentWall.height} cm)
@@ -186,17 +244,28 @@ export default function SpatialCanvas({
                     </div>
                 )}
 
-                {/* Drawing Preview */}
-                {isDrawing && startPoint && currentPoint && (
-                    <div
-                        className="absolute border-2 border-primary bg-primary/20 z-50"
-                        style={{
-                            left: Math.min(startPoint.x, currentPoint.x),
-                            top: Math.min(startPoint.y, currentPoint.y),
-                            width: Math.abs(currentPoint.x - startPoint.x),
-                            height: Math.abs(currentPoint.y - startPoint.y),
-                        }}
-                    />
+                {drawingDims && (
+                    <>
+                        <div
+                            className="absolute border-2 border-primary bg-primary/20 z-50"
+                            style={{
+                                left: drawingDims.x,
+                                top: drawingDims.y,
+                                width: drawingDims.width,
+                                height: drawingDims.height,
+                            }}
+                        />
+                        <div 
+                            className="absolute z-[60] bg-foreground text-background text-[10px] font-bold px-2 py-1 rounded shadow-md pointer-events-none whitespace-nowrap"
+                            style={{
+                                left: drawingDims.x + drawingDims.width / 2,
+                                top: drawingDims.y - 30,
+                                transform: 'translateX(-50%) scale(1)'
+                            }}
+                        >
+                            {drawingDims.width}cm × {drawingDims.height}cm
+                        </div>
+                    </>
                 )}
 
                 <AnimatePresence>
@@ -225,10 +294,19 @@ export default function SpatialCanvas({
                     <PlusCircle size={48} className="mb-4" />
                     <p className="text-sm font-bold">Your canvas is ready!</p>
                     <p className="text-xs mt-2">Select a tool from the sidebar and draw on the wall.</p>
+                    <p className="text-[10px] mt-4 opacity-50">Shortcuts: W (Window), D (Door), S (Socket), Esc (Cancel)</p>
                 </div>
             )}
 
-            <SpatialControls isOffline={!currentKitchen} />
+            <SpatialControls 
+                isOffline={!currentKitchen} 
+                zoom={zoom}
+                onZoomChange={setZoom}
+                onResetView={() => {
+                    setZoom(1);
+                    setPan({ x: 0, y: 0 });
+                }}
+            />
         </div>
     );
 }

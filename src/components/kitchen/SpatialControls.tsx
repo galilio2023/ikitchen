@@ -1,14 +1,17 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { ShieldAlert, Undo2, Redo2 } from 'lucide-react';
+import { ShieldAlert, Undo2, Redo2, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
 import { useKitchenHistory } from '@/providers/KitchenStoreProvider';
 
 interface SpatialControlsProps {
     isOffline: boolean;
+    zoom: number;
+    onZoomChange: (zoom: number) => void;
+    onResetView: () => void;
 }
 
-export default function SpatialControls({ isOffline }: SpatialControlsProps) {
+export default function SpatialControls({ isOffline, zoom, onZoomChange, onResetView }: SpatialControlsProps) {
     const { undo, redo, pastStates, futureStates } = useKitchenHistory((state) => ({
         undo: state.undo,
         redo: state.redo,
@@ -60,7 +63,6 @@ export default function SpatialControls({ isOffline }: SpatialControlsProps) {
             >
                 <Undo2 size={20} />
             </button>
-            <div className="w-px h-4 bg-border mx-1" />
             <button 
                 onClick={() => redo()} 
                 disabled={!canRedo}
@@ -68,6 +70,36 @@ export default function SpatialControls({ isOffline }: SpatialControlsProps) {
                 title="Redo (Ctrl+Y)"
             >
                 <Redo2 size={20} />
+            </button>
+            
+            <div className="w-px h-4 bg-border mx-1" />
+            
+            <button 
+                onClick={() => onZoomChange(Math.max(0.5, zoom - 0.1))}
+                className="p-2 hover:bg-accent rounded-full transition-colors"
+                title="Zoom Out"
+            >
+                <ZoomOut size={20} />
+            </button>
+            <span className="text-xs font-mono w-12 text-center select-none">
+                {Math.round(zoom * 100)}%
+            </span>
+            <button 
+                onClick={() => onZoomChange(Math.min(3, zoom + 0.1))}
+                className="p-2 hover:bg-accent rounded-full transition-colors"
+                title="Zoom In"
+            >
+                <ZoomIn size={20} />
+            </button>
+            
+            <div className="w-px h-4 bg-border mx-1" />
+            
+            <button 
+                onClick={onResetView}
+                className="p-2 hover:bg-accent rounded-full transition-colors"
+                title="Reset View"
+            >
+                <Maximize size={20} />
             </button>
         </div>
     );

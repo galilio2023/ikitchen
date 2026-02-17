@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, ChefHat, Ruler, Database, Settings, Search, Bell, Plus, X, Menu } from 'lucide-react';
+import { LayoutDashboard, ChefHat, Database, Settings, Plus, X, Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/lib/store/uiStore";
 import { SidebarGroup } from './SidebarGroup';
 import { SidebarLink } from './SidebarLink';
 import { ThemeToggle } from '../ThemeToggle';
-import CreateProjectModal from '../CreateProjectModal';
+import CreateProjectButton from '../CreateProjectButton';
 
 export const SidebarContainer = React.memo(({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
@@ -49,13 +49,10 @@ export const SidebarContainer = React.memo(({ children }: { children: React.Reac
                         <SidebarLink href="/projects" icon={<ChefHat size={18} />} label="Projects" active={pathname === "/projects"} onClick={closeSidebar} />
                     </SidebarGroup>
                     
-                    <button
-                        onClick={() => { openModal(); closeSidebar(); }}
-                        className="w-full btn btn-primary"
-                    >
-                        <Plus size={18} className="mr-2" />
-                        New Project
-                    </button>
+                    <CreateProjectButton 
+                        className="w-full" 
+                        onClick={closeSidebar}
+                    />
 
                     <SidebarGroup title="Configuration">
                         <SidebarLink href="/inventory" icon={<Database size={18} />} label="Inventory" active={pathname === "/inventory"} onClick={closeSidebar} />
@@ -73,14 +70,18 @@ export const SidebarContainer = React.memo(({ children }: { children: React.Reac
                         >
                             <Menu size={24} />
                         </button>
-                        <h1 className="text-lg font-semibold text-foreground">
+                        <h1 
+                            className="text-lg font-semibold text-foreground capitalize"
+                            suppressHydrationWarning
+                        >
                             {pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}
                         </h1>
                     </div>
 
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
-                        <CreateProjectModal />
+                        {/* Mobile-only create button in header */}
+                        <CreateProjectButton className="md:hidden" size="icon" label="" />
                     </div>
                 </header>
 

@@ -1,5 +1,5 @@
 import { createStore } from 'zustand';
-import { IKitchen, IObstacle, IWall, ObstacleType } from '@/types/kitchen';
+import { IKitchen, IObstacle, IWall, ObstacleType, IAppliance } from '@/types/kitchen';
 import { validateKitchenLayout, ValidationError } from '@/services/validationService';
 import { temporal } from 'zundo';
 
@@ -9,18 +9,19 @@ export interface KitchenState {
     validationErrors: ValidationError[];
     activeWallIndex: number;
     selectedObstacleId: string | null;
-    activeTool: ObstacleType | null; // New state for the active drawing tool
+    activeTool: ObstacleType | null;
     
     // Actions
     setInitialState: (project: any, kitchen: IKitchen) => void;
     setKitchen: (kitchen: IKitchen) => void;
     addObstacle: (obstacle: IObstacle) => void;
+    addAppliance: (appliance: IAppliance) => void; // Added
     updateObstaclePosition: (id: string, x: number, y: number) => void;
     updateObstacleDetails: (id: string, updates: Partial<IObstacle['position']>) => void;
     deleteObstacle: (id: string) => void;
     setSelectedObstacle: (id: string | null) => void;
     setActiveWallIndex: (index: number) => void;
-    setActiveTool: (tool: ObstacleType | null) => void; // Action to set the active tool
+    setActiveTool: (tool: ObstacleType | null) => void;
     
     // Wall Actions
     addWall: (wall: IWall) => void;
@@ -69,13 +70,50 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
             });
         },
 
+        addAppliance: (appliance) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    appliances: [...(state.currentKitchen.appliances || []), appliance],
+                };
+                return {
+                    currentKitchen: newKitchen,
+                    validationErrors: validateKitchenLayout(newKitchen),
+                };
+            });
+        },
+
         updateObstaclePosition: (id, x, y) => {
             set(state => {
                 if (!state.currentKitchen) return {};
-                const newObstacles = (state.currentKitchen.obstacles || []).map(obs => 
-                    obs.id === id ? { ...obs, position: { ...obs.position, x, y } } : obs
-                );
-                const newKitchen = { ...state.currentKitchen, obstacles: newObstacles };
+                
+                // Try to update obstacle first
+                let found = false;
+                let newObstacles = (state.currentKitchen.obstacles || []).map(obs => {
+                    if (obs.id === id) {
+                        found = true;
+                        return { ...obs, position: { ...obs.position, x, y } };
+                    }
+                    return obs;
+                });
+
+                // If not found in obstacles, try appliances
+                let newAppliances = state.currentKitchen.appliances || [];
+                if (!found) {
+                    newAppliances = newAppliances.map(app => {
+                        if (app.id === id) {
+                            return { ...app, position: { ...app.position, x, y } };
+                        }
+                        return app;
+                    });
+                }
+
+                const newKitchen = { 
+                    ...state.currentKitchen, 
+                    obstacles: newObstacles,
+                    appliances: newAppliances
+                };
                 return {
                     currentKitchen: newKitchen,
                     validationErrors: validateKitchenLayout(newKitchen),
@@ -86,10 +124,31 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
         updateObstacleDetails: (id, updates) => {
             set(state => {
                 if (!state.currentKitchen) return {};
-                const newObstacles = (state.currentKitchen.obstacles || []).map(obs => 
-                    obs.id === id ? { ...obs, position: { ...obs.position, ...updates } } : obs
-                );
-                const newKitchen = { ...state.currentKitchen, obstacles: newObstacles };
+                
+                let found = false;
+                let newObstacles = (state.currentKitchen.obstacles || []).map(obs => {
+                    if (obs.id === id) {
+                        found = true;
+                        return { ...obs, position: { ...obs.position, ...updates } };
+                    }
+                    return obs;
+                });
+
+                let newAppliances = state.currentKitchen.appliances || [];
+                if (!found) {
+                    newAppliances = newAppliances.map(app => {
+                        if (app.id === id) {
+                            return { ...app, position: { ...app.position, ...updates } };
+                        }
+                        return app;
+                    });
+                }
+
+                const newKitchen = { 
+                    ...state.currentKitchen, 
+                    obstacles: newObstacles,
+                    appliances: newAppliances
+                };
                 return {
                     currentKitchen: newKitchen,
                     validationErrors: validateKitchenLayout(newKitchen),
@@ -101,7 +160,13 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
             set(state => {
                 if (!state.currentKitchen) return {};
                 const newObstacles = (state.currentKitchen.obstacles || []).filter(obs => obs.id !== id);
-                const newKitchen = { ...state.currentKitchen, obstacles: newObstacles };
+                const newAppliances = (state.currentKitchen.appliances || []).filter(app => app.id !== id);
+                
+                const newKitchen = { 
+                    ...state.currentKitchen, 
+                    obstacles: newObstacles,
+                    appliances: newAppliances
+                };
                 return {
                     currentKitchen: newKitchen,
                     validationErrors: validateKitchenLayout(newKitchen),
@@ -113,7 +178,6 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
         setActiveWallIndex: (index) => set({ activeWallIndex: index }),
         setActiveTool: (tool) => set({ activeTool: tool }),
 
-        // Wall Actions Implementation
         addWall: (wall) => {
             set(state => {
                 if (!state.currentKitchen) return {};
@@ -148,7 +212,6 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
                 if (!state.currentKitchen) return {};
                 const newWalls = (state.currentKitchen.walls || []).filter((_, i) => i !== index);
                 
-                // Adjust activeWallIndex if necessary
                 let newActiveIndex = state.activeWallIndex;
                 if (newActiveIndex >= newWalls.length) {
                     newActiveIndex = Math.max(0, newWalls.length - 1);
@@ -164,17 +227,16 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
         },
       }),
       {
-        limit: 100, // Limit history to 100 steps
+        limit: 100,
         partialize: (state) => ({
-            currentKitchen: state.currentKitchen, // Only track changes to the kitchen data
+            currentKitchen: state.currentKitchen,
         }),
-        equality: (a, b) => JSON.stringify(a) === JSON.stringify(b), // Deep comparison
+        equality: (a, b) => JSON.stringify(a) === JSON.stringify(b),
       }
     )
   );
 }
 
-// Selectors
 export const selectRenderableNodes = (state: KitchenState) => {
     if (!state.currentKitchen) return [];
     const obstacles = (state.currentKitchen.obstacles ?? []).map((obs, index) => ({
