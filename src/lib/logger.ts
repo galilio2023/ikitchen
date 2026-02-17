@@ -25,46 +25,34 @@ class Logger {
     return requestedLevelIndex >= currentLevelIndex;
   }
 
-  private formatMessage(
-    level: LogLevel,
-    message: string,
-    context?: LogContext
-  ): string {
+  private log(level: LogLevel, message: string, context?: any): void {
+    if (!this.shouldLog(level)) return;
+
     const timestamp = new Date().toISOString();
-    
-    if (this.isDevelopment) {
-      // Human-readable format for development
-      const contextStr = context ? `\n${JSON.stringify(context, null, 2)}` : '';
-      return `[${timestamp}] ${level.toUpperCase()}: ${message}${contextStr}`;
-    }
-    
-    // JSON format for production (easier to parse by log aggregators)
-    const logObject = {
+    const logData = {
       timestamp,
       level,
       message,
       ...context,
     };
-    
-    return JSON.stringify(logObject);
-  }
 
-  private log(level: LogLevel, message: string, context?: LogContext): void {
-    if (!this.shouldLog(level)) return;
-
-    const formattedMessage = this.formatMessage(level, message, context);
-
-    switch (level) {
-      case 'debug':
-      case 'info':
-        console.log(formattedMessage);
-        break;
-      case 'warn':
-        console.warn(formattedMessage);
-        break;
-      case 'error':
-        console.error(formattedMessage);
-        break;
+    if (this.isDevelopment) {
+      // Human-readable format for development
+      const color = {
+        debug: '\x1b[34m', // Blue
+        info: '\x1b[32m',  // Green
+        warn: '\x1b[33m',  // Yellow
+        error: '\x1b[31m', // Red
+      }[level];
+      const reset = '\x1b[0m';
+      
+      console.log(`${color}[${level.toUpperCase()}]${reset} ${message}`);
+      if (context && Object.keys(context).length > 0) {
+        console.log(JSON.stringify(context, null, 2));
+      }
+    } else {
+      // JSON format for production (natively parsed by Datadog/CloudWatch/Vercel)
+      console.log(JSON.stringify(logData));
     }
   }
 
@@ -80,80 +68,45 @@ class Logger {
     this.log('warn', message, context);
   }
 
-  error(message: string, context?: LogContext | Error): void {
-    if (context instanceof Error) {
-      this.log('error', message, {
-        error: context.message,
-        stack: context.stack,
-        name: context.name,
-      });
-    } else {
-      this.log('error', message, context);
+  error(message: string, error?: Error | unknown, context?: LogContext): void {
+    let errorContext = {};
+    if (error instanceof Error) {
+      errorContext = {
+        errorName: error.name,
+        errorMessage: error.message,
+        stack: error.stack,
+      };
+    } else if (typeof error === 'object') {
+      errorContext = error as object;
     }
+
+    this.log('error', message, { ...errorContext, ...context });
   }
 
   /**
-   * Log HTTP request
+   * Log AI Generation events
    */
-  request(method: string, url: string, context?: LogContext): void {
-    this.info('HTTP Request', { method, url, ...context });
-  }
-
-  /**
-   * Log HTTP response
-   */
-  response(
-    method: string,
-    url: string,
-    statusCode: number,
-    duration: number,
-    context?: LogContext
-  ): void {
-    const level = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'info';
-    this.log(level, 'HTTP Response', {
-      method,
-      url,
-      statusCode,
-      duration: `${duration}ms`,
-      ...context,
-    });
+  ai(event: 'generation_start' | 'generation_success' | 'generation_failed', details: {
+    model: string;
+    durationMs?: number;
+    tokenCount?: number;
+    kitchenId?: string;
+    error?: string;
+  }): void {
+    this.info(`AI Event: ${event}`, details);
   }
 
   /**
    * Log database query
    */
-  query(operation: string, collection: string, duration?: number): void {
-    this.debug('Database Query', {
+  db(operation: string, collection: string, durationMs?: number): void {
+    this.debug('DB Operation', {
       operation,
       collection,
-      duration: duration ? `${duration}ms` : undefined,
-    });
-  }
-
-  /**
-   * Log authentication events
-   */
-  auth(event: string, userId?: string, context?: LogContext): void {
-    this.info('Authentication Event', {
-      event,
-      userId,
-      ...context,
-    });
-  }
-
-  /**
-   * Log business events
-   */
-  business(event: string, context?: LogContext): void {
-    this.info('Business Event', {
-      event,
-      ...context,
+      durationMs,
     });
   }
 }
 
-// Export singleton instance
 export const logger = new Logger();
-
-// Export type for use in other files
 export type { LogLevel, LogContext };
