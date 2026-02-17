@@ -4,6 +4,7 @@ import React from 'react';
 import { Copy, Trash2, X } from 'lucide-react';
 import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { v4 as uuidv4 } from 'uuid';
+import { IObstacle, IAppliance } from '@/types/kitchen';
 
 interface ContextualToolbarProps {
     selectedId: string;
@@ -11,36 +12,36 @@ interface ContextualToolbarProps {
 }
 
 export default function ContextualToolbar({ selectedId, onClose }: ContextualToolbarProps) {
-    const { currentKitchen, addObstacle, deleteObstacle } = useKitchenStore(state => state);
+    const { currentKitchen, addObstacle, addAppliance, deleteObstacle } = useKitchenStore(state => state);
 
     const handleDuplicate = () => {
         if (!currentKitchen) return;
         
-        // Find the object in obstacles or appliances
         const obstacle = currentKitchen.obstacles.find(o => o.id === selectedId);
         const appliance = currentKitchen.appliances?.find(a => a.id === selectedId);
         
-        const item = obstacle || appliance;
-        
-        if (item) {
-            // Create a copy with a new ID and slightly offset position
-            const newItem = {
-                ...item,
+        if (obstacle) {
+            const newObstacle: IObstacle = {
+                ...obstacle,
                 id: uuidv4(),
                 position: {
-                    ...item.position,
-                    x: item.position.x + 10,
-                    y: item.position.y + 10
+                    ...obstacle.position,
+                    x: obstacle.position.x + 10,
+                    y: obstacle.position.y + 10
                 }
             };
-            
-            // We use addObstacle for both because the store handles merging/separation logic 
-            // (though ideally we should have separate actions, for now addObstacle works for generic items)
-            // Note: If it's an appliance, we might need a specific addAppliance action in the future.
-            // For now, let's assume we are duplicating obstacles.
-            if (obstacle) {
-                addObstacle(newItem);
-            }
+            addObstacle(newObstacle);
+        } else if (appliance) {
+            const newAppliance: IAppliance = {
+                ...appliance,
+                id: uuidv4(),
+                position: {
+                    ...appliance.position,
+                    x: appliance.position.x + 10,
+                    y: appliance.position.y + 10
+                }
+            };
+            addAppliance(newAppliance);
         }
     };
 
