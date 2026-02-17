@@ -289,3 +289,83 @@ The project is growing in complexity, involving advanced features like AI layout
 
 ### 3. How was it implemented?
 *   **`src/models/Project.ts` & `src/models/Kitchen.ts`**: Added `if (mongoose.models.ModelName) delete mongoose.models.ModelName;` before the `model()` call.
+
+---
+
+## [2025-02-24] - Robust AI Integration & Production Readiness
+
+### 1. What was done?
+*   **Robust AI Parsing:** Implemented regex-based JSON extraction in `aiService.ts` to handle LLM responses that include markdown or conversational text.
+*   **Deterministic AI Config:** Set `temperature: 0.1` and `topP: 0.95` to ensure consistent layout generation.
+*   **Mock AI Fallback:** Added a mock layout generator that activates if the `GEMINI_API_KEY` is missing or if the API call fails in development.
+*   **AI Rate Limiting:** Implemented a database-backed rate limiter (10 requests/hour) to control costs and prevent abuse.
+*   **DB Lifecycle Optimization:** Optimized `dbConnect.ts` for serverless environments by disabling `autoIndex` in production and implementing connection pooling.
+*   **Migration System:** Built a custom migration runner (`scripts/migrate.ts`) and tracking system to safely evolve the database schema.
+*   **Spatial Inspector Polish:** Enhanced the `SpatialInspector.tsx` with precise `+`/`-` controls, 5cm step increments, and input validation.
+
+### 2. Why was it done?
+*   **Reliability:** LLMs are non-deterministic; robust parsing and configuration are required to prevent runtime crashes.
+*   **Cost Control:** Generative AI APIs are expensive. Rate limiting ensures the project remains financially viable.
+*   **Scalability:** The migration system and DB optimizations ensure the app can handle real-world traffic and data evolution without downtime.
+*   **UX Precision:** Users need to be able to fine-tune their drawings with exact measurements, not just mouse dragging.
+
+### 3. How was it implemented?
+*   **`src/services/aiService.ts`**: Added `extractJson` helper and `AbortController` for 15s timeouts.
+*   **`src/actions/aiActions.ts`**: Integrated `UsageLimit` model to track IP-based requests.
+*   **`src/lib/dbConnect.ts`**: Added `maxPoolSize: 10` and `autoIndex: false` for production.
+*   **`scripts/migrate.ts`**: Created a runner that executes scripts from `scripts/migrations` and records them in a `Migration` collection.
+*   **`src/components/kitchen/SpatialInspector.tsx`**: Added `Plus`/`Minus` buttons and enforced a 10cm minimum dimension constraint.
+
+---
+
+## [2025-02-24] - Observability & Dependency Compatibility
+
+### 1. What was done?
+*   **Engine Enforcement:** Updated `package.json` to enforce `node >= 20.0.0` to align with Next.js 16 and Mongoose 9 requirements.
+*   **Structured Logging:** Enhanced `src/lib/logger.ts` to output structured JSON logs in production (for Datadog/CloudWatch) and readable colorized logs in development.
+*   **AI & DB Logging:** Added dedicated `logger.ai()` and `logger.db()` methods to trace high-value operations.
+
+### 2. Why was it done?
+*   **Stability:** Ensuring all environments (CI, Dev, Prod) run on the same Node version prevents "works on my machine" bugs.
+*   **Debuggability:** Structured logs allow for powerful querying in log management systems, making it easier to diagnose production issues.
+
+### 3. How was it implemented?
+*   **`package.json`**: Added `"engines": { "node": ">=20.0.0" }`.
+*   **`src/lib/logger.ts`**: Refactored the `log` method to output raw JSON objects in production and added specialized methods for AI and DB events.
+
+---
+
+## [2025-02-24] - AI Resilience & Health Checks
+
+### 1. What was done?
+*   **Defensive JSON Parsing:** Enhanced `aiService.ts` with a multi-stage parser that attempts direct parsing, then regex extraction, and finally logs detailed errors if both fail.
+*   **Deterministic AI Config:** Set `temperature: 0.0` in `aiService.ts` to minimize hallucination and ensure consistent outputs for identical inputs.
+*   **Health Check Endpoint:** Created `src/app/api/health/route.ts` to provide a quick status check for MongoDB connectivity and AI configuration.
+
+### 2. Why was it done?
+*   **Resilience:** AI models can sometimes return "chatty" responses or malformed JSON. The new parser ensures the app doesn't crash on these edge cases.
+*   **Operational Visibility:** The health endpoint allows uptime monitors (like UptimeRobot or AWS Route53) to verify that the critical dependencies are healthy.
+
+### 3. How was it implemented?
+*   **`src/services/aiService.ts`**: Added `parseResponse` method with try-catch blocks and `logger.error` calls.
+*   **`src/app/api/health/route.ts`**: Implemented a Next.js Route Handler that checks `mongoose.connection.readyState` and `hasGeminiAPI`.
+
+---
+
+## [2025-02-24] - Security Hardening & Atomic Rate Limiting
+
+### 1. What was done?
+*   **Atomic Rate Limiting:** Refactored `checkAiRateLimit` in `aiActions.ts` to use atomic MongoDB operators (`$inc`, `$set`, `$setOnInsert`).
+*   **Robust IP Extraction:** Updated IP identification to correctly handle comma-separated `x-forwarded-for` headers by extracting the first IP.
+*   **Production Error Masking:** Implemented generic error messages for production clients while preserving detailed server-side logs.
+
+### 2. Why was it done?
+*   **Consistency:** Atomic operations prevent race conditions where multiple concurrent requests could bypass the rate limit.
+*   **Security:** Masking internal error messages prevents "information leakage" that could be used by attackers to understand the system's internal structure.
+*   **Accuracy:** Correct IP extraction ensures that users behind multiple proxies are still correctly identified for rate limiting.
+
+### 3. How was it implemented?
+*   **`src/actions/aiActions.ts`**:
+    *   Used `UsageLimit.findOneAndUpdate` with `$inc` and `$set`.
+    *   Used `forwardedFor.split(',')[0].trim()` for IP extraction.
+    *   Used `isProd ? "Generic Message" : error.message` in catch blocks.

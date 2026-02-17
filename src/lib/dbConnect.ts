@@ -7,7 +7,6 @@ interface MongooseCache {
     promise: Promise<typeof mongoose> | null;
 }
 
-// Extend global type for mongoose cache
 declare global {
     // eslint-disable-next-line no-var
     var mongoose: MongooseCache | undefined;
@@ -21,27 +20,27 @@ if (!global.mongoose) {
 
 async function dbConnect() {
     if (!MONGODB_URI) {
-        console.error('[DB CONNECT] CRITICAL: MONGODB_URI is not defined.');
-        throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+        throw new Error('Please define the MONGODB_URI environment variable');
     }
 
-    // 1. Return existing connection if healthy (readyState 1 = connected)
+    // Return existing connection if healthy
     if (cached.conn && mongoose.connection.readyState === 1) {
         return cached.conn;
     }
 
-    // 2. Start a new connection promise if none exists
     if (!cached.promise) {
         const opts = {
             bufferCommands: false,
-            // Increased timeout slightly for serverless stability during AI heavy-lifting
             connectTimeoutMS: 10000,
-            socketTimeoutMS: 45000, // Longer for large AI data transfers
+            socketTimeoutMS: 45000,
             serverSelectionTimeoutMS: 10000,
+            // Senior Dev Additions:
+            maxPoolSize: 10, // Recommended for serverless to prevent connection exhaustion
+            autoIndex: process.env.NODE_ENV !== 'production', // Disable auto-indexing in prod for performance
         };
 
         cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => {
-            console.log('[DB CONNECT] New MongoDB connection established');
+            console.log(`[DB CONNECT] Connected to MongoDB (${process.env.NODE_ENV})`);
             return m;
         });
     }
@@ -49,12 +48,20 @@ async function dbConnect() {
     try {
         cached.conn = await cached.promise;
     } catch (e) {
-        cached.promise = null; // Reset promise so next attempt can retry
-        console.error('[DB CONNECT] Failed to connect to MongoDB:', e);
+        cached.promise = null;
+        console.error('[DB CONNECT] Error:', e);
         throw e;
     }
 
     return cached.conn;
+}
+
+// Optional: Graceful shutdown for non-serverless environments (Docker/PM2)
+if (process.env.NODE_ENV !== 'production') {
+    process.on('SIGINT', async () => {
+        await mongoose.connection.close();
+        process.exit(0);
+    });
 }
 
 export default dbConnect;
