@@ -12,6 +12,7 @@ export default function GlobalCreateProjectModal() {
             isOpen={isModalOpen} 
             onClose={closeModal} 
             title="Create New Project"
+            description="Start a new design journey"
         >
             <ProjectForm onSuccess={closeModal} />
         </ModalWrapper>

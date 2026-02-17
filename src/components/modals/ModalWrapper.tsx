@@ -8,10 +8,11 @@ interface ModalWrapperProps {
     isOpen: boolean;
     onClose: () => void;
     title: string;
+    description?: string; // Added optional description prop
     children: React.ReactNode;
 }
 
-export default function ModalWrapper({ isOpen, onClose, title, children }: ModalWrapperProps) {
+export default function ModalWrapper({ isOpen, onClose, title, description, children }: ModalWrapperProps) {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-none shadow-2xl">
@@ -23,9 +24,11 @@ export default function ModalWrapper({ isOpen, onClose, title, children }: Modal
                         <DialogTitle className="text-center text-xl font-bold tracking-tight">
                             {title}
                         </DialogTitle>
-                        <p className="text-center text-sm text-muted-foreground mt-1">
-                            Start a new design journey
-                        </p>
+                        {description && (
+                            <p className="text-center text-sm text-muted-foreground mt-1">
+                                {description}
+                            </p>
+                        )}
                     </DialogHeader>
                 </div>
                 

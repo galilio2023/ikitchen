@@ -19,7 +19,7 @@ interface ProjectGridProps {
   limit?: number;
 }
 
-export default function ProjectGrid({ projects, showSearch = false, limit }: ProjectGridProps) {
+export default function ProjectGrid({ projects, showSearch = true, limit }: ProjectGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredProjects = projects.filter(
@@ -36,7 +36,7 @@ export default function ProjectGrid({ projects, showSearch = false, limit }: Pro
 
   return (
     <div className="space-y-6">
-      {/* Optional Search Bar */}
+      {/* Optional Search Bar - Defaults to true for backward compatibility */}
       {showSearch && (
         <div className="relative max-w-md">
           <Search
@@ -59,7 +59,7 @@ export default function ProjectGrid({ projects, showSearch = false, limit }: Pro
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {displayedProjects.map((project) => (
+          {filteredProjects.map((project) => (
             <EnterpriseProjectCard key={project.id} project={project} />
           ))}
         </div>
