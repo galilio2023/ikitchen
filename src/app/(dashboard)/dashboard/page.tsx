@@ -12,8 +12,12 @@ export default async function DashboardPage() {
       {/* Hero / Stats Section */}
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Overview of your kitchen design operations.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Overview of your kitchen design operations.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -59,9 +63,10 @@ export default async function DashboardPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="p-6 md:p-8 bg-background/50">
-          <ProjectGrid projects={projects} />
+          {/* Hide search on dashboard for a cleaner look, and show only recent ones */}
+          <ProjectGrid projects={projects} showSearch={false} limit={4} />
         </div>
       </div>
     </div>
