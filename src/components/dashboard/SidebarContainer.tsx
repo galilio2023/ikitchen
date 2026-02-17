@@ -47,13 +47,6 @@ export const SidebarContainer = React.memo(({ children }: { children: React.Reac
                 </div>
 
                 <div className="flex-1 overflow-y-auto py-6 px-4 space-y-6">
-                    <div className="px-2">
-                        <CreateProjectButton 
-                            className="w-full justify-start shadow-md" 
-                            onClick={closeSidebar}
-                        />
-                    </div>
-
                     <nav className="space-y-6">
                         <SidebarGroup title="Platform">
                             <SidebarLink href="/dashboard" icon={<LayoutDashboard size={18} />} label="Dashboard" active={pathname === "/dashboard"} onClick={closeSidebar} />
@@ -98,6 +91,8 @@ export const SidebarContainer = React.memo(({ children }: { children: React.Reac
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <CreateProjectButton size="sm" />
+                        <div className="h-6 w-px bg-border/50 mx-1" />
                         <ThemeToggle />
                     </div>
                 </header>

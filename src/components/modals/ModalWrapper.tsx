@@ -1,8 +1,8 @@
 'use client';
 
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { X } from 'lucide-react';
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ChefHat } from 'lucide-react';
 
 interface ModalWrapperProps {
     isOpen: boolean;
@@ -13,49 +13,26 @@ interface ModalWrapperProps {
 
 export default function ModalWrapper({ isOpen, onClose, title, children }: ModalWrapperProps) {
     return (
-        <Transition.Root show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={onClose}>
-                <Transition.Child
-                    as={Fragment}
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-                </Transition.Child>
-
-                <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4 text-center">
-                        <Transition.Child
-                            as={Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                        >
-                            <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-card p-6 text-left align-middle shadow-xl transition-all">
-                                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-foreground">
-                                    {title}
-                                </Dialog.Title>
-                                <button
-                                    onClick={onClose}
-                                    className="absolute top-4 right-4 btn btn-ghost"
-                                >
-                                    <X size={20} />
-                                </button>
-                                <div className="mt-4">
-                                    {children}
-                                </div>
-                            </Dialog.Panel>
-                        </Transition.Child>
-                    </div>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="bg-gradient-to-b from-primary/5 to-background p-6 border-b border-border/50">
+                    <DialogHeader>
+                        <div className="mx-auto mb-4 p-3 bg-background rounded-full shadow-sm border border-border/50 w-fit">
+                            <ChefHat className="w-8 h-8 text-primary" />
+                        </div>
+                        <DialogTitle className="text-center text-xl font-bold tracking-tight">
+                            {title}
+                        </DialogTitle>
+                        <p className="text-center text-sm text-muted-foreground mt-1">
+                            Start a new design journey
+                        </p>
+                    </DialogHeader>
                 </div>
-            </Dialog>
-        </Transition.Root>
+                
+                <div className="p-6 pt-4">
+                    {children}
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
