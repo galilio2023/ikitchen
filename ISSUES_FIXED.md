@@ -349,3 +349,23 @@ The project is growing in complexity, involving advanced features like AI layout
 ### 3. How was it implemented?
 *   **`src/services/aiService.ts`**: Added `parseResponse` method with try-catch blocks and `logger.error` calls.
 *   **`src/app/api/health/route.ts`**: Implemented a Next.js Route Handler that checks `mongoose.connection.readyState` and `hasGeminiAPI`.
+
+---
+
+## [2025-02-24] - Security Hardening & Atomic Rate Limiting
+
+### 1. What was done?
+*   **Atomic Rate Limiting:** Refactored `checkAiRateLimit` in `aiActions.ts` to use atomic MongoDB operators (`$inc`, `$set`, `$setOnInsert`).
+*   **Robust IP Extraction:** Updated IP identification to correctly handle comma-separated `x-forwarded-for` headers by extracting the first IP.
+*   **Production Error Masking:** Implemented generic error messages for production clients while preserving detailed server-side logs.
+
+### 2. Why was it done?
+*   **Consistency:** Atomic operations prevent race conditions where multiple concurrent requests could bypass the rate limit.
+*   **Security:** Masking internal error messages prevents "information leakage" that could be used by attackers to understand the system's internal structure.
+*   **Accuracy:** Correct IP extraction ensures that users behind multiple proxies are still correctly identified for rate limiting.
+
+### 3. How was it implemented?
+*   **`src/actions/aiActions.ts`**:
+    *   Used `UsageLimit.findOneAndUpdate` with `$inc` and `$set`.
+    *   Used `forwardedFor.split(',')[0].trim()` for IP extraction.
+    *   Used `isProd ? "Generic Message" : error.message` in catch blocks.

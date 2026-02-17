@@ -42,9 +42,10 @@ This document provides a comprehensive audit of the **Kitchen SaaS (Tablawy)** a
 ### B. AI Layout Generation Cycle
 *   **Flow:** `Client -> Server Action -> AI Service -> DB -> Client`.
 *   **Robustness Check:**
-    *   **Rate Limiting:** IP-based 10 req/hour limit prevents cost spikes and API abuse.
+    *   **Atomic Rate Limiting:** Uses MongoDB `$inc` to prevent race conditions in usage tracking.
+    *   **IP Identification:** Robustly extracts client IP from multi-proxy `x-forwarded-for` headers.
     *   **Data Integrity:** AI output is validated against `generatedDesignSchema` (Zod) before being saved.
-    *   **Application Logic:** `applyAiLayout` generates unique UUIDs and standardizes types to ensure the 3D renderer and BOM panel don't crash.
+    *   **Security:** Internal error messages are masked in production to prevent information leakage.
 
 ### C. Observability & Health
 *   **Functionality:** Monitoring system health and errors.
@@ -62,11 +63,12 @@ This document provides a comprehensive audit of the **Kitchen SaaS (Tablawy)** a
 | **AI Generation** | 5/5 | Regex Parsing & 15s Timeout |
 | **Data Evolution** | 4/5 | Custom Migration Runner & Tracking |
 | **User Input** | 4/5 | Spatial Inspector Validation & Snapping |
-| **Cost Control** | 5/5 | DB-backed Rate Limiting |
+| **Cost Control** | 5/5 | Atomic DB-backed Rate Limiting |
+| **Security** | 5/5 | Error Masking & Robust IP Extraction |
 | **Observability** | 5/5 | Structured JSON Logging & Health API |
 
 ### **Conclusion:**
-The **Tablawy** system cycle is now **Production-Ready**. The integration of deterministic AI configurations, defensive parsing, and database-backed rate limiting creates a "fail-safe" environment where the application can handle both LLM unpredictability and high user traffic.
+The **Tablawy** system cycle is now **Production-Ready**. The integration of deterministic AI configurations, defensive parsing, and atomic database-backed rate limiting creates a "fail-safe" environment where the application can handle both LLM unpredictability and high user traffic.
 
 **System Status:** `STABLE`
 **Last Audit:** 2025-02-24

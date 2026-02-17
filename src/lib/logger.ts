@@ -37,7 +37,6 @@ class Logger {
     };
 
     if (this.isDevelopment) {
-      // Human-readable format for development
       const color = {
         debug: '\x1b[34m', // Blue
         info: '\x1b[32m',  // Green
@@ -46,13 +45,25 @@ class Logger {
       }[level];
       const reset = '\x1b[0m';
       
-      console.log(`${color}[${level.toUpperCase()}]${reset} ${message}`);
+      const formattedMessage = `${color}[${level.toUpperCase()}]${reset} ${message}`;
+      
+      switch (level) {
+        case 'error': console.error(formattedMessage); break;
+        case 'warn': console.warn(formattedMessage); break;
+        default: console.log(formattedMessage);
+      }
+
       if (context && Object.keys(context).length > 0) {
         console.log(JSON.stringify(context, null, 2));
       }
     } else {
-      // JSON format for production (natively parsed by Datadog/CloudWatch/Vercel)
-      console.log(JSON.stringify(logData));
+      // JSON format for production
+      const jsonLog = JSON.stringify(logData);
+      switch (level) {
+        case 'error': console.error(jsonLog); break;
+        case 'warn': console.warn(jsonLog); break;
+        default: console.log(jsonLog);
+      }
     }
   }
 
@@ -83,9 +94,6 @@ class Logger {
     this.log('error', message, { ...errorContext, ...context });
   }
 
-  /**
-   * Log AI Generation events
-   */
   ai(event: 'generation_start' | 'generation_success' | 'generation_failed', details: {
     model: string;
     durationMs?: number;
@@ -96,9 +104,6 @@ class Logger {
     this.info(`AI Event: ${event}`, details);
   }
 
-  /**
-   * Log database query
-   */
   db(operation: string, collection: string, durationMs?: number): void {
     this.debug('DB Operation', {
       operation,

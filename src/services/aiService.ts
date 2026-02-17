@@ -6,10 +6,8 @@ import { logger } from "@/lib/logger";
 class KitchenAiService {
     private parseResponse(text: string): any {
         try {
-            // First attempt: Direct parse
             return JSON.parse(text);
         } catch (e) {
-            // Second attempt: Extract JSON block
             const jsonMatch = text.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 try {
@@ -47,7 +45,6 @@ class KitchenAiService {
     }
 
     async generateLayout(kitchenData: IKitchen) {
-        // Use centralized env check
         if (!hasGeminiAPI) {
             if (isProd) {
                 throw new Error("AI Generation is unavailable in production: GEMINI_API_KEY is missing.");
@@ -89,7 +86,7 @@ class KitchenAiService {
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: {
-                        temperature: 0.0, // Deterministic
+                        temperature: 0.0,
                         topP: 0.95,
                         maxOutputTokens: 2048,
                         response_mime_type: "application/json",
@@ -120,9 +117,14 @@ class KitchenAiService {
             clearTimeout(timeoutId);
             logger.ai('generation_failed', { model: modelName, error: error.message });
             
-            // Fallback to mock in dev if API fails, but throw in prod
-            if (!isProd || error.name === 'AbortError') {
+            // Restricted fallback: only return mock in development.
+            // In production, we throw so the user sees a proper error message (masked by Server Action).
+            if (!isProd) {
                 return generatedDesignSchema.parse(this.getMockLayout(kitchenData));
+            }
+            
+            if (error.name === 'AbortError') {
+                throw new Error("AI generation timed out. Please try again.");
             }
             throw new Error(error.message || "AI failed to generate layout.");
         }
