@@ -358,6 +358,7 @@ The project is growing in complexity, involving advanced features like AI layout
 *   **Atomic Rate Limiting:** Refactored `checkAiRateLimit` in `aiActions.ts` to use atomic MongoDB operators (`$inc`, `$set`, `$setOnInsert`).
 *   **Robust IP Extraction:** Updated IP identification to correctly handle comma-separated `x-forwarded-for` headers by extracting the first IP.
 *   **Production Error Masking:** Implemented generic error messages for production clients while preserving detailed server-side logs.
+*   **Deprecated In-Memory Limiter:** Deprecated `src/lib/rate-limit.ts` to prevent accidental usage of the non-atomic limiter.
 
 ### 2. Why was it done?
 *   **Consistency:** Atomic operations prevent race conditions where multiple concurrent requests could bypass the rate limit.
@@ -369,3 +370,4 @@ The project is growing in complexity, involving advanced features like AI layout
     *   Used `UsageLimit.findOneAndUpdate` with `$inc` and `$set`.
     *   Used `forwardedFor.split(',')[0].trim()` for IP extraction.
     *   Used `isProd ? "Generic Message" : error.message` in catch blocks.
+*   **`src/lib/rate-limit.ts`**: Replaced content with a deprecation notice.
