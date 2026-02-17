@@ -2,91 +2,96 @@
 
 import { IKitchen } from "@/types/kitchen";
 import { IProject } from "@/models/Project";
-import { Phone, MapPin, DollarSign, Github, ExternalLink, ShieldCheck } from "lucide-react";
+import { Phone, MapPin, DollarSign, Github, ExternalLink, ShieldCheck, User, Calendar } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function ProjectInfo({ project, kitchen }: { project: IProject | null, kitchen: IKitchen | null }) {
+    if (!project || !kitchen) return null;
+
+    const InfoRow = ({ icon: Icon, label, value, href }: { icon: any, label: string, value: string, href?: string }) => (
+        <div className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
+            <div className="flex items-center gap-3">
+                <div className="p-1.5 bg-muted rounded-md text-muted-foreground">
+                    <Icon size={14} />
+                </div>
+                <span className="text-xs font-medium text-muted-foreground">{label}</span>
+            </div>
+            {href ? (
+                <a 
+                    href={href} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-primary hover:underline flex items-center gap-1"
+                >
+                    {value} <ExternalLink size={10} />
+                </a>
+            ) : (
+                <span className="text-xs font-semibold text-foreground truncate max-w-[120px]">{value}</span>
+            )}
+        </div>
+    );
+
     return (
-        <div className="flex flex-col gap-2 h-full bg-transparent">
-            {/* Contact & Location */}
-            <div className="animate-reveal glass-brilliant p-3 rounded-2xl space-y-1 bg-transparent flex-1">
-                <h3 className="text-[7px] font-black uppercase tracking-[0.4em] text-foreground/30 mb-0.5">Entity</h3>
-                
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-accent/30 border border-border text-magic-purple">
-                        <Phone size={10} />
-                    </div>
-                    <div>
-                        <p className="text-[6px] font-black text-foreground/20 uppercase tracking-widest">Phone</p>
-                        <p className="text-[8px] font-mono text-foreground">{kitchen?.phone || "DISCONNECTED"}</p>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-accent/30 border border-border text-magic-purple">
-                        <MapPin size={10} />
-                    </div>
-                    <div>
-                        <p className="text-[6px] font-black text-foreground/20 uppercase tracking-widest">Site</p>
-                        <p className="text-[8px] font-mono text-foreground truncate max-w-[100px]">{kitchen?.address || "NOT_SET"}</p>
-                    </div>
+        <div className="space-y-6">
+            {/* Client Details */}
+            <div className="space-y-3">
+                <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex items-center gap-2">
+                    <User size={12} /> Client Details
+                </h3>
+                <div className="bg-card border rounded-xl p-4 shadow-sm">
+                    <InfoRow icon={User} label="Name" value={kitchen.clientName || "Unknown"} />
+                    <InfoRow icon={Phone} label="Phone" value={kitchen.phone || "Not set"} />
+                    <InfoRow icon={MapPin} label="Address" value={kitchen.address || "Not set"} />
                 </div>
             </div>
 
-            {/* Financial & Status */}
-            <div className="animate-reveal glass-brilliant p-3 rounded-2xl space-y-1 bg-transparent flex-1">
-                <h3 className="text-[7px] font-black uppercase tracking-[0.4em] text-foreground/30 mb-0.5">Resources</h3>
-                
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-accent/30 border border-border text-emerald-400">
-                        <DollarSign size={10} />
-                    </div>
-                    <div>
-                        <p className="text-[6px] font-black text-foreground/20 uppercase tracking-widest">Budget</p>
-                        <p className="text-[8px] font-mono text-foreground">${kitchen?.totalPrice?.toLocaleString() || "0"}</p>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-accent/30 border border-border text-magic-cyan">
-                        <ShieldCheck size={10} />
-                    </div>
-                    <div>
-                        <p className="text-[6px] font-black text-foreground/20 uppercase tracking-widest">Status</p>
-                        <p className="text-[8px] font-mono text-foreground uppercase">{kitchen?.status === 'installed' ? 'STABLE' : 'UNVERIFIED'}</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* External Links */}
-            <div className="animate-reveal glass-brilliant p-3 rounded-2xl space-y-1 bg-transparent flex-1">
-                <h3 className="text-[7px] font-black uppercase tracking-[0.4em] text-foreground/30 mb-0.5">Links</h3>
-                
-                <div className="flex gap-2">
-                    <a 
-                        href={project?.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-between p-1.5 rounded-lg bg-accent/30 border border-border hover:bg-accent/50 transition-all group"
-                    >
-                        <div className="flex items-center gap-1.5">
-                            <Github size={10} className="text-foreground/40 group-hover:text-foreground" />
-                            <span className="text-[6px] font-black uppercase tracking-widest text-foreground/40 group-hover:text-foreground">Src</span>
+            {/* Project Status */}
+            <div className="space-y-3">
+                <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex items-center gap-2">
+                    <ShieldCheck size={12} /> Status & Budget
+                </h3>
+                <div className="bg-card border rounded-xl p-4 shadow-sm">
+                    <InfoRow 
+                        icon={DollarSign} 
+                        label="Budget" 
+                        value={kitchen.totalPrice ? `$${kitchen.totalPrice.toLocaleString()}` : "$0"} 
+                    />
+                    <div className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-3">
+                            <div className="p-1.5 bg-muted rounded-md text-muted-foreground">
+                                <ShieldCheck size={14} />
+                            </div>
+                            <span className="text-xs font-medium text-muted-foreground">Status</span>
                         </div>
-                    </a>
-
-                    <a 
-                        href={project?.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-between p-1.5 rounded-lg bg-accent/30 border border-border hover:bg-accent/50 transition-all group"
-                    >
-                        <div className="flex items-center gap-1.5">
-                            <ExternalLink size={10} className="text-foreground/40 group-hover:text-foreground" />
-                            <span className="text-[6px] font-black uppercase tracking-widest text-foreground/40 group-hover:text-foreground">Live</span>
-                        </div>
-                    </a>
+                        <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
+                            kitchen.status === 'installed' ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
+                            kitchen.status === 'ordered' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
+                            "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                        )}>
+                            {kitchen.status || "Draft"}
+                        </span>
+                    </div>
+                    <InfoRow 
+                        icon={Calendar} 
+                        label="Created" 
+                        value={new Date(project.createdAt || new Date()).toLocaleDateString()} 
+                    />
                 </div>
             </div>
+
+            {/* Links */}
+            {(project.github || project.url) && (
+                <div className="space-y-3">
+                    <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider flex items-center gap-2">
+                        <ExternalLink size={12} /> Resources
+                    </h3>
+                    <div className="bg-card border rounded-xl p-4 shadow-sm">
+                        {project.github && <InfoRow icon={Github} label="Repository" value="View Code" href={project.github} />}
+                        {project.url && <InfoRow icon={ExternalLink} label="Live Site" value="Visit Link" href={project.url} />}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import { Sparkles, Image as ImageIcon, Loader2, Box } from 'lucide-react';
+import { Sparkles, Image as ImageIcon, Loader2, Box, Cuboid } from 'lucide-react';
 import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { generateAiImage } from '@/actions/aiActions';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Box as ThreeBox, Grid, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Box as ThreeBox, Grid, Environment, ContactShadows, SoftShadows } from '@react-three/drei';
 
 export default function VisualizationPanel() {
     const [mode, setMode] = useState<'2d' | '3d'>('2d');
@@ -43,34 +43,38 @@ export default function VisualizationPanel() {
             ...(currentKitchen.obstacles || []).map(o => ({ ...o, isAppliance: false })),
             ...(currentKitchen.appliances || []).map(a => ({ ...a, isAppliance: true }))
         ];
-        const wall = currentKitchen.walls[0]; // Simple visualization for the first wall for now
+        const wall = currentKitchen.walls[0];
 
         return (
-            <div className="h-64 w-full bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg overflow-hidden border border-border mt-4 relative shadow-inner">
+            <div className="h-64 w-full bg-gradient-to-b from-gray-50 to-gray-200 dark:from-gray-900 dark:to-black rounded-xl overflow-hidden border border-border mt-4 relative shadow-inner group">
                 <Canvas camera={{ position: [0, 200, 400], fov: 45 }} shadows>
-                    {/* Lighting & Environment */}
-                    <Environment preset="apartment" />
-                    <ambientLight intensity={0.4} />
+                    <SoftShadows size={10} samples={10} focus={0.5} />
+                    
+                    {/* Realistic Environment Lighting */}
+                    <Environment preset="city" />
+                    <ambientLight intensity={0.5} />
                     <directionalLight 
-                        position={[100, 200, 100]} 
-                        intensity={1} 
+                        position={[50, 100, 50]} 
+                        intensity={1.5} 
                         castShadow 
                         shadow-mapSize={[1024, 1024]} 
+                        shadow-bias={-0.0001}
                     />
                     
-                    <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2.2} />
+                    <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 2.2} enableDamping dampingFactor={0.05} />
                     
-                    {/* Floor Grid - Subtle */}
+                    {/* Floor Grid */}
                     <Grid 
                         infiniteGrid 
                         fadeDistance={600} 
                         sectionColor="#a0a0a0" 
-                        cellColor="#d0d0d0" 
+                        cellColor="#e0e0e0" 
                         position={[0, -1, 0]}
+                        sectionThickness={1}
+                        cellThickness={0.5}
                     />
 
-                    {/* Ground Shadows */}
-                    <ContactShadows resolution={1024} scale={500} blur={2} opacity={0.5} far={10} color="#000000" />
+                    <ContactShadows resolution={1024} scale={500} blur={2} opacity={0.4} far={10} color="#000000" />
 
                     {/* Wall Floor Representation */}
                     {wall && (
@@ -79,7 +83,7 @@ export default function VisualizationPanel() {
                             position={[wall.length / 2, 0, 0]}
                             receiveShadow
                         >
-                            <meshStandardMaterial color="#e5e7eb" roughness={0.8} />
+                            <meshStandardMaterial color="#e5e7eb" roughness={0.9} />
                         </ThreeBox>
                     )}
 
@@ -91,43 +95,61 @@ export default function VisualizationPanel() {
                             position={[
                                 item.position.x + item.position.width / 2,
                                 item.position.y + item.position.height / 2,
-                                item.position.depth / 2 // Extrude outwards
+                                item.position.depth / 2
                             ]}
                             castShadow
                             receiveShadow
                         >
                             <meshStandardMaterial 
-                                color={item.isAppliance ? "#3b82f6" : "#ef4444"} 
-                                roughness={0.2} // Glossy for appliances
-                                metalness={item.isAppliance ? 0.5 : 0.1}
+                                color={item.isAppliance ? "#6366f1" : "#f59e0b"} // Indigo for appliances, Amber for obstacles
+                                roughness={item.isAppliance ? 0.2 : 0.5} 
+                                metalness={item.isAppliance ? 0.6 : 0.1}
+                                envMapIntensity={1}
                             />
                         </ThreeBox>
                     ))}
                 </Canvas>
-                <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground pointer-events-none select-none bg-background/80 backdrop-blur px-2 py-1 rounded border shadow-sm">
-                    Left Click: Rotate | Right Click: Pan | Scroll: Zoom
+                
+                <div className="absolute top-3 right-3 bg-black/50 backdrop-blur text-white text-[10px] px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Interactive 3D
+                </div>
+                
+                <div className="absolute bottom-3 left-3 right-3 flex justify-center pointer-events-none">
+                    <div className="bg-background/80 backdrop-blur border shadow-sm px-3 py-1.5 rounded-full text-[10px] text-muted-foreground flex gap-3">
+                        <span>Left Click: Rotate</span>
+                        <span className="w-px h-3 bg-border" />
+                        <span>Right Click: Pan</span>
+                        <span className="w-px h-3 bg-border" />
+                        <span>Scroll: Zoom</span>
+                    </div>
                 </div>
             </div>
         );
     };
 
     return (
-        <div className="card p-6 mt-6">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold flex items-center gap-3">
-                    <Box size={22} className="text-primary" />
-                    Visualization
-                </h2>
-                <div className="flex bg-muted rounded-lg p-1">
+        <div className="card p-6 mt-6 bg-card/50">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                        <Cuboid size={20} />
+                    </div>
+                    <div>
+                        <h2 className="text-base font-bold">Visualization</h2>
+                        <p className="text-xs text-muted-foreground">Preview your design</p>
+                    </div>
+                </div>
+                
+                <div className="flex bg-muted p-1 rounded-lg">
                     <button 
                         onClick={() => setMode('2d')}
-                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${mode === '2d' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${mode === '2d' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         AI Render
                     </button>
                     <button 
                         onClick={() => setMode('3d')}
-                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${mode === '3d' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${mode === '3d' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         3D Preview
                     </button>
@@ -135,43 +157,41 @@ export default function VisualizationPanel() {
             </div>
 
             {mode === '2d' ? (
-                <>
-                    <div className="mb-6">
+                <div className="space-y-4">
+                    <div className="relative group">
                         <button
                             onClick={handleVisualize}
                             disabled={isPending}
-                            className="btn btn-primary w-full h-12 text-sm"
+                            className="btn btn-primary w-full h-32 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary transition-all"
                         >
                             {isPending ? (
-                                <div className="flex items-center justify-center">
-                                    <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
-                                    Rendering Image...
-                                </div>
+                                <>
+                                    <Loader2 className="animate-spin h-8 w-8" />
+                                    <span className="text-sm font-medium">Rendering Concept...</span>
+                                </>
                             ) : (
-                                <div className="flex items-center justify-center gap-2">
-                                    <Sparkles size={16} />
-                                    Generate AI Concept
-                                </div>
+                                <>
+                                    <div className="p-3 bg-background rounded-full shadow-sm group-hover:scale-110 transition-transform">
+                                        <Sparkles size={24} />
+                                    </div>
+                                    <span className="text-sm font-medium">Generate Photorealistic Concept</span>
+                                </>
                             )}
                         </button>
-                        <p className="text-xs text-muted-foreground mt-3 text-center">
-                            Generates a photorealistic concept of your layout.
-                        </p>
                     </div>
 
                     {error && (
-                        <div className="bg-destructive/10 border border-destructive/30 text-destructive-foreground p-4 rounded-lg mb-4">
-                            <h3 className="font-bold">Visualization Failed</h3>
-                            <p className="text-sm">{error}</p>
+                        <div className="bg-destructive/10 border border-destructive/20 text-destructive p-3 rounded-lg text-xs">
+                            {error}
                         </div>
                     )}
 
                     {imageUrl && (
-                        <div className="rounded-lg overflow-hidden border">
-                            <img src={imageUrl} alt="AI Generated Kitchen" className="w-full h-auto" />
+                        <div className="rounded-xl overflow-hidden border shadow-md animate-in fade-in zoom-in-95 duration-300">
+                            <img src={imageUrl} alt="AI Generated Kitchen" className="w-full h-auto hover:scale-105 transition-transform duration-700" />
                         </div>
                     )}
-                </>
+                </div>
             ) : (
                 render3DScene()
             )}

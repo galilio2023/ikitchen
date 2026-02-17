@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useKitchenStore } from '@/providers/KitchenStoreProvider';
 import { cn } from '@/lib/utils';
-import { Plus, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, Ruler } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function WallManager() {
@@ -27,12 +27,12 @@ export default function WallManager() {
         const newWall = {
             id: uuidv4(),
             label: `Wall ${walls.length + 1}`,
-            length: 300, // Default length
-            height: 240, // Default height
+            length: 300,
+            height: 240,
             thickness: 10
         };
         addWall(newWall);
-        setActiveWallIndex(walls.length); // Select the new wall
+        setActiveWallIndex(walls.length);
     };
 
     const handleStartEdit = () => {
@@ -55,17 +55,12 @@ export default function WallManager() {
         }
     };
 
-    const handleCancelEdit = () => {
-        setIsEditing(false);
-        setEditValues(null);
-    };
-
     const handleDeleteWall = () => {
         if (walls.length <= 1) {
             alert("You must have at least one wall.");
             return;
         }
-        if (confirm("Are you sure you want to delete this wall? All items on it will be removed.")) {
+        if (confirm("Are you sure you want to delete this wall?")) {
             deleteWall(activeWallIndex);
         }
     };
@@ -73,26 +68,26 @@ export default function WallManager() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase text-muted-foreground">Walls</h3>
+                <h3 className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Active Wall</h3>
                 <button 
                     onClick={handleAddWall}
-                    className="text-xs flex items-center gap-1 text-primary hover:underline"
+                    className="text-xs flex items-center gap-1 text-primary hover:text-primary/80 transition-colors font-medium"
                 >
-                    <Plus size={12} /> Add Wall
+                    <Plus size={14} /> Add Wall
                 </button>
             </div>
 
-            {/* Wall Selector Tabs */}
-            <div className="flex flex-wrap gap-2">
+            {/* Segmented Control for Walls */}
+            <div className="flex p-1 bg-muted rounded-lg overflow-x-auto custom-scrollbar">
                 {walls.map((wall, index) => (
                     <button
                         key={wall.id}
                         onClick={() => setActiveWallIndex(index)}
                         className={cn(
-                            "px-3 py-1.5 rounded-md text-xs font-medium transition-colors border",
+                            "flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap",
                             activeWallIndex === index
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-background text-muted-foreground border-border hover:bg-accent"
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
                         )}
                     >
                         {wall.label}
@@ -100,29 +95,34 @@ export default function WallManager() {
                 ))}
             </div>
 
-            {/* Active Wall Properties Editor */}
+            {/* Active Wall Properties */}
             {walls[activeWallIndex] && (
-                <div className="p-3 bg-muted/30 rounded-lg border space-y-3">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold">
-                            {isEditing ? "Edit Wall" : walls[activeWallIndex].label}
-                        </span>
+                <div className="p-4 bg-card border rounded-xl shadow-sm space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-primary/10 rounded text-primary">
+                                <Ruler size={14} />
+                            </div>
+                            <span className="text-sm font-semibold">
+                                {isEditing ? "Edit Dimensions" : walls[activeWallIndex].label}
+                            </span>
+                        </div>
                         <div className="flex gap-1">
                             {isEditing ? (
                                 <>
-                                    <button onClick={handleSaveEdit} className="p-1 hover:bg-green-100 text-green-600 rounded">
+                                    <button onClick={handleSaveEdit} className="p-1.5 hover:bg-green-500/10 text-green-600 rounded-md transition-colors">
                                         <Check size={14} />
                                     </button>
-                                    <button onClick={handleCancelEdit} className="p-1 hover:bg-red-100 text-red-600 rounded">
+                                    <button onClick={() => setIsEditing(false)} className="p-1.5 hover:bg-red-500/10 text-red-600 rounded-md transition-colors">
                                         <X size={14} />
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={handleStartEdit} className="p-1 hover:bg-accent rounded text-muted-foreground">
+                                    <button onClick={handleStartEdit} className="p-1.5 hover:bg-accent text-muted-foreground hover:text-foreground rounded-md transition-colors">
                                         <Edit2 size={14} />
                                     </button>
-                                    <button onClick={handleDeleteWall} className="p-1 hover:bg-red-100 text-red-500 rounded">
+                                    <button onClick={handleDeleteWall} className="p-1.5 hover:bg-destructive/10 text-muted-foreground hover:text-destructive rounded-md transition-colors">
                                         <Trash2 size={14} />
                                     </button>
                                 </>
@@ -131,39 +131,47 @@ export default function WallManager() {
                     </div>
 
                     {isEditing ? (
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="col-span-2">
-                                <label className="text-[10px] uppercase text-muted-foreground">Label</label>
+                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div>
+                                <label className="text-[10px] uppercase font-bold text-muted-foreground mb-1 block">Label</label>
                                 <input 
                                     type="text" 
                                     value={editValues?.label || ''}
                                     onChange={(e) => setEditValues(prev => prev ? {...prev, label: e.target.value} : null)}
-                                    className="w-full text-xs p-1 border rounded"
+                                    className="w-full text-xs p-2 bg-background border rounded-md focus:ring-1 focus:ring-primary outline-none"
                                 />
                             </div>
-                            <div>
-                                <label className="text-[10px] uppercase text-muted-foreground">Length (cm)</label>
-                                <input 
-                                    type="number" 
-                                    value={editValues?.length || 0}
-                                    onChange={(e) => setEditValues(prev => prev ? {...prev, length: Number(e.target.value)} : null)}
-                                    className="w-full text-xs p-1 border rounded"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-[10px] uppercase text-muted-foreground">Height (cm)</label>
-                                <input 
-                                    type="number" 
-                                    value={editValues?.height || 0}
-                                    onChange={(e) => setEditValues(prev => prev ? {...prev, height: Number(e.target.value)} : null)}
-                                    className="w-full text-xs p-1 border rounded"
-                                />
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-muted-foreground mb-1 block">Length (cm)</label>
+                                    <input 
+                                        type="number" 
+                                        value={editValues?.length || 0}
+                                        onChange={(e) => setEditValues(prev => prev ? {...prev, length: Number(e.target.value)} : null)}
+                                        className="w-full text-xs p-2 bg-background border rounded-md focus:ring-1 focus:ring-primary outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-muted-foreground mb-1 block">Height (cm)</label>
+                                    <input 
+                                        type="number" 
+                                        value={editValues?.height || 0}
+                                        onChange={(e) => setEditValues(prev => prev ? {...prev, height: Number(e.target.value)} : null)}
+                                        className="w-full text-xs p-2 bg-background border rounded-md focus:ring-1 focus:ring-primary outline-none"
+                                    />
+                                </div>
                             </div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                            <div>Length: <span className="text-foreground">{walls[activeWallIndex].length} cm</span></div>
-                            <div>Height: <span className="text-foreground">{walls[activeWallIndex].height} cm</span></div>
+                        <div className="grid grid-cols-2 gap-4 pt-2">
+                            <div className="bg-muted/30 p-2 rounded-lg">
+                                <span className="text-[10px] uppercase text-muted-foreground block mb-0.5">Length</span>
+                                <span className="text-sm font-mono font-medium">{walls[activeWallIndex].length} cm</span>
+                            </div>
+                            <div className="bg-muted/30 p-2 rounded-lg">
+                                <span className="text-[10px] uppercase text-muted-foreground block mb-0.5">Height</span>
+                                <span className="text-sm font-mono font-medium">{walls[activeWallIndex].height} cm</span>
+                            </div>
                         </div>
                     )}
                 </div>
