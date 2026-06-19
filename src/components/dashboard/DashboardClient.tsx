@@ -597,9 +597,10 @@ export default function DashboardClient({ projects }: DashboardClientProps) {
                             </div>
                         </div>
                     </div>
-                )}
-                </motion.div>
-            </AnimatePresence>
+                </div>
+            )}
+            </motion.div>
+        </AnimatePresence>
         </div>
     );
 }
