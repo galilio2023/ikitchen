@@ -14,7 +14,8 @@
     <img src="https://img.shields.io/badge/Next.js-16%2B-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
     <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
     <img src="https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-    <img src="https://img.shields.io/badge/MongoDB-4.4-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
+    <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+    <img src="https://img.shields.io/badge/Prisma-39827F?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma">
 </p>
 
 <br>
@@ -68,7 +69,8 @@ With the removal of client-side data fetching, we were able to **completely dele
 - **Framework:** [Next.js](https://nextjs.org/) (App Router)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) (v4 `@theme` architecture)
-- **Database:** [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
+- **Database:** [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
+- **Authentication:** [Better Auth](https://www.better-auth.com/)
 - **Client State:** [Zustand](https://github.com/pmndrs/zustand)
 - **AI Engine:** [Google Gemini](https://ai.google.dev/)
 - **UI:** [Lucide React](https://lucide.dev/) for icons, [Sonner](https://sonner.emilkowal.ski/) for notifications.
@@ -79,9 +81,9 @@ To get a local copy up and running, follow these simple steps.
 
 ### Prerequisites
 
-- Node.js (v18 or later)
+- Node.js (v20 or later)
 - npm or yarn
-- A MongoDB database instance (local or cloud-based)
+- A PostgreSQL database instance
 - A Google Gemini API Key
 
 ### Installation & Setup
@@ -97,8 +99,12 @@ To get a local copy up and running, follow these simple steps.
 3.  **Set up environment variables:**
     Create a file named `.env.local` in the root of the project and add the following variables:
     ```env
-    # Your MongoDB connection string
-    MONGODB_URI="mongodb+srv://<user>:<password>@<cluster>/<database>"
+    # Your PostgreSQL connection string for Prisma
+    DATABASE_URL="postgresql://username:password@localhost:5432/ikitchen?schema=public"
+
+    # Better Auth config
+    BETTER_AUTH_SECRET="a_random_32_character_secret"
+    BETTER_AUTH_URL="http://localhost:3000"
 
     # Your Google Gemini API Key
     GEMINI_API_KEY=AIzaSy...
