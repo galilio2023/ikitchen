@@ -23,6 +23,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/lib/store/uiStore";
 import ProjectGrid from "@/components/dashboard/ProjectGrid";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Technical specs translation dictionary
 const MATERIAL_LABELS: Record<string, string> = {
@@ -175,41 +176,52 @@ export default function DashboardClient({ projects }: DashboardClientProps) {
                 </div>
             </div>
 
-            {/* Render dynamic screens based on active toggle */}
-            {viewMode === "b2c" ? (
-                /* B2C Consumer portal screen */
-                <div className="space-y-8 animate-in fade-in duration-300">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Massive Action Card (Span 2) */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Blueprint Quick Start Card */}
-                            <div className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 p-8 flex flex-col justify-between min-h-[220px] transition-all hover:border-primary/30">
-                                <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
-                                <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full blur-3xl bg-primary/10 group-hover:bg-primary/20 transition-all pointer-events-none" />
-                                
-                                <div className={cn("space-y-2 relative z-10", isAr ? "text-right" : "text-left")}>
-                                    <div className="p-2 bg-primary/10 text-primary w-fit rounded-lg mb-2">
-                                        <Compass size={24} className="animate-pulse" />
+            {/* Render dynamic screens based on active toggle using high-fidelity framer-motion transitions */}
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={viewMode}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="space-y-8"
+                >
+                    {viewMode === "b2c" ? (
+                        /* B2C Consumer portal screen */
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Massive Action Card (Span 2) */}
+                            <div className="lg:col-span-2 space-y-6">
+                                {/* Blueprint Quick Start Card (High-Fidelity Spotlight & Rotating Gradient Effect) */}
+                                <div className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-card p-8 flex flex-col justify-between min-h-[230px] transition-all duration-500 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/5">
+                                    <div className="absolute inset-0 bg-grid-pattern opacity-[0.04] pointer-events-none" />
+                                    <div className="absolute -right-20 -top-20 w-60 h-60 rounded-full blur-3xl bg-primary/10 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-700 pointer-events-none" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 via-transparent to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                                    
+                                    <div className={cn("space-y-3 relative z-10", isAr ? "text-right" : "text-left")}>
+                                        <div className="p-2.5 bg-primary/10 text-primary w-fit rounded-xl mb-2 flex items-center justify-center border border-primary/10">
+                                            <Compass size={24} className="animate-pulse" />
+                                        </div>
+                                        <h3 className="text-2xl font-black text-foreground tracking-tight">
+                                            {isAr ? "صمم مطبخ أحلامك في 3 خطوات بسيطة" : "Configure Your Dream Kitchen in 3 Easy Steps"}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground/90 max-w-xl leading-relaxed font-medium">
+                                            {isAr
+                                                ? "نظام تهيئة تفاعلي بالكامل مصمم ليتناسب مع الطبيعة المعمارية للشقق المصرية والفلل الخليجية. حدد نوع الاستخدام (شو / مطبخ خدمة)، اختر الستايل والخامات، وسيقوم نظامنا الذكي بحساب مقايسة الأسعار التقريبية فوراً وإعداد رسالة تفصيلية لتأكيد رفع المقاسات الفعلي مجاناً."
+                                                : "A fully guided configuration system optimized for Egyptian apartments and Gulf villas. Specify your kitchen role (Show vs. Service), select design styles, and let our smart engine calculate instant price ranges and write a structured WhatsApp request to schedule a free site survey."
+                                            }
+                                        </p>
                                     </div>
-                                    <h3 className="text-xl font-bold text-foreground">
-                                        {isAr ? "صمم مطبخ أحلامك في 3 خطوات بسيطة" : "Configure Your Dream Kitchen in 3 Easy Steps"}
-                                    </h3>
-                                    <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
-                                        {isAr
-                                            ? "نظام تهيئة تفاعلي بالكامل مصمم ليتناسب مع الطبيعة المعمارية للشقق المصرية والفلل الخليجية. حدد نوع الاستخدام (شو / مطبخ قلي)، اختر الستايل والخرسانة، وسيقوم نظامنا الذكي بحساب مقايسة الأسعار التقريبية فوراً وإعداد رسالة تفصيلية لتأكيد رفع المقاسات الفعلي مجاناً."
-                                            : "A fully guided configuration system optimized for Egyptian apartments and Gulf villas. Specify your kitchen role (Show vs. Service), select design styles, and let our smart engine calculate instant price ranges and write a structured WhatsApp request to schedule a free site survey."
-                                        }
-                                    </p>
+                                    
+                                    <motion.button
+                                        onClick={openModal}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="mt-6 flex items-center gap-2 px-6 py-3.5 bg-primary text-primary-foreground font-bold rounded-xl text-xs w-fit cursor-pointer hover:shadow-xl hover:shadow-primary/20 transition-all relative z-10"
+                                    >
+                                        <Plus size={16} />
+                                        <span>{isAr ? "ابدأ تصميم مطبخك الآن" : "Configure New Kitchen"}</span>
+                                    </motion.button>
                                 </div>
-                                
-                                <button
-                                    onClick={openModal}
-                                    className="mt-6 flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-bold rounded-xl text-xs w-fit cursor-pointer hover:shadow-lg hover:shadow-primary/15 hover:-translate-y-0.5 active:scale-[0.98] transition-all relative z-10"
-                                >
-                                    <Plus size={16} />
-                                    <span>{isAr ? "ابدأ تصميم مطبخك الآن" : "Configure New Kitchen"}</span>
-                                </button>
-                            </div>
 
                             {/* Saved designs summary grid */}
                             <div className="kitchen-card bg-card/55 backdrop-blur-md overflow-hidden p-6 space-y-6">
@@ -300,10 +312,9 @@ export default function DashboardClient({ projects }: DashboardClientProps) {
                             </div>
                         </div>
                     </div>
-                </div>
-            ) : (
-                /* B2B CRM Operations Hub screen */
-                <div className="space-y-8 animate-in fade-in duration-300">
+                ) : (
+                    /* B2B CRM Operations Hub screen */
+                    <div className="space-y-8">
                     {/* CRM Statistics row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {/* Pipeline Egypt */}
@@ -586,8 +597,9 @@ export default function DashboardClient({ projects }: DashboardClientProps) {
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+                </motion.div>
+            </AnimatePresence>
         </div>
     );
 }
