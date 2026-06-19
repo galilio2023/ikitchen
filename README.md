@@ -26,20 +26,22 @@
 
 ---
 
-## 🚀 About iKitchen
+## 🚀 About iKitchen (B2C Pivot — Egypt & Gulf Market)
 
-iKitchen is a modern, web-based tool designed to revolutionize the kitchen design workflow. It provides an interactive 2D spatial editor where designers can quickly map out wall dimensions, place structural obstacles like doors and windows, and then leverage a powerful AI assistant to automatically generate functional and efficient kitchen layouts.
+iKitchen has pivoted from a complex CAD planner into a high-converting, localized B2C kitchen planning experience optimized specifically for the Egyptian and Gulf consumer. Rather than expecting users to design complex structures, iKitchen guides them through a quick **3-step mobile-first configurator** to estimate price ranges, select materials, and automatically draft a personalized WhatsApp request to book a free site survey (`رفع مقاسات`).
 
-This project was architected from the ground up to be a showcase of modern web development best practices. It eschews traditional client-heavy architectures in favor of a lean, performant, and maintainable **server-centric model** using Next.js Server Actions, resulting in a faster user experience and a dramatically simplified codebase.
+The platform supports a dual-mode workflow:
+- **Consumer Mode (B2C):** A frictionless 3-step configurator in [B2cConfigurator.tsx](file:///C:/Users/PC/Desktop/ikitchen/src/components/kitchen/B2cConfigurator.tsx) tailored for high-speed engagement on mobile, ending with a WhatsApp survey booking.
+- **Showroom / Sales Mode (B2B):** A comprehensive administration dashboard in [DashboardClient.tsx](file:///C:/Users/PC/Desktop/ikitchen/src/components/dashboard/DashboardClient.tsx) where showroom staff can review projects, configure custom details, track pricing tiers, and manage customer leads.
 
 ## ✨ Key Features
 
-- **AI-Powered Layout Generation:** Automatically generates functional and efficient kitchen layouts based on user-defined constraints and design principles.
-- **Interactive 2D Spatial Canvas:** A fluid drag-and-drop interface for designing wall structures and placing fixed obstacles with pixel-perfect precision.
-- **Real-time Validation Engine:** Provides immediate, intelligent feedback to the user, preventing common design errors like overlapping items before they happen.
-- **Modern, Server-Centric Architecture:** Built with the Next.js App Router, Server Components, and Server Actions for optimal performance and a superior developer experience.
-- **Themable UI:** A clean, professional, and accessible design system with full support for both light and dark modes, built on a centralized Tailwind CSS v4 configuration.
-- **Project Management:** A complete workflow for creating, viewing, and deleting design projects, all powered by our robust server-side architecture.
+- **3-Step B2C Configurator:** A fast, mobile-first design journey where users choose their Kitchen Role (Show vs. Service), select from style cards (`Acrylic`, `High Gloss`, `Khashm`, etc.), define shape layouts (`I`, `L`, `U`, `Parallel`), and get instant estimated price ranges.
+- **WhatsApp Survey Funnel:** Integrates direct WhatsApp triggers. It compiles a highly detailed, natural Arabic message detailing their configuration to instantly book a free site survey (`معاينة مجانية ورفع مقاسات`).
+- **AI-Powered WhatsApp Copywriter:** Leverages Google Gemini in [aiService.ts](file:///C:/Users/PC/Desktop/ikitchen/src/services/aiService.ts) to automatically draft personalized, natural-sounding Arabic messages based on user specifications to send to the sales rep.
+- **Dual-Language i18n:** Full Arabic (RTL) and English (LTR) localization support with a persistent language toggle at the top level.
+- **Smart Offline Fallback:** Fully operational local pricing and copywriting engine that serves as an instant fallback if AI or external API services are offline.
+- **Robust Modern Architecture:** Constructed with a server-centric approach using Next.js 16 Server Components and Server Actions, completely replacing heavy client-side APIs and Redux with Zustand and Prisma.
 
 ## 🛠️ Under the Hood: The Architecture
 
@@ -57,16 +59,15 @@ We have completely eliminated the need for traditional REST or GraphQL API route
 Client Component (Form) ---calls---> Server Action ---updates---> Database ---revalidates---> Updated UI
 ```
 
-### 2. Lean State Management
+### 2. State & Database Layer
 
-With the removal of client-side data fetching, we were able to **completely delete Redux**. This dramatically reduced the project's complexity and bundle size.
-
-- **Server State:** All data that comes from the database is considered "server state" and is managed by Server Components and Server Actions.
-- **Client State:** For the small amount of purely client-side UI state (e.g., the state of the interactive kitchen editor), we use **Zustand**. It is lightweight, unopinionated, and provides a localized store that doesn't pollute the global scope, making it the perfect tool for managing the editor's complex state without the boilerplate of Redux.
+- **Relational Integrity with Prisma:** Our relational schemas are defined using Prisma ORM in [schema.prisma](file:///C:/Users/PC/Desktop/ikitchen/prisma/schema.prisma) with PostgreSQL, supporting users, project instances, layout configurations, and raw AI log audits.
+- **Lightweight UI Store:** We use **Zustand** to manage dynamic configurator state locally, avoiding the heavy boilerplate of Redux.
+- **Secure Authentication:** User and session management is handled out of the box using **Better Auth**, ensuring secure access control.
 
 ## 💻 Tech Stack
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
+- **Framework:** [Next.js](https://nextjs.org/) (App Router v16)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) (v4 `@theme` architecture)
 - **Database:** [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
@@ -109,9 +110,10 @@ To get a local copy up and running, follow these simple steps.
     # Your Google Gemini API Key
     GEMINI_API_KEY=AIzaSy...
     ```
-4.  **Seed the database (Optional):**
-    To populate your database with initial demo data for testing, run the following command:
+4.  **Synchronize & Seed the database:**
+    Initialize the database using Prisma migrate/push and populate it with seed data:
     ```sh
+    npx prisma db push
     npx tsx scripts/seed.ts
     ```
 5.  **Run the development server:**
