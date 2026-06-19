@@ -1,13 +1,19 @@
 'use client';
 
-import { useSession, signOut } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { LogOut } from "lucide-react";
 
 export function SidebarProfile() {
-    const { data: session } = useSession();
+    const { data: session } = authClient.useSession();
 
-    const handleSignOut = () => {
-        signOut({ callbackUrl: '/login' });
+    const handleSignOut = async () => {
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    window.location.href = '/login';
+                }
+            }
+        });
     };
 
     if (!session) {

@@ -1,93 +1,75 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState, useTransition } from "react";
+import React, { useState } from "react";
 import { useKitchenStore } from "@/providers/KitchenStoreProvider";
-import { selectRenderableNodes } from "@/lib/store/kitchenStore";
-import { v4 as uuidv4 } from "uuid";
-import { updateKitchen } from "@/actions/projectActions";
-import { toast } from "sonner";
-import { DEFAULT_OBSTACLE_DIMENSIONS } from "@/lib/constants";
-import { ObstacleType } from "@/types/kitchen";
+import { Loader2, Users, LayoutDashboard, Monitor } from "lucide-react";
+import B2cConfigurator from "@/components/kitchen/B2cConfigurator";
+import ShowroomMode from "@/components/kitchen/ShowroomMode";
+import { cn } from "@/lib/utils";
 
-import SpatialCanvas from "@/components/kitchen/SpatialCanvas";
-import UnifiedSidebar from "@/components/kitchen/UnifiedSidebar";
-import { Save, Loader2 } from "lucide-react";
+type Mode = "b2c" | "b2b";
 
 export default function KitchenEditor() {
   const store = useKitchenStore((state) => state);
-  const renderableNodes = useKitchenStore(selectRenderableNodes);
-  const [isSaving, startSaveTransition] = useTransition();
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-
-  const handleSave = () => {
-    const kitchenToSave = store.currentKitchen;
-    if (kitchenToSave) {
-      startSaveTransition(async () => {
-        const result = await updateKitchen(kitchenToSave.projectId, kitchenToSave.id, kitchenToSave);
-        if (result.success) {
-          toast.success("Project Saved!");
-        } else {
-          toast.error(result.error);
-        }
-      });
-    }
-  };
-
-  const currentWall = useMemo(() => {
-    if (!store.currentKitchen || !store.currentKitchen.walls) return null;
-    return store.currentKitchen.walls[store.activeWallIndex] || null;
-  }, [store.currentKitchen, store.activeWallIndex]);
+  const [mode, setMode] = useState<Mode>("b2c");
 
   if (!store.currentKitchen) {
     return (
-      <div className="flex items-center justify-center h-full flex-col gap-4">
+      <div className="flex items-center justify-center h-full flex-col gap-4 bg-background text-foreground min-h-[calc(100vh-3.5rem)]">
         <Loader2 className="animate-spin text-primary" size={48} />
-        <p className="text-muted-foreground font-medium">Loading Editor...</p>
+        <p className="text-muted-foreground text-sm font-medium">جاري تحميل النظام...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex lg:flex-row gap-0 min-h-0 overflow-hidden relative">
-      {/* Saving Indicator Overlay */}
-      {isSaving && (
-        <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] z-50 flex items-center justify-center pointer-events-none">
-          <div className="bg-card border shadow-lg rounded-full px-4 py-2 flex items-center gap-2">
-            <Loader2 className="animate-spin text-primary" size={16} />
-            <span className="text-sm font-medium">Saving changes...</span>
-          </div>
+    <div className="flex-1 flex flex-col min-h-0 bg-background text-foreground">
+      {/* Mode switcher header (hidden during printing) */}
+      <div className="flex-none bg-muted/30 border-b border-border/80 px-4 md:px-8 py-2.5 flex justify-between items-center print:hidden">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[11px] font-bold text-muted-foreground font-mono">
+            {mode === "b2c" ? "وضع العميل B2C (Consumer Mode)" : "وضع المعرض B2B (Showroom Mode)"}
+          </span>
         </div>
-      )}
 
-      <div className="absolute top-4 right-4 z-10">
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="btn btn-primary gap-2"
-        >
-          {isSaving ? (
-            <Loader2 className="animate-spin" size={16} />
-          ) : (
-            <Save size={16} />
-          )}
-          {isSaving ? "Saving..." : "Save"}
-        </button>
+        {/* Action Toggle Switch */}
+        <div className="flex bg-card border border-border p-1 rounded-xl">
+          <button
+            onClick={() => setMode("b2c")}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer",
+              mode === "b2c" 
+                ? "bg-primary text-primary-foreground shadow-md" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+            )}
+          >
+            <Monitor size={12} />
+            <span>بوابة المستهلك B2C</span>
+          </button>
+          <button
+            onClick={() => setMode("b2b")}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer",
+              mode === "b2b" 
+                ? "bg-primary text-primary-foreground shadow-md" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+            )}
+          >
+            <Users size={12} />
+            <span>بوابة المبيعات B2B</span>
+          </button>
+        </div>
       </div>
-      <main className="flex-1 relative min-w-0 h-full">
-        <SpatialCanvas
-          currentKitchen={store.currentKitchen}
-          currentWall={currentWall}
-          renderableObstacles={renderableNodes}
-          selectedObstacleId={store.selectedObstacleId}
-          activeTool={store.activeTool}
-          onCanvasClick={() => store.setSelectedObstacle(null)}
-          onNodeClick={(id) => store.setSelectedObstacle(id)}
-          onNodeDragStart={(id) => setDraggingId(id)}
-          onAddObstacle={store.addObstacle}
-          onToolUsed={() => store.setActiveTool(null)}
-        />
-      </main>
-      <UnifiedSidebar />
+
+      {/* Dynamic view */}
+      <div className="flex-1 flex flex-col min-h-0">
+        {mode === "b2c" ? (
+          <B2cConfigurator />
+        ) : (
+          <ShowroomMode />
+        )}
+      </div>
     </div>
   );
 }

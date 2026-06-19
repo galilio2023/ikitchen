@@ -42,6 +42,7 @@ export default function EnterpriseProjectCard({
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed': return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800';
+      case 'designing':
       case 'in progress': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800';
       case 'draft': return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800';
       default: return 'bg-muted text-muted-foreground border-border';
@@ -51,8 +52,19 @@ export default function EnterpriseProjectCard({
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed': return <CheckCircle2 size={12} />;
+      case 'designing':
       case 'in progress': return <Clock size={12} />;
       default: return <AlertCircle size={12} />;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'تمت المعاينة';
+      case 'designing':
+      case 'in progress': return 'قيد التصميم';
+      case 'draft': return 'مسودة';
+      default: return status;
     }
   };
 
@@ -62,26 +74,27 @@ export default function EnterpriseProjectCard({
     <>
       <Link
         href={`/editor/${project.id}`}
-        className="group relative flex flex-col bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300"
+        className="group relative flex flex-col kitchen-card hover:border-primary/40 hover:scale-[1.01] transition-all duration-300 !p-0 overflow-hidden cursor-pointer shadow-sm hover:shadow-md text-right"
+        dir="rtl"
       >
         {/* Header Section */}
-        <div className="p-5 flex justify-between items-start">
-          <div className="space-y-1.5">
-            <h3 className="font-semibold text-foreground tracking-tight truncate pr-4">
-              {project.clientName || "Untitled Project"}
+        <div className="p-5 flex justify-between items-start gap-4">
+          <div className="space-y-1.5 flex-1 min-w-0">
+            <h3 className="font-bold text-foreground text-sm tracking-tight truncate">
+              {project.clientName || "تصميم بدون عنوان"}
             </h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-start">
               <span className={cn(
-                "px-2 py-0.5 rounded-full text-[10px] font-medium border flex items-center gap-1 uppercase tracking-wider",
+                "px-2.5 py-0.5 rounded-full text-[9px] font-bold border flex items-center gap-1 uppercase tracking-wider",
                 getStatusColor(project.status || 'draft')
               )}>
                 {getStatusIcon(project.status || 'draft')}
-                {project.status || "Draft"}
+                {getStatusLabel(project.status || 'draft')}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0">
              <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -89,7 +102,7 @@ export default function EnterpriseProjectCard({
                   setIsDeleteDialogOpen(true);
                 }}
                 disabled={isPending}
-                className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
               >
                 {isPending ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -97,7 +110,7 @@ export default function EnterpriseProjectCard({
                   <Trash2 size={14} />
                 )}
               </button>
-              <div className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+              <div className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                 <ArrowUpRight size={14} />
               </div>
           </div>
@@ -105,9 +118,9 @@ export default function EnterpriseProjectCard({
 
         {/* Progress Section */}
         <div className="mt-auto px-5 pb-5">
-          <div className="flex justify-between items-end mb-2">
-            <span className="text-xs text-muted-foreground">Progress</span>
-            <span className="text-sm font-medium text-foreground">{project.progress || 0}%</span>
+          <div className="flex justify-between items-end mb-2 text-[11px]" dir="rtl">
+            <span className="text-muted-foreground font-bold">نسبة التقدم</span>
+            <span className="font-mono font-bold text-foreground">{project.progress || 0}%</span>
           </div>
           <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
             <div
@@ -115,12 +128,12 @@ export default function EnterpriseProjectCard({
               style={{ width: `${project.progress || 0}%` }}
             />
           </div>
-          <div className="mt-4 pt-4 border-t border-border/50 flex justify-between items-center">
-             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-              Last Updated
+          <div className="mt-4 pt-4 border-t border-border/50 flex justify-between items-center text-[10px]" dir="rtl">
+             <span className="text-muted-foreground font-bold uppercase tracking-wider">
+              آخر تحديث
             </span>
-            <span className="text-xs font-medium text-foreground/80">
-              {new Date(displayDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+            <span className="font-mono font-medium text-foreground/80" suppressHydrationWarning>
+              {new Date(displayDate).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })}
             </span>
           </div>
         </div>
@@ -130,8 +143,8 @@ export default function EnterpriseProjectCard({
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDelete}
-        title="Delete Project"
-        description="Are you sure you want to permanently delete this project? This action cannot be undone."
+        title="حذف المشروع"
+        description="هل أنت متأكد من رغبتك في حذف هذا المشروع نهائياً؟ لا يمكن التراجع عن هذا الإجراء."
       />
     </>
   );

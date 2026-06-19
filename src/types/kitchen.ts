@@ -21,6 +21,12 @@ export interface IKitchen {
     totalPrice: number;
     material?: string;
     color?: string;
+    layoutShape?: 'I' | 'L' | 'U' | 'Parallel' | 'Island';
+    kitchenRole?: 'show' | 'wet' | 'standard';
+    region?: 'Egypt' | 'Gulf';
+    cabinetMaterial?: string;
+    countertopMaterial?: string;
+    hardwareTier?: string;
     createdAt?: string | Date;
     updatedAt?: string | Date;
     generatedDesign?: GeneratedDesign;

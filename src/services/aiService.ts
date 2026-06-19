@@ -56,22 +56,40 @@ class KitchenAiService {
         const modelName = "gemini-1.5-flash"; 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
+        const shape = kitchenData.layoutShape || 'I';
+        const role = kitchenData.kitchenRole || 'standard';
+        const region = kitchenData.region || 'Egypt';
+        const cabinetMaterial = kitchenData.cabinetMaterial || 'Alumetal Standard';
+        const countertopMaterial = kitchenData.countertopMaterial || 'Local Granite';
+
         const prompt = `
-            You are a professional kitchen designer. Generate a functional layout.
-            INPUT DATA:
+            You are a senior professional kitchen interior architect specialized in Egyptian and Gulf (Arabian GCC) residential designs.
+            Provide a premium, ergonomically optimized kitchen design summary based on the following requirements:
+
+            INPUT METADATA:
+            - Target Region: ${region} (Egyptian/Gulf cultural expectations)
+            - Kitchen Type: ${role === 'show' ? 'Show/Dry Kitchen (Open plan, breakfast bar, high aesthetics, integrated coffee/beverage station)' : role === 'wet' ? 'Wet/Dirty Kitchen (Heavy-duty cooking, massive storage, high-performance exhaust placement, laundry space, double sinks)' : 'Standard Family Residential Kitchen'}
+            - Layout Configuration: ${shape}-Shape (Straight, L-Shape, U-Shape, Parallel, or Island)
+            - Cabinets Materials selected: ${cabinetMaterial}
+            - Countertop Slab selected: ${countertopMaterial}
+
+            SPATIAL ENVIRONMENT:
             - Walls: ${JSON.stringify(kitchenData.walls)}
-            - Obstacles: ${JSON.stringify(kitchenData.obstacles)}
-            
-            STRICT REQUIREMENT:
-            Return ONLY a JSON object. No markdown, no preamble.
+
+            DESIGN GUIDELINES:
+            1. Validate the user's choices. Discuss how the chosen shape, kitchen type (Show vs. Service), and materials fit local Egyptian or Gulf lifestyles.
+            2. Explain the "Kitchen Work Triangle" rules: where the Refrigerator, Sink, and Cooker should be placed along their walls.
+            3. Draft a natural, highly engaging opening WhatsApp message in Arabic that the user will send to the kitchen showroom rep. The message must summarize their configuration details (size, shape, style, materials) and request a free site survey (رفع مقاسات) and catalog. It must sound like a real Egyptian or Gulf customer wrote it.
+
+            STRICT OUTPUT FORMAT:
+            Return ONLY a single valid JSON object. No markdown, no code block wrapping, no preamble.
             Structure:
             {
-              "layoutType": "string",
-              "aiReasoning": "string",
-              "units": [{ "id": "string", "wallIndex": number, "type": "string", "position": { "x": number, "y": number, "z": number, "width": number, "height": number, "depth": number } }]
+              "layoutType": "${shape}-Shape ${role === 'show' ? 'Show' : role === 'wet' ? 'Wet' : 'Standard'} Kitchen",
+              "aiReasoning": "Provide a beautiful, warm, and highly professional layout design advice in Arabic (5-6 sentences) talking directly to the client (e.g. 'لقد قمنا بتصميم مطبخك المودرن كلاسيك...'). Include design tips and how it fits their space.",
+              "units": [],
+              "instructions": "The pre-written Arabic WhatsApp message. Start with 'السلام عليكم...' and write a natural message detailing their choice of shape, materials, and requesting a site survey (رفع مقاسات). Do not use placeholders; use the actual values provided (e.g. dimensions, Acrylic, Quartz, etc.)."
             }
-            Types: "socket", "vent", "window", "door", "appliance", "pipe", "pillar", "radiator", "clearance", "cabinet".
-            Coordinates: Relative to wall top-left (0,0). x=horizontal, y=vertical from floor.
         `;
 
         const controller = new AbortController();

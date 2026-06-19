@@ -23,6 +23,14 @@ export interface KitchenState {
     setActiveWallIndex: (index: number) => void;
     setActiveTool: (tool: ObstacleType | null) => void;
     
+    // Regional & Spec Actions
+    updateLayoutShape: (shape: 'I' | 'L' | 'U' | 'Parallel' | 'Island') => void;
+    updateKitchenRole: (role: 'show' | 'wet' | 'standard') => void;
+    updateRegion: (region: 'Egypt' | 'Gulf') => void;
+    updateCabinetMaterial: (material: string) => void;
+    updateCountertopMaterial: (material: string) => void;
+    updateHardwareTier: (tier: string) => void;
+    
     // Wall Actions
     addWall: (wall: IWall) => void;
     updateWall: (index: number, updates: Partial<IWall>) => void;
@@ -177,6 +185,138 @@ export const createKitchenStore = (initialState: Partial<KitchenState> = {}) => 
         setSelectedObstacle: (id) => set({ selectedObstacleId: id }),
         setActiveWallIndex: (index) => set({ activeWallIndex: index }),
         setActiveTool: (tool) => set({ activeTool: tool }),
+
+        updateLayoutShape: (shape) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                
+                const timestamp = Date.now();
+                let defaultWalls: IWall[] = [];
+                switch (shape) {
+                    case 'I':
+                        defaultWalls = [
+                            { id: `wall-${timestamp}-1`, label: 'Wall A (Straight)', length: 300, height: 240, thickness: 10 }
+                        ];
+                        break;
+                    case 'L':
+                        defaultWalls = [
+                            { id: `wall-${timestamp}-1`, label: 'Wall A (Left)', length: 300, height: 240, thickness: 10 },
+                            { id: `wall-${timestamp}-2`, label: 'Wall B (Right)', length: 240, height: 240, thickness: 10 }
+                        ];
+                        break;
+                    case 'U':
+                        defaultWalls = [
+                            { id: `wall-${timestamp}-1`, label: 'Wall A (Left)', length: 300, height: 240, thickness: 10 },
+                            { id: `wall-${timestamp}-2`, label: 'Wall B (Center)', length: 240, height: 240, thickness: 10 },
+                            { id: `wall-${timestamp}-3`, label: 'Wall C (Right)', length: 300, height: 240, thickness: 10 }
+                        ];
+                        break;
+                    case 'Parallel':
+                        defaultWalls = [
+                            { id: `wall-${timestamp}-1`, label: 'Wall A (Main)', length: 300, height: 240, thickness: 10 },
+                            { id: `wall-${timestamp}-2`, label: 'Wall B (Opposite)', length: 300, height: 240, thickness: 10 }
+                        ];
+                        break;
+                    case 'Island':
+                        defaultWalls = [
+                            { id: `wall-${timestamp}-1`, label: 'Wall A (Main)', length: 350, height: 240, thickness: 10 },
+                            { id: `wall-${timestamp}-2`, label: 'Island Unit', length: 180, height: 90, thickness: 90 }
+                        ];
+                        break;
+                }
+                
+                const numWalls = defaultWalls.length;
+                const newObstacles = (state.currentKitchen.obstacles || []).filter(o => o.wallIndex < numWalls);
+                const newAppliances = (state.currentKitchen.appliances || []).filter(a => a.wallIndex < numWalls);
+                
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    layoutShape: shape,
+                    walls: defaultWalls,
+                    obstacles: newObstacles,
+                    appliances: newAppliances
+                };
+                
+                return {
+                    currentKitchen: newKitchen,
+                    activeWallIndex: 0,
+                    selectedObstacleId: null,
+                    validationErrors: validateKitchenLayout(newKitchen)
+                };
+            });
+        },
+
+        updateKitchenRole: (role) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    kitchenRole: role
+                };
+                return {
+                    currentKitchen: newKitchen
+                };
+            });
+        },
+
+        updateRegion: (region) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                
+                // Adjust default materials based on region
+                const defaultCab = region === 'Egypt' ? 'Alumetal Standard' : 'Acrylic Turkish/Spanish';
+                const defaultCount = region === 'Egypt' ? 'Local Granite' : 'Premium Quartz';
+                
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    region: region,
+                    cabinetMaterial: defaultCab,
+                    countertopMaterial: defaultCount
+                };
+                return {
+                    currentKitchen: newKitchen
+                };
+            });
+        },
+
+        updateCabinetMaterial: (material) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    cabinetMaterial: material
+                };
+                return {
+                    currentKitchen: newKitchen
+                };
+            });
+        },
+
+        updateCountertopMaterial: (material) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    countertopMaterial: material
+                };
+                return {
+                    currentKitchen: newKitchen
+                };
+            });
+        },
+
+        updateHardwareTier: (tier) => {
+            set(state => {
+                if (!state.currentKitchen) return {};
+                const newKitchen = {
+                    ...state.currentKitchen,
+                    hardwareTier: tier
+                };
+                return {
+                    currentKitchen: newKitchen
+                };
+            });
+        },
 
         addWall: (wall) => {
             set(state => {

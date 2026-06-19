@@ -33,19 +33,19 @@ function SubmitButton() {
             disabled={pending} 
             className={cn(
                 "btn btn-primary w-full h-11 text-sm font-medium transition-all duration-200",
-                "flex items-center justify-center gap-2",
+                "flex items-center justify-center gap-2 cursor-pointer",
                 pending ? "opacity-80" : "hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
             )}
         >
             {pending ? (
                 <>
                     <Loader2 className="animate-spin" size={16} />
-                    Creating Project...
+                    جاري إنشاء التصميم...
                 </>
             ) : (
                 <>
-                    Create Project
-                    <ArrowRight size={16} />
+                    <span>إنشاء التصميم والبدء</span>
+                    <ArrowRight size={16} className="rotate-180" />
                 </>
             )}
         </button>
@@ -61,14 +61,14 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
             toast.error(state.error);
         }
         if (state.success && state.projectId) {
-            toast.success("Project created successfully!");
+            toast.success("تم إنشاء التصميم بنجاح!");
             onSuccess();
             router.push(`/editor/${state.projectId}`);
         }
     }, [state, onSuccess, router]);
 
     return (
-        <form action={formAction} className="space-y-5">
+        <form action={formAction} className="space-y-5 text-right" dir="rtl">
             {state.error && (
                 <div className="bg-destructive/10 border border-destructive/20 text-destructive p-3 rounded-lg text-sm flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
@@ -78,32 +78,32 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
             
             <div className="space-y-4">
                 <div className="space-y-1.5">
-                    <label htmlFor="name" className="text-xs font-semibold text-foreground/80 ml-1">
-                        Project Name
+                    <label htmlFor="name" className="text-xs font-semibold text-foreground/80 mr-1">
+                        اسم العميل أو المشروع <span className="text-destructive">*</span>
                     </label>
                     <div className="relative group">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
+                        <User className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
                         <input 
                             id="name" 
                             name="name" 
                             required 
-                            placeholder="e.g. Smith Residence Kitchen"
-                            className="w-full pl-10 pr-4 py-2.5 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/50" 
+                            placeholder="مثال: أ. أحمد عبد العزيز - الرياض"
+                            className="w-full pr-10 pl-4 py-2.5 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/50 text-right" 
                         />
                     </div>
                 </div>
                 
                 <div className="space-y-1.5">
-                    <label htmlFor="phone" className="text-xs font-semibold text-foreground/80 ml-1">
-                        Client Phone <span className="text-muted-foreground font-normal">(Optional)</span>
+                    <label htmlFor="phone" className="text-xs font-semibold text-foreground/80 mr-1">
+                        رقم هاتف العميل <span className="text-muted-foreground font-normal">(اختياري)</span>
                     </label>
                     <div className="relative group">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
+                        <Phone className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={16} />
                         <input 
                             id="phone" 
                             name="phone" 
-                            placeholder="+1 (555) 000-0000"
-                            className="w-full pl-10 pr-4 py-2.5 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/50" 
+                            placeholder="مثال: +966500000000"
+                            className="w-full pr-10 pl-4 py-2.5 bg-background border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/50 text-right" 
                         />
                     </div>
                 </div>

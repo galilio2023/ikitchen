@@ -11,8 +11,8 @@ export default function GlobalCreateProjectModal() {
         <ModalWrapper 
             isOpen={isModalOpen} 
             onClose={closeModal} 
-            title="Create New Project"
-            description="Start a new design journey"
+            title="إنشاء تصميم مطبخ جديد"
+            description="ابدأ تخصيص مطبخك وحساب عروض الأسعار تقريبياً"
         >
             <ProjectForm onSuccess={closeModal} />
         </ModalWrapper>
