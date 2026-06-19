@@ -132,6 +132,6 @@ To get a local copy up and running, follow these simple steps.
     Tablawy
   </p>
   <a href="https://vercel.com/?utm_source=ikitchen&utm_campaign=oss" target="_blank" rel="noopener noreferrer" style="margin-top: 1.5rem; display: inline-block;">
-    <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by Vercel" />
+    <img src="https://raw.githubusercontent.com/abumalick/powered-by-vercel/master/powered-by-vercel.svg" alt="Powered by Vercel" />
   </a>
 </div>
