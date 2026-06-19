@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Better Auth Required Models
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  
+  projects      Project[]
+  kitchens      Kitchen[]
+  aiResponses   AiRawResponse[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+}
+
+// App Models
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  client    String
+  status    String   @default("Draft")
+  progress  Int      @default(0)
+  img       String?
+  url       String?
+  github    String?
+  stars     Int      @default(0)
+  tags      String[]
+  ownerId   String?
+  owner     User?    @relation(fields: [ownerId], references: [id])
+  kitchen   Kitchen?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Kitchen {
+  id                 String   @id @default(cuid())
+  userId             String?
+  user               User?    @relation(fields: [userId], references: [id])
+  projectId          String   @unique
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  progress           Int      @default(0)
+  clientName         String
+  phone              String
+  address            String?
+  status             String   @default("draft")
+  img                String?
+  url                String?
+  github             String?
+  stars              Int      @default(0)
+  tags               String[]
+
+  walls              Json     @default("[]")
+  obstacles          Json     @default("[]")
+  appliances         Json     @default("[]")
+  standards          Json?
+  
+  totalPrice         Float    @default(0)
+  material           String?
+  color              String?
+  layoutShape        String   @default("I")
+  kitchenRole        String   @default("standard")
+  region             String   @default("Egypt")
+  cabinetMaterial    String   @default("Alumetal Standard")
+  countertopMaterial String   @default("Local Granite")
+  hardwareTier       String   @default("Standard")
+  
+  generatedDesign    Json?
+  generatedDesignHistory Json @default("[]")
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  aiResponses        AiRawResponse[]
+}
+
+model AiRawResponse {
+  id             String   @id @default(cuid())
+  kitchenId      String
+  kitchen        Kitchen  @relation(fields: [kitchenId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model          String
+  rawText        String   @db.Text
+  promptHash     String
+  tokensEstimate Int      @default(0)
+  createdAt      DateTime @default(now())
+}
+
+model UsageLimit {
+  id         String   @id @default(cuid())
+  identifier String
+  type       String
+  count      Int      @default(0)
+  lastReset  DateTime @default(now())
+
+  @@unique([identifier, type])
+}

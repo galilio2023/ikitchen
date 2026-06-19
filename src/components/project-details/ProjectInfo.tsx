@@ -1,11 +1,11 @@
 'use client';
 
 import { IKitchen } from "@/types/kitchen";
-import { IProject } from "@/models/Project";
+import { Project } from "@prisma/client";
 import { Phone, MapPin, DollarSign, Github, ExternalLink, ShieldCheck, User, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function ProjectInfo({ project, kitchen }: { project: IProject | null, kitchen: IKitchen | null }) {
+export default function ProjectInfo({ project, kitchen }: { project: Project | null, kitchen: IKitchen | null }) {
     if (!project || !kitchen) return null;
 
     const InfoRow = ({ icon: Icon, label, value, href }: { icon: any, label: string, value: string, href?: string }) => (
@@ -26,7 +26,7 @@ export default function ProjectInfo({ project, kitchen }: { project: IProject | 
                     {value} <ExternalLink size={10} />
                 </a>
             ) : (
-                <span className="text-xs font-semibold text-foreground truncate max-w-[120px]">{value}</span>
+                <span className="text-xs font-semibold text-foreground truncate max-w-[120px]" suppressHydrationWarning>{value}</span>
             )}
         </div>
     );

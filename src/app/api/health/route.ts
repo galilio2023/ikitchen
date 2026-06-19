@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import { prisma } from '@/lib/prisma';
 import { hasGeminiAPI } from '@/lib/env';
-import dbConnect from '@/lib/dbConnect';
 
 export async function GET() {
   const health = {
@@ -14,8 +13,8 @@ export async function GET() {
   };
 
   try {
-    await dbConnect();
-    health.services.database = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    await prisma.$queryRaw`SELECT 1`;
+    health.services.database = 'connected';
   } catch (e) {
     health.services.database = 'error';
   }

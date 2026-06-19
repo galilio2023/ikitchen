@@ -4,18 +4,18 @@
  */
 
 interface EnvConfig {
-    MONGODB_URI: string;
-    NEXTAUTH_URL: string;
-    NEXTAUTH_SECRET: string;
+    DATABASE_URL: string;
+    BETTER_AUTH_URL: string;
+    BETTER_AUTH_SECRET: string;
     GEMINI_API_KEY?: string; // Optional - app works without it (uses mock data)
     NEXT_PUBLIC_GEMINI_API_KEY?: string;
 }
 
 function validateEnv(): EnvConfig {
     const requiredVars = [
-        'MONGODB_URI',
-        'NEXTAUTH_URL',
-        'NEXTAUTH_SECRET',
+        'DATABASE_URL',
+        'BETTER_AUTH_URL',
+        'BETTER_AUTH_SECRET',
     ];
 
     const missing: string[] = [];
@@ -54,9 +54,9 @@ ${missing.map(v => `║  ${v}=your_value_here`).join('\n')}
     }
 
     return {
-        MONGODB_URI: process.env.MONGODB_URI!,
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL!,
-        NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET!,
+        DATABASE_URL: process.env.DATABASE_URL!,
+        BETTER_AUTH_URL: process.env.BETTER_AUTH_URL!,
+        BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET!,
         GEMINI_API_KEY: process.env.GEMINI_API_KEY,
         NEXT_PUBLIC_GEMINI_API_KEY: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
     };
